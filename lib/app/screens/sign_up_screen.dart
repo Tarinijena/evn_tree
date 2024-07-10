@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:national_wild_animal/app/screens/login_screen.dart';
+
 import '../common_widgets/background_widget.dart';
 import '../common_widgets/common_text_field_view.dart';
 
 class SignUpScreen extends StatefulWidget {
+  
   const SignUpScreen({super.key});
 
   @override
@@ -23,11 +26,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
               height: usableHeight,
               child: BackgroundWidget(size: size,
                 btnOnTap: () {
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => LoginScreen(),));
                   debugPrint(">>>>>>>>>>>>>btnOnTap Call");
-                }, buttonText: 'Log In', footerOnTap: () {
+                }, buttonText: 'Sign UP', footerOnTap: () {
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => LoginScreen(),));
                   debugPrint(">>>>>>>>>>>>>footerOnTap Call");
                 },
                 footerTextOne: "Already have an account ? ", footerTextTwo: 'sign-in', widgetLst: [
+                  SizedBox(height: 25,),
                   CommonTextFieldView(
                     controller: TextEditingController(),
                     // errorText: _errorFName,
@@ -40,6 +46,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     suffixIcon: Icons.person,
                     radius: 1,
                     height: 40,
+                    suffixIconColor: null,
                   ),
                   const SizedBox(
                     height: 5,
@@ -54,6 +61,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onChanged: (String txt) {},
                     isAllowTopTitleView: false,
                     suffixIcon: Icons.mail_outlined,
+                    suffixIconColor: null,
                     radius: 1,
                     height: 40,
                   ),
@@ -70,6 +78,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onChanged: (String txt) {},
                     isAllowTopTitleView: false,
                     suffixIcon: Icons.key,
+                    suffixIconColor: null,
                     radius: 1,
                     height: 40,
                   ),

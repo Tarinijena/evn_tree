@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:national_wild_animal/app/modules/sign_up_screen.dart';
+import 'package:national_wild_animal/OTPScreen/OtpVerificationPage.dart';
+
+import 'package:national_wild_animal/app/screens/sign_up_screen.dart';
 
 import '../common_widgets/background_widget.dart';
 
@@ -25,9 +27,16 @@ class _LoginScreenState extends State<LoginScreen> {
             height: usableHeight,
             child: BackgroundWidget(size: size,
               btnOnTap: () {
-                debugPrint(">>>>>>>>>>>>>btnOnTap Call");
+                
+                
+                 showDialog(context: context, builder:(context) {
+
+                        return Hero(
+                          tag: 'otp',
+                          child: OtpVerificationScreen());
+                   },);
               }, buttonText: 'Log In', footerOnTap: () {
-              debugPrint(">>>>>>>>>>>>>footerOnTap Call");
+              
               Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpScreen()));
               },
               footerTextOne: "You don't have an account ? ", footerTextTwo: 'sign-up', widgetLst: [
@@ -43,6 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   suffixIcon: Icons.mail_outlined,
                   radius: 1,
                   height: 40,
+                  suffixIconColor: null,
+
                 ),
               ],
               headerText: 'Welcome Back ! ',)

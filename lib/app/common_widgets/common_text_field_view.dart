@@ -16,6 +16,9 @@ class CommonTextFieldView extends StatelessWidget {
   final double? pad;
   final double? height;
   final double? radius;
+  final Color? suffixIconColor;
+  final double? suffixIconSize;
+  final Color? borderColor;
   final IconData? suffixIcon;
   final BuildContext? contextNew;
 
@@ -35,9 +38,11 @@ class CommonTextFieldView extends StatelessWidget {
       this.pad = 16,
       this.radius = 10,
       this.contextNew,
-      this.height = 34,
+      this.height = 40,
         this.suffixIcon,
-      this.enable = true});
+        this.suffixIconSize,
+        this.borderColor,
+      this.enable = true, required this.suffixIconColor});
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +82,10 @@ class CommonTextFieldView extends StatelessWidget {
                 fillColor: const Color(0xFF171224),
                 contentPadding: const EdgeInsets.only(left: 16,right: 14,top: 2,bottom: 2),
                 filled: true,
-                suffixIcon:  Icon(suffixIcon??Icons.email_outlined,size: 18,color: const Color(0xFFB74BFF) ,)
+                suffixIcon:  Icon(suffixIcon??Icons.email_outlined,size: 18,color: suffixIconColor??const  Color(0xFFB74BFF) ,)
             ),
             keyboardType: keyboardType,
+            
           ),
         ),
       ),

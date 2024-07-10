@@ -9,7 +9,7 @@ class TextStyles{
 
   TextStyle getTitleStyle() {
     return Theme.of(context).textTheme.titleLarge!.copyWith(
-      fontSize: 24,
+      fontSize: 30,
       color: AppTheme.primaryTextColor,
     );
   }
@@ -22,14 +22,14 @@ class TextStyles{
 
   TextStyle getRegularStyle() {
     return Theme.of(context).textTheme.bodyLarge!.copyWith(
-      fontSize: 16,
+      fontSize: 20,
       color: AppTheme.primaryTextColor,
     );
   }
 
   TextStyle getBoldStyle() {
     return Theme.of(context).textTheme.titleMedium!.copyWith(
-      fontSize: 14,
+      fontSize: 20,
       color: AppTheme.primaryTextColor,
     );
   }

@@ -55,7 +55,7 @@ class CommonButton extends StatelessWidget {
                       buttonText ?? "",
                       style: TextStyles(context).getRegularStyle().copyWith(
                           color: textColor,
-                          fontSize: 16,
+                          fontSize: 26,
                           fontWeight: FontWeight.bold
                       ),
                     ),

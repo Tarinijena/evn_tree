@@ -26,7 +26,7 @@ class BackgroundWidget extends StatelessWidget {
       children: [
         Expanded(
             flex:1,child: Container()),
-        Image.asset("assets/logo1.png"),
+            Image.asset("assets/logo1.png"),
         Expanded(
             flex:1,child: Container()),
         SizedBox(
@@ -44,7 +44,7 @@ class BackgroundWidget extends StatelessWidget {
                       // width: size.width*0.95,
                       decoration: BoxDecoration(
                           color: const Color(0xFF231D32),           // Background color
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(6),
                           border: Border.all(color: const Color(0xFF333649))// Rounded corners
                       ),
                       child: Padding(
@@ -73,13 +73,15 @@ class BackgroundWidget extends StatelessWidget {
                         height: 190,
                         fit: BoxFit.cover,  // Adjust the fit as per your requirement
                       ),
-                      Text(headerText,style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w500,fontSize: 22),)
+                      
+                      Text(headerText,style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w500,fontSize: 22),),
+                      
                     ],
                   ),
                 ),
               ),
               Positioned(
-                bottom: 55,
+                bottom: 50,
                 left: 0,
                 right: 0,
 
@@ -100,7 +102,7 @@ class BackgroundWidget extends StatelessWidget {
             Text(
               footerTextOne,
               textAlign: TextAlign.center,
-              style: TextStyles(context).googleRubikFontsForButtonText(fontSize: 12,fontWeight: FontWeight.w500),
+              style: TextStyles(context).googleRubikFontsForButtonText(fontSize: 16,fontWeight: FontWeight.w500),
             ),
             InkWell(
               borderRadius: const BorderRadius.all(Radius.circular(8)),
@@ -109,7 +111,7 @@ class BackgroundWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(4.0),
                 child: Text(
                   footerTextTwo,
-                  style:TextStyles(context).googleRubikFontsForText2(fontSize: 12,fontWeight: FontWeight.w500),
+                  style:TextStyles(context).googleRubikFontsForText2(fontSize: 14,fontWeight: FontWeight.w500),
                 ),
               ),
             ),
