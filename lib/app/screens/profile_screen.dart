@@ -106,6 +106,7 @@ class _HomeScreenState extends State<ProfileScreen> {
       backgroundColor: const Color(0xFF231D32),
       body: SafeArea(
         child: DefaultTabController(
+          
           length: 2,
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -222,12 +223,13 @@ class _HomeScreenState extends State<ProfileScreen> {
                           ):Container()
                         ],
                       ),
-            
-                      
-                       SizedBox(height: 10,),    
-                      SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: Container(
+
+                       SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                     children: [
+                         SizedBox(height: 10,),    
+                        Container(
                                                   height: 33,
                                                   decoration: BoxDecoration(
                          color: Colors.transparent
@@ -279,17 +281,15 @@ class _HomeScreenState extends State<ProfileScreen> {
                                                        
                           ]),
                                                  ),
-                      ),
-                                              
-                          SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: Container(
-                               
-                              height:MediaQuery.of(context).size.height,
-                              
+                                                
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height,
                               child: TabBarView(children: [
-                                  Expanded(
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.height,
                                     child: ListView.builder(
+                                      scrollDirection: Axis.vertical,
+                                      
                                       itemCount: festivalData.length,
                                       itemBuilder: (context, index) {
                                              return Padding(
@@ -306,7 +306,7 @@ class _HomeScreenState extends State<ProfileScreen> {
                                                       )
                                                  ),
                                                  child: Padding(
-
+                                    
                                                    padding: const EdgeInsets.only(left: 8,top: 8,right: 8,bottom: 8),
                                                    child: Row(
                                                       children: [
@@ -356,14 +356,23 @@ class _HomeScreenState extends State<ProfileScreen> {
                                     }, ),
                                   ),
                                   Text("Hii")
-                              ])),
-                          )   ,  
+                              ]),
+                            )   ,  
+                     ],
+                  ),
+                )
+            
+                      
+                     
                             
                            
             
                     ],
                   ),
                 ),
+                    
+               
+                   
             
             
             
