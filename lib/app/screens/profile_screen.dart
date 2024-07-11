@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:national_wild_animal/ProfilePageDate/ProfilePageData.dart';
 
 import '../app_theme/colors.dart';
@@ -104,185 +107,268 @@ class _HomeScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: DefaultTabController(
           length: 2,
-          child: Column(
-            children: [
-              CustomAppBar(),
-              Padding(
-                padding: const EdgeInsets.only(left: 24.0,top: 12,right: 18),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text("Hello",style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400,fontSize: 20),),
-                        Text(" Jay",style: TextStyles(context).googleRubikFontsForText2(fontWeight: FontWeight.w400,fontSize: 20)),
-                        Text(",",style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400,fontSize: 20)),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text("Let’s explore your fav",style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400,fontSize: 20),),
-                        Text(" event",style: TextStyles(context).googleRubikFontsForText2(fontWeight: FontWeight.w400,fontSize: 20)),
-                        Text(" !",style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400,fontSize: 20)),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 17,
-                    ),
-                    CommonTextFieldView(
-                      controller: TextEditingController(),
-                      // errorText: _errorFName,
-                      padding: const EdgeInsets.only(left: 0, right: 0),
-                      keyboardType: TextInputType.name,
-                      onChanged: (String txt) {},
-                      isAllowTopTitleView: false,
-                      suffixIcon: Icons.search,
-                      suffixIconColor: Colors.white,
-                      suffixIconSize: 25,
-                      radius: 15.5,
-                      height: 35,
-                      borderColor: const Color(0xFFC1C1C1),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 60,
-                          width: size.width*0.82,
-                          child: ListView.builder(
-                              itemCount: dataLst.length,
-                              controller: scrollController,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (BuildContext context,int index){
-                               return GestureDetector(
-                              onTap: (){
-                                selectedIndex = index;
-                                setState(() {
-          
-                                });
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 19.0),
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(2),
-                                        border: Border.all(width: 1,color: const Color(0xFF362B51)),
-                                        color: (selectedIndex == index)?const Color(0xFFB74BFF) :const Color(0xFF221D31)
-                                      ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(4.0),
-                                          child: Icon(dataLst[index].icon,size: 30,color: Colors.white,),
-                                        )),
-                                    Text(dataLst[index].nameStr??"",style: TextStyles(context).googleRubikFontsForButtonText(fontSize: 9,fontWeight: FontWeight.w600),)
-                                  ],
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              children: [
+                CustomAppBar(),
+                Padding(
+                  padding: const EdgeInsets.only(left: 24.0,top: 12,right: 18),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text("Hello",style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400,fontSize: 20),),
+                          Text(" Jay",style: TextStyles(context).googleRubikFontsForText2(fontWeight: FontWeight.w400,fontSize: 20)),
+                          Text(",",style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400,fontSize: 20)),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text("Let’s explore your fav",style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400,fontSize: 20),),
+                          Text(" event",style: TextStyles(context).googleRubikFontsForText2(fontWeight: FontWeight.w400,fontSize: 20)),
+                          Text(" !",style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400,fontSize: 20)),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 17,
+                      ),
+                      CommonTextFieldView(
+                        controller: TextEditingController(),
+                        // errorText: _errorFName,
+                        padding: const EdgeInsets.only(left: 0, right: 0),
+                        keyboardType: TextInputType.name,
+                        onChanged: (String txt) {},
+                        isAllowTopTitleView: false,
+                        suffixIcon: Icons.search,
+                        suffixIconColor: Colors.white,
+                        suffixIconSize: 25,
+                        radius: 15.5,
+                        height: 35,
+                        borderColor: const Color(0xFFC1C1C1),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 60,
+                            width: size.width*0.82,
+                            child: ListView.builder(
+                                itemCount: dataLst.length,
+                                controller: scrollController,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (BuildContext context,int index){
+                                 return GestureDetector(
+                                onTap: (){
+                                  selectedIndex = index;
+                                  setState(() {
+            
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 19.0),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(2),
+                                          border: Border.all(width: 1,color: const Color(0xFF362B51)),
+                                          color: (selectedIndex == index)?const Color(0xFFB74BFF) :const Color(0xFF221D31)
+                                        ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Icon(dataLst[index].icon,size: 30,color: Colors.white,),
+                                          )),
+                                      Text(dataLst[index].nameStr??"",style: TextStyles(context).googleRubikFontsForButtonText(fontSize: 9,fontWeight: FontWeight.w600),)
+                                    ],
+                                  ),
                                 ),
+                              );
+                            }),
+                          ),
+                          (dataLst.length > 4)? GestureDetector(
+                            onTap: (){
+                              double currentOffset = scrollController.offset;
+                              double newOffset = currentOffset + 30.0;
+            
+                              if(maxScrollExtent == 0){
+                                scrollController.jumpTo(
+                                  30,
+                                );
+                              }
+            
+                              if (newOffset <= maxScrollExtent) {
+                                scrollController.animateTo(
+                                  newOffset,
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut,
+                                );
+                              } else {
+                                // If reached the end, stop scrolling further
+                                scrollController.jumpTo(maxScrollExtent);
+                              }
+                            },
+                            child: Container(
+                              color: const Color(0xFF362B51),
+                              height: 40,
+                              child: const Padding(
+                                padding: EdgeInsets.all(4.0),
+                                child: Icon(Icons.arrow_forward_sharp,size: 18,color: Colors.white,),
                               ),
-                            );
-                          }),
-                        ),
-                        (dataLst.length > 4)? GestureDetector(
-                          onTap: (){
-                            double currentOffset = scrollController.offset;
-                            double newOffset = currentOffset + 30.0;
-          
-                            if(maxScrollExtent == 0){
-                              scrollController.jumpTo(
-                                30,
-                              );
-                            }
-          
-                            if (newOffset <= maxScrollExtent) {
-                              scrollController.animateTo(
-                                newOffset,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            } else {
-                              // If reached the end, stop scrolling further
-                              scrollController.jumpTo(maxScrollExtent);
-                            }
-                          },
-                          child: Container(
-                            color: const Color(0xFF362B51),
-                            height: 40,
-                            child: const Padding(
-                              padding: EdgeInsets.all(4.0),
-                              child: Icon(Icons.arrow_forward_sharp,size: 18,color: Colors.white,),
                             ),
-                          ),
-                        ):Container()
-                      ],
-                    ),
-          
-                    SizedBox(height: 20,),
+                          ):Container()
+                        ],
+                      ),
+            
+                      
+                       SizedBox(height: 10,),    
+                      SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Container(
+                                                  height: 33,
+                                                  decoration: BoxDecoration(
+                         color: Colors.transparent
+                                                  ),
+                        
+                        child: TabBar(
                          
-                          Container(
-                          height: 33,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent
-                          ),
-                           
-                           child: TabBar(
-                            
-                             physics: ClampingScrollPhysics(),
-                             
-                             unselectedLabelColor: Color(0xffB74BFF),
-                             indicatorSize: TabBarIndicatorSize.label,
-                              dividerColor: Colors.transparent,
-                             indicator: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                color: Color(0xffB74BFF),
-                                border: Border(
-                                  bottom: BorderSide(color: Colors.transparent)
-                                )
-                             ),
-                             tabs: [
-                               Tab(
-                               child: Container(
-                               height: 33,
-                               width: 100,
-                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  border: Border.all(color: Color(0xffB74BFF),width: 1)
-                               ),
-                               child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text("Ungoing",style: TextStyle(color: Colors.white),),
-                               ),
-                                                             ),
-                                                          ),
-                                                          Tab(
-                                                             child: Container(
-                                height: 33,
-                               width: 100,
-                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  border: Border.all(color: Color(0xffB74BFF),width: 1)
-                               ),
-                               child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text("Upcomeing",style: TextStyle(color: Colors.white)),),
-                               ),
-                                                             ),
-                                                          
-                             ]),
-                         ),
-
-                         
+                          physics: ClampingScrollPhysics(),
                           
-                         
-          
-                  ],
+                          unselectedLabelColor: Color(0xffB74BFF),
+                          indicatorSize: TabBarIndicatorSize.label,
+                           dividerColor: Colors.transparent,
+                          indicator: BoxDecoration(
+                             borderRadius: BorderRadius.circular(30),
+                             color: Color(0xffB74BFF),
+                             border: Border(
+                               bottom: BorderSide(color: Colors.transparent)
+                             )
+                          ),
+                          tabs: [
+                            Tab(
+                            child: Container(
+                            height: 33,
+                            width: 100,
+                            decoration: BoxDecoration(
+                               borderRadius: BorderRadius.circular(30),
+                               border: Border.all(color: Color(0xffB74BFF),width: 1)
+                            ),
+                            child: Align(
+                               alignment: Alignment.center,
+                               child: Text("Ungoing",style: TextStyle(color: Colors.white),),
+                            ),
+                                                          ),
+                                                       ),
+                                                       Tab(
+                                                          child: Container(
+                             height: 33,
+                            width: 100,
+                            decoration: BoxDecoration(
+                               borderRadius: BorderRadius.circular(30),
+                               border: Border.all(color: Color(0xffB74BFF),width: 1)
+                            ),
+                            child: Align(
+                               alignment: Alignment.center,
+                               child: Text("Upcomeing",style: TextStyle(color: Colors.white)),),
+                            ),
+                                                          ),
+                                                          
+                                                       
+                          ]),
+                                                 ),
+                      ),
+                                              
+                          SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Container(
+                               
+                              height:MediaQuery.of(context).size.height,
+                              
+                              child: TabBarView(children: [
+                                  Expanded(
+                                    child: ListView.builder(
+                                      itemCount: festivalData.length,
+                                      itemBuilder: (context, index) {
+                                             return Padding(
+                                               padding: const EdgeInsets.only(top: 25),
+                                               child: Container(
+                                                height: 150,
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(7),
+                                                     image: DecorationImage(
+                                                      
+                                                      image:AssetImage(festivalData[index].imagePath,),
+                                                      fit: BoxFit.cover,
+                                                      
+                                                      )
+                                                 ),
+                                                 child: Padding(
+
+                                                   padding: const EdgeInsets.only(left: 8,top: 8,right: 8,bottom: 8),
+                                                   child: Row(
+                                                      children: [
+                                                          Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                             children: [
+                                                                 Container(
+                                                                  height: 20,
+                                                                  width: 60,
+                                                                  decoration: BoxDecoration(
+                                                                      color: Colors.grey.shade800,
+                                                                      borderRadius: BorderRadius.circular(2)
+                                                                  ),
+                                                                  child: Center(child: Text(festivalData[index].festival,style: TextStyle(color: ColorsGroup.whiteColor,fontSize: 14,fontWeight: FontWeight.bold),))),
+                                                                  Column(
+                                                                    children: [
+                                                                        Text("Adibasi Mela",style: TextStyle(color: ColorsGroup.whiteColor,fontSize: 24,fontWeight: FontWeight.bold ),),
+                                                                        SizedBox(height: 5,),
+                                                                        Column(
+                                                                            children: [
+                                                                               Row(
+                                                                                 children: [
+                                                                                     Icon(Icons.location_on,color: Color(0xFFB74BFF),size: 20,),
+                                                                                     SizedBox(width: 3,),
+                                                                                     Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),)
+                                                                                 ],
+                                                                               ),
+                                                                               Row(
+                                                                                 children: [
+                                                                                     Icon(Icons.date_range,color: Color(0xFFB74BFF),size: 20,),
+                                                                                     SizedBox(width: 3,),
+                                                                                     Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),)
+                                                                                 ],
+                                                                               )
+                                                                            ],
+                                                                        )
+                                                                    ],
+                                                                  )
+                                                             ],
+                                                          )
+                                                      ],
+                                                   ),
+                                                 ),
+                                               ),
+                                             );
+                                    }, ),
+                                  ),
+                                  Text("Hii")
+                              ])),
+                          )   ,  
+                            
+                           
+            
+                    ],
+                  ),
                 ),
-              ),
-          
-          
-          
-            ],
+            
+            
+            
+              ],
+            ),
           ),
         ),
       ),
