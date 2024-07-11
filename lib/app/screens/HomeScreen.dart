@@ -85,32 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         )
                            ]),
                        ),
-                       SizedBox(height: 10,),
-                       Container(
-                        height: MediaQuery.of(context).size.width,
-                         child: TabBarView(children: [
-                          
-                            SingleChildScrollView(
-                              scrollDirection: Axis.vertical,
-                              child: ListView.builder(
-                                itemCount: 3,
-                                itemBuilder: (context, index) {
-                                   return Container(
-                                        height: 70,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(13),
-                                          color: Colors.amber,
-                                            border:Border.all(
-                                              width: 3,
-                                              color: Colors.red,
-                                            )
-                                        ),
-                                   );
-                              },),
-                            ),
-                            Text("Hello")
-                         ]),
-                       )
+                      
                
                       
                       
