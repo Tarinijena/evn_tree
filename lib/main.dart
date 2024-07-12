@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:national_wild_animal/Demo.dart';
 import 'package:national_wild_animal/app/screens/EventScreen.dart';
 import 'package:national_wild_animal/app/screens/HomeScreen.dart';
 import 'package:national_wild_animal/app/screens/login_screen.dart';
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginScreen(),
+      home: LoginScreen(), 
     );
   }
 }

@@ -224,143 +224,140 @@ class _HomeScreenState extends State<ProfileScreen> {
                         ],
                       ),
 
-                       SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                     children: [
-                         SizedBox(height: 10,),    
-                        Container(
-                                                  height: 33,
-                                                  decoration: BoxDecoration(
-                         color: Colors.transparent
-                                                  ),
-                        
-                        child: TabBar(
-                         
-                          physics: ClampingScrollPhysics(),
-                          
-                          unselectedLabelColor: Color(0xffB74BFF),
-                          indicatorSize: TabBarIndicatorSize.label,
-                           dividerColor: Colors.transparent,
-                          indicator: BoxDecoration(
-                             borderRadius: BorderRadius.circular(30),
-                             color: Color(0xffB74BFF),
-                             border: Border(
-                               bottom: BorderSide(color: Colors.transparent)
-                             )
-                          ),
-                          tabs: [
-                            Tab(
-                            child: Container(
-                            height: 33,
-                            width: 100,
-                            decoration: BoxDecoration(
-                               borderRadius: BorderRadius.circular(30),
-                               border: Border.all(color: Color(0xffB74BFF),width: 1)
-                            ),
-                            child: Align(
-                               alignment: Alignment.center,
-                               child: Text("Ungoing",style: TextStyle(color: Colors.white),),
-                            ),
-                                                          ),
+                       Column(
+                          children: [
+                              SizedBox(height: 10,),    
+                             Container(
+                                                       height: 33,
+                                                       decoration: BoxDecoration(
+                              color: Colors.transparent
                                                        ),
-                                                       Tab(
-                                                          child: Container(
-                             height: 33,
-                            width: 100,
-                            decoration: BoxDecoration(
-                               borderRadius: BorderRadius.circular(30),
-                               border: Border.all(color: Color(0xffB74BFF),width: 1)
-                            ),
-                            child: Align(
-                               alignment: Alignment.center,
-                               child: Text("Upcomeing",style: TextStyle(color: Colors.white)),),
-                            ),
-                                                          ),
-                                                          
-                                                       
-                          ]),
-                                                 ),
-                                                
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height,
-                              child: TabBarView(children: [
-                                  SizedBox(
-                                    height: MediaQuery.of(context).size.height,
-                                    child: ListView.builder(
-                                      scrollDirection: Axis.vertical,
-                                      
-                                      itemCount: festivalData.length,
-                                      itemBuilder: (context, index) {
-                                             return Padding(
-                                               padding: const EdgeInsets.only(top: 25),
-                                               child: Container(
-                                                height: 150,
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(7),
-                                                     image: DecorationImage(
-                                                      
-                                                      image:AssetImage(festivalData[index].imagePath,),
-                                                      fit: BoxFit.cover,
-                                                      
-                                                      )
-                                                 ),
-                                                 child: Padding(
-                                    
-                                                   padding: const EdgeInsets.only(left: 8,top: 8,right: 8,bottom: 8),
-                                                   child: Row(
-                                                      children: [
-                                                          Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                             children: [
-                                                                 Container(
-                                                                  height: 20,
-                                                                  width: 60,
-                                                                  decoration: BoxDecoration(
-                                                                      color: Colors.grey.shade800,
-                                                                      borderRadius: BorderRadius.circular(2)
-                                                                  ),
-                                                                  child: Center(child: Text(festivalData[index].festival,style: TextStyle(color: ColorsGroup.whiteColor,fontSize: 14,fontWeight: FontWeight.bold),))),
-                                                                  Column(
-                                                                    children: [
-                                                                        Text("Adibasi Mela",style: TextStyle(color: ColorsGroup.whiteColor,fontSize: 24,fontWeight: FontWeight.bold ),),
-                                                                        SizedBox(height: 5,),
-                                                                        Column(
-                                                                            children: [
-                                                                               Row(
+                             
+                             child: TabBar(
+                              
+                               physics: ClampingScrollPhysics(),
+                               
+                               unselectedLabelColor: Color(0xffB74BFF),
+                               indicatorSize: TabBarIndicatorSize.label,
+                                dividerColor: Colors.transparent,
+                               indicator: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  color: Color(0xffB74BFF),
+                                  border: Border(
+                                    bottom: BorderSide(color: Colors.transparent)
+                                  )
+                               ),
+                               tabs: [
+                                 Tab(
+                                 child: Container(
+                                 height: 33,
+                                 width: 100,
+                                 decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    border: Border.all(color: Color(0xffB74BFF),width: 1)
+                                 ),
+                                 child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text("Ungoing",style: TextStyle(color: Colors.white),),
+                                 ),
+                                                               ),
+                                                            ),
+                                                            Tab(
+                                                               child: Container(
+                                  height: 33,
+                                 width: 100,
+                                 decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    border: Border.all(color: Color(0xffB74BFF),width: 1)
+                                 ),
+                                 child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text("Upcomeing",style: TextStyle(color: Colors.white)),),
+                                 ),
+                                                               ),
+                                                               
+                                                            
+                               ]),
+                                                      ),
+                                                     
+                                 SizedBox(
+                                   height: MediaQuery.of(context).size.height*0.5,
+                                   child: TabBarView(children: [
+                                       SizedBox(
+                                         height: MediaQuery.of(context).size.height,
+                                         child: ListView.builder(
+                                           scrollDirection: Axis.vertical,
+                                           
+                                           itemCount: festivalData.length,
+                                           itemBuilder: (context, index) {
+                                                  return Padding(
+                                                    padding: const EdgeInsets.only(top: 25),
+                                                    child: Container(
+                                                     height: 150,
+                                                     decoration: BoxDecoration(
+                                                       borderRadius: BorderRadius.circular(7),
+                                                          image: DecorationImage(
+                                                           
+                                                           image:AssetImage(festivalData[index].imagePath,),
+                                                           fit: BoxFit.cover,
+                                                           
+                                                           )
+                                                      ),
+                                                      child: Padding(
+                                         
+                                                        padding: const EdgeInsets.only(left: 8,top: 8,right: 8,bottom: 8),
+                                                        child: Row(
+                                                           children: [
+                                                               Column(
+                                                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                  children: [
+                                                                      Container(
+                                                                       height: 20,
+                                                                       width: 60,
+                                                                       decoration: BoxDecoration(
+                                                                           color: Colors.grey.shade800,
+                                                                           borderRadius: BorderRadius.circular(2)
+                                                                       ),
+                                                                       child: Center(child: Text(festivalData[index].festival,style: TextStyle(color: ColorsGroup.whiteColor,fontSize: 14,fontWeight: FontWeight.bold),))),
+                                                                       Column(
+                                                                         children: [
+                                                                             Text("Adibasi Mela",style: TextStyle(color: ColorsGroup.whiteColor,fontSize: 24,fontWeight: FontWeight.bold ),),
+                                                                             SizedBox(height: 5,),
+                                                                             Column(
                                                                                  children: [
-                                                                                     Icon(Icons.location_on,color: Color(0xFFB74BFF),size: 20,),
-                                                                                     SizedBox(width: 3,),
-                                                                                     Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),)
+                                                                                    Row(
+                                                                                      children: [
+                                                                                          Icon(Icons.location_on,color: Color(0xFFB74BFF),size: 20,),
+                                                                                          SizedBox(width: 3,),
+                                                                                          Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),)
+                                                                                      ],
+                                                                                    ),
+                                                                                    Row(
+                                                                                      children: [
+                                                                                          Icon(Icons.date_range,color: Color(0xFFB74BFF),size: 20,),
+                                                                                          SizedBox(width: 3,),
+                                                                                          Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),)
+                                                                                      ],
+                                                                                    )
                                                                                  ],
-                                                                               ),
-                                                                               Row(
-                                                                                 children: [
-                                                                                     Icon(Icons.date_range,color: Color(0xFFB74BFF),size: 20,),
-                                                                                     SizedBox(width: 3,),
-                                                                                     Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),)
-                                                                                 ],
-                                                                               )
-                                                                            ],
-                                                                        )
-                                                                    ],
-                                                                  )
-                                                             ],
-                                                          )
-                                                      ],
-                                                   ),
-                                                 ),
-                                               ),
-                                             );
-                                    }, ),
-                                  ),
-                                  Text("Hii")
-                              ]),
-                            )   ,  
-                     ],
-                  ),
-                )
+                                                                             )
+                                                                         ],
+                                                                       )
+                                                                  ],
+                                                               )
+                                                           ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                         }, ),
+                                       ),
+                                       Text("Hii")
+                                   ]),
+                                 )   ,  
+                          ],
+                       )
             
                       
                      

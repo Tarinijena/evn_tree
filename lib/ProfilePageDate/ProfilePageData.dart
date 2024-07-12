@@ -48,5 +48,20 @@ List<Profilepagedata> festivalData=[
           festival:"Festival", 
          festivalLocation:"Janata maidan,Jaydev vihar,Bbsr",
          festivalDate:"27 jan 2024-09 feb 2024",
+        ),
+
+        
+        Profilepagedata(
+          imagePath: 'assets/adivasi3.jpeg',
+          festival:"Festival", 
+         festivalLocation:"Janata maidan,Jaydev vihar,Bbsr",
+         festivalDate:"27 jan 2024-09 feb 2024",
+        ),
+        
+        Profilepagedata(
+          imagePath: 'assets/adivasi4.jpeg',
+          festival:"Festival", 
+         festivalLocation:"Janata maidan,Jaydev vihar,Bbsr",
+         festivalDate:"27 jan 2024-09 feb 2024",
         )
 ];
