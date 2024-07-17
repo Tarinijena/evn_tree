@@ -38,7 +38,7 @@ class CommonTextFieldView extends StatelessWidget {
       this.pad = 16,
       this.radius = 10,
       this.contextNew,
-      this.height = 40,
+      this.height = 50,
         this.suffixIcon,
         this.suffixIconSize,
         this.borderColor,
@@ -49,9 +49,10 @@ class CommonTextFieldView extends StatelessWidget {
     return Padding(
       padding: padding,
       child: SizedBox(
-        height: height ?? 34,
+        height: height ?? 50,
         child: Center(
           child: TextField(
+            
             controller: controller,
             maxLines: 1,
             enabled: enable,

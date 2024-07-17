@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   isAllowTopTitleView: false,
                   suffixIcon: Icons.mail_outlined,
                   radius: 1,
-                  height: 40,
+                  //height: 50,
                   suffixIconColor: null,
 
                 ),

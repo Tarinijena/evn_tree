@@ -102,10 +102,10 @@ class _HomeScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: const Color(0xFF231D32),
-      body: SafeArea(
-        child: DefaultTabController(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: const Color(0xFF231D32),
+        body: DefaultTabController(
           
           length: 2,
           child: SingleChildScrollView(
@@ -223,7 +223,7 @@ class _HomeScreenState extends State<ProfileScreen> {
                           ):Container()
                         ],
                       ),
-
+        
                        Column(
                           children: [
                               SizedBox(height: 10,),    

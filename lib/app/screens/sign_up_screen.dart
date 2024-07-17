@@ -45,7 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     isAllowTopTitleView: false,
                     suffixIcon: Icons.person,
                     radius: 1,
-                    height: 40,
+                    height: 50,
                     suffixIconColor: null,
                   ),
                   const SizedBox(
@@ -63,7 +63,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     suffixIcon: Icons.mail_outlined,
                     suffixIconColor: null,
                     radius: 1,
-                    height: 40,
+                    height: 50,
                   ),
                   const SizedBox(
                     height: 5,
@@ -80,7 +80,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     suffixIcon: Icons.key,
                     suffixIconColor: null,
                     radius: 1,
-                    height: 40,
+                    height: 50,
                   ),
 
                 ],

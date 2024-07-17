@@ -14,6 +14,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+   //bool isSelected=false;
+
    List<DataLstClass> dataLst = [
     DataLstClass(
       icon: Icons.border_all_rounded,
@@ -87,22 +90,32 @@ class _HomeScreenState extends State<HomeScreen> {
   double maxScrollExtent = 0.0;
   ScrollController scrollController = ScrollController();
   int selectedIndex = 0;
+  late TextEditingController _textEditingController;
   @override
   void initState() {
+    _textEditingController=TextEditingController();
     scrollController.addListener((){
       maxScrollExtent = scrollController.position.maxScrollExtent;
     });
 
     super.initState();
   }
+
+   @override
+  void dispose() {
+    _textEditingController.dispose();
+    scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      
-        backgroundColor: const Color(0xFF231D32),
-           body: SafeArea(
-             child: DefaultTabController(
+    return SafeArea(
+      child: Scaffold(
+        
+          backgroundColor: const Color(0xFF231D32),
+             body: DefaultTabController(
               length: 2,
                child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
@@ -131,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 17,
                         ),
                         CommonTextFieldView(
-                          controller: TextEditingController(),
+                          controller:_textEditingController,
                           // errorText: _errorFName,
                           padding: const EdgeInsets.only(left: 0, right: 0),
                           keyboardType: TextInputType.name,
@@ -277,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         ),
                                                        
                                    SizedBox(
-                                     height: MediaQuery.of(context).size.height*0.5,
+                                     height: MediaQuery.of(context).size.height*0.8,
                                      child: TabBarView(children: [
                                          SizedBox(
                                            height: MediaQuery.of(context).size.height,
@@ -313,36 +326,45 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                   children: [
                                                                      
-                                                                       Column(
-                                                                         children: [
-                                                                             Text("Adibasi Mela",style: TextStyle(color: ColorsGroup.whiteColor,fontSize: 20,fontWeight: FontWeight.bold ),),
-                                                                             SizedBox(height: 5,),
-                                                                             Column(
-                                                                                 children: [
-                                                                                    Row(
-                                                                                      children: [
-                                                                                          Icon(Icons.location_on,color: Color(0xFFB74BFF),size: 20,),
-                                                                                          SizedBox(width: 3,),
-                                                                                          Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),)
-                                                                                      ],
-                                                                                    ),
-                                                                                    Row(
-                                                                                      children: [
-                                                                                          Icon(Icons.date_range,color: Color(0xFFB74BFF),size: 20,),
-                                                                                          SizedBox(width: 3,),
-                                                                                          Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),)
-                                                                                      ],
-                                                                                    )
-                                                                                 ],
-                                                                             )
-                                                                         ],
+                                                                       Expanded(
+                                                                         child: Column(
+                                                                           children: [
+                                                                               Text("Adibasi Mela",style: TextStyle(color: ColorsGroup.whiteColor,fontSize: 15,fontWeight: FontWeight.bold ),),
+                                                                               SizedBox(height: 5,),
+                                                                               Column(
+                                                                                   children: [
+                                                                                      Row(
+                                                                                        children: [
+                                                                                            Icon(Icons.location_on,color: Color(0xFFB74BFF),size: 20,),
+                                                                                            SizedBox(width: 3,),
+                                                                                            Expanded(child: Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),
+                                                                                            overflow: TextOverflow.ellipsis,
+                                                                                            ))
+                                                                                        ],
+                                                                                      ),
+                                                                                      Row(
+                                                                                        children: [
+                                                                                            Icon(Icons.date_range,color: Color(0xFFB74BFF),size: 20,),
+                                                                                            SizedBox(width: 3,),
+                                                                                            Expanded(
+                                                                                              child: Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),
+                                                                                              overflow: TextOverflow.ellipsis,
+                                                                                              ),
+                                                                                            )
+                                                                                        ],
+                                                                                      )
+                                                                                   ],
+                                                                               )
+                                                                           ],
+                                                                         ),
                                                                        )
                                                                   ],
-                                                               )
+                                                                                                                                )
                                                                    ],
                                                                 ),
-
+             
                                                                Column(
+                                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                   children: [
                                                                     SizedBox(height: 8,),
                                                                     Row(
@@ -357,7 +379,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                child: Center(child: Text(festivalData[index].festival,style: TextStyle(color: ColorsGroup.whiteColor,fontSize: 14,fontWeight: FontWeight.bold),))),
                                                                                SizedBox(width: 8,)
                                                                        ],
-                                                                    )   
+                                                                    ) ,
+
+                                                                    IconButton(onPressed: () {
+                                                                        //isSelected=true;
+                                                                    } ,
+                                                                     icon:Icon(Icons.favorite,color:Colors.red ,))  
                                                                   ],
                                                                )
                                                              ],
@@ -384,7 +411,7 @@ class _HomeScreenState extends State<HomeScreen> {
                  ),
                ),
              ),
-           ),
+      ),
     );
   }
 }

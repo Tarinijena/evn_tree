@@ -59,7 +59,7 @@ class TextStyles{
   }
 
   TextStyle googleRubikFontsForButtonText({double ?fontSize , FontWeight? fontWeight}){
-    return GoogleFonts.raleway(textStyle: TextStyle(fontWeight: fontWeight??FontWeight.w500,fontSize: fontSize??10,color: const Color(0xFFFFFFFF)));
+    return GoogleFonts.raleway(textStyle: TextStyle(fontWeight: fontWeight??FontWeight.w500,fontSize: fontSize??15,color: const Color(0xFFFFFFFF)));
   }
 
   TextStyle googleRubikFontsForText2({double ?fontSize , FontWeight? fontWeight}){
