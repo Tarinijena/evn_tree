@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:national_wild_animal/app/screens/EventScreen.dart';
 import 'package:national_wild_animal/app/screens/HomeScreen.dart';
+import 'package:national_wild_animal/app/screens/ProfilePage.dart';
 import 'package:national_wild_animal/app/screens/profile_screen.dart';
 
 class BottomAppBarPage extends StatefulWidget {
@@ -21,7 +22,7 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> {
               
               HomeScreen(),
               EventScreen(),
-              ProfileScreen()
+              ProfilePage()
               
               
 

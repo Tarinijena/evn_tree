@@ -109,6 +109,7 @@ class _EventScreenState extends State<EventScreen> {
                                 children: [
                                     
                                     CustomTextField(
+                                      
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
                                           color: Color(0xffB74BFF)

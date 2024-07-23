@@ -290,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         ),
                                                        
                                    SizedBox(
-                                     height: MediaQuery.of(context).size.height*0.8,
+                                     height: MediaQuery.of(context).size.height*0.5,
                                      child: TabBarView(children: [
                                          SizedBox(
                                            height: MediaQuery.of(context).size.height,
@@ -311,57 +311,48 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                             crossAxisAlignment: CrossAxisAlignment.start,
                                                              children: [
-                                                                Row(
-                                                                   children: [
-                                                                       Container(
-                                                                     height: 90,
-                                                                     width:90 ,
-                                                                     decoration: BoxDecoration(
-                                                                        image: DecorationImage(image:AssetImage(festivalData[index].imagePath,),fit: BoxFit.cover )
-                                                                     ),
-                                                                 ),
-                                                                 SizedBox(width: 5,),
-                                                                 Column(
-                                                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                  children: [
-                                                                     
-                                                                       Expanded(
-                                                                         child: Column(
-                                                                           children: [
-                                                                               Text("Adibasi Mela",style: TextStyle(color: ColorsGroup.whiteColor,fontSize: 15,fontWeight: FontWeight.bold ),),
-                                                                               SizedBox(height: 5,),
-                                                                               Column(
-                                                                                   children: [
-                                                                                      Row(
-                                                                                        children: [
-                                                                                            Icon(Icons.location_on,color: Color(0xFFB74BFF),size: 20,),
-                                                                                            SizedBox(width: 3,),
-                                                                                            Expanded(child: Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),
-                                                                                            overflow: TextOverflow.ellipsis,
-                                                                                            ))
-                                                                                        ],
-                                                                                      ),
-                                                                                      Row(
-                                                                                        children: [
-                                                                                            Icon(Icons.date_range,color: Color(0xFFB74BFF),size: 20,),
-                                                                                            SizedBox(width: 3,),
-                                                                                            Expanded(
-                                                                                              child: Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),
-                                                                                              overflow: TextOverflow.ellipsis,
-                                                                                              ),
-                                                                                            )
-                                                                                        ],
-                                                                                      )
-                                                                                   ],
-                                                                               )
-                                                                           ],
-                                                                         ),
-                                                                       )
-                                                                  ],
-                                                                                                                                )
-                                                                   ],
-                                                                ),
+                                                               Column(
+                                                                 children: [
+                                                                     Container(
+                                                                                                                                     height: 90,
+                                                                                                                                     width:90 ,
+                                                                                                                                     decoration: BoxDecoration(
+                                                                 image: DecorationImage(image:AssetImage(festivalData[index].imagePath,),fit: BoxFit.cover )
+                                                                                                                                     ),
+                                                                                                                                 ),
+                                                                 ],
+                                                               ),
+                                                                                                                                 SizedBox(width: 5,),
+                                                                                                                                 Expanded(
+                                                                                                                                   child: Column(
+                                                                                                                                     children: [
+                                                                                                                                         Text("Adibasi Mela",style: TextStyle(color: ColorsGroup.whiteColor,fontSize: 15,fontWeight: FontWeight.bold ),),
+                                                                                                                                         SizedBox(height: 5,),
+                                                                                                                                         Row(
+                                                                                                                                           children: [
+                                                                                                                                               Icon(Icons.location_on,color: Color(0xFFB74BFF),size: 20,),
+                                                                                                                                               SizedBox(width: 3,),
+                                                                                                                                               Expanded(
+                                                                                                                                                 child: Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),
+                                                                                                                                                 overflow: TextOverflow.ellipsis,
+                                                                                                                                                 ),
+                                                                                                                                               )
+                                                                                                                                           ],
+                                                                                                                                         ),
+                                                                                                                                         Row(
+                                                                                                                                           children: [
+                                                                                                                                               Icon(Icons.date_range,color: Color(0xFFB74BFF),size: 20,),
+                                                                                                                                               SizedBox(width: 3,),
+                                                                                                                                               Expanded(
+                                                                                                                                                 child: Text(festivalData[index].festivalLocation,style: TextStyle(fontSize: 10,color: Colors.white,fontWeight: FontWeight.bold),
+                                                                                                                                                 overflow: TextOverflow.ellipsis,
+                                                                                                                                                 ),
+                                                                                                                                               )
+                                                                                                                                           ],
+                                                                                                                                         )
+                                                                                                                                     ],
+                                                                                                                                   ),
+                                                                                                                                 ),
              
                                                                Column(
                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
