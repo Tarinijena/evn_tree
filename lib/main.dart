@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:national_wild_animal/Demo.dart';
-import 'package:national_wild_animal/app/screens/Demo.dart';
+import 'package:national_wild_animal/ProfilePageDate/ProfilePageData.dart';
+
+import 'package:national_wild_animal/app/screens/Demo2.dart';
+import 'package:national_wild_animal/app/screens/EventListed/EventCard.dart';
+import 'package:national_wild_animal/app/screens/EventListed/EventDetails.dart';
+import 'package:national_wild_animal/app/screens/EventListed/EventListed.dart';
+import 'package:national_wild_animal/app/screens/EventListed/EventListedDetails.dart';
 import 'package:national_wild_animal/app/screens/ProfilePage.dart';
 import 'package:national_wild_animal/app/screens/EventScreen.dart';
 import 'package:national_wild_animal/app/screens/HomeScreen.dart';
@@ -37,7 +43,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:FestivalList(), 
+      home:LoginScreen(), 
     );
   }
 }

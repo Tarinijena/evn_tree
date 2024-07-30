@@ -13,6 +13,7 @@ class CommonButton extends StatelessWidget {
   final bool? isClickable;
   final double radius;
   final double? height;
+  final double? width;
   final bool isIcon;
   final IconData? icon;
   const CommonButton({
@@ -26,6 +27,7 @@ class CommonButton extends StatelessWidget {
     this.isClickable = true,
     this.radius = 29,
     this.height = 40,
+    this.width=40,
     this.icon = Icons.arrow_forward,
     this.isIcon = false
   });
@@ -39,6 +41,7 @@ class CommonButton extends StatelessWidget {
         onClick: onTap ?? () {},
         child: SizedBox(
           height: height??40,
+          width: width??40,
           child: Container(
             decoration: BoxDecoration(
               gradient: const LinearGradient(

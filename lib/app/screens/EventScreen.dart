@@ -4,6 +4,8 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:national_wild_animal/app/common_widgets/common_button.dart';
+import 'package:national_wild_animal/app/screens/EventListed/EventListed.dart';
+
 import 'package:national_wild_animal/app/screens/HomeWidget/EventScreenWidget/custom_text_field.dart';
 import 'package:national_wild_animal/app/screens/profile_screen.dart';
 
@@ -24,7 +26,8 @@ class _EventScreenState extends State<EventScreen> {
 
   DateTime selectedDate = DateTime.now();
 
-  TextEditingController date1=TextEditingController();
+  TextEditingController dateController=TextEditingController();
+  TextEditingController dateController2=TextEditingController();
 
   List item=["Create Event","Event Listing"];
 
@@ -277,11 +280,11 @@ class _EventScreenState extends State<EventScreen> {
                                       children: [
                                           Expanded(
                                             child: CustomTextField(
-                                                                                  controller: date1,
+                                                                                  controller: dateController,
                                                                                     readOnly: true,
                                                                                     enabledBorder: OutlineInputBorder(
                                                                                     borderSide: BorderSide(
-                                            color: Color(0xffB74BFF)
+                                                                                      color: Color(0xffB74BFF)
                                                                                     ),
                                                                    
                                                                                   ),
@@ -289,7 +292,7 @@ class _EventScreenState extends State<EventScreen> {
                                                                                   suffixIcon: InkWell(
                                                                                     onTap: (){
                                             
-                                            _selectDate(context);
+                                                                                        _selectDate();
                                             
                                                                                     },
                                             
@@ -299,7 +302,10 @@ class _EventScreenState extends State<EventScreen> {
                                           SizedBox(width: 3,),
                                      Expanded(
                                        child: CustomTextField(
-                                        controller: date1,
+                                        focusedBorder: OutlineInputBorder(
+                                           
+                                        ),
+                                        controller: dateController2 ,
                                           readOnly: true,
                                           enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
@@ -307,11 +313,12 @@ class _EventScreenState extends State<EventScreen> {
                                           ),
                                                                    
                                         ),
-                                        inputHint:"Start Date" ,
+                                        inputHint:"End Date" ,
+                                        
                                         suffixIcon: InkWell(
                                           onTap: (){
                                        
-                                            _selectDate(context);
+                                            _selectDate();
                                        
                                           },
                                        
@@ -464,13 +471,16 @@ class _EventScreenState extends State<EventScreen> {
                                      SizedBox(height: 7,),
                                     CommonButton(
                                       buttonText:"Submit",
+                                      width: double.infinity,
                                     )
                                     
                                 ],
                              ),
                            ),
                          ),
-                         Text("Hii")
+                         //Text("Hii",style: TextStyle(color: Colors.white),)
+                         EventListedPage()
+                         
                      ]))
                      
                  ],
@@ -484,17 +494,17 @@ class _EventScreenState extends State<EventScreen> {
 
   }
      
-      Future<void> _selectDate(BuildContext context) async {
+      Future<void> _selectDate() async {
     DateTime? currentDate=await showDatePicker(
       context:context ,
-      initialDate:selectedDate ,
+      initialDate:DateTime.now() ,
      firstDate:DateTime(2000), 
      lastDate: DateTime(2100),
      );
      if(currentDate!=null&&currentDate!=selectedDate){
         setState(() {
            
-           
+           dateController.text=currentDate.toString().split(" ")[0];
             
         });
      }
