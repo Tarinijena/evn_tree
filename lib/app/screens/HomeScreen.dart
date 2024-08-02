@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:national_wild_animal/ProfilePageDate/ProfilePageData.dart';
 import 'package:national_wild_animal/app/app_theme/colors.dart';
@@ -91,8 +93,26 @@ class _HomeScreenState extends State<HomeScreen> {
   ScrollController scrollController = ScrollController();
   int selectedIndex = 0;
   late TextEditingController _textEditingController;
+
+  List<String> data = ["event", "festival", "google", "chrome", "makarasankranti"];
+  int currentIndex = 0;
+  Timer? timer;
+
   @override
   void initState() {
+
+     // Start the timer when the widget is initialized
+    timer = Timer.periodic(Duration(seconds: 10), (Timer t) {
+      setState(() {
+        // Update the index and reset it if it exceeds the length of the list
+        if(mounted){
+           setState(() {
+             currentIndex = (currentIndex + 1) % data.length;
+           });
+        }
+      });
+    });
+
     _textEditingController=TextEditingController();
     scrollController.addListener((){
       maxScrollExtent = scrollController.position.maxScrollExtent;
@@ -105,6 +125,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _textEditingController.dispose();
     scrollController.dispose();
+      timer?.cancel();
+  
     super.dispose();
   }
 
@@ -136,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Row(
                           children: [
                             Text("Let’s explore your fav",style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400,fontSize: 20),),
-                            Text(" event",style: TextStyles(context).googleRubikFontsForText2(fontWeight: FontWeight.w400,fontSize: 20)),
+                            Text(data[currentIndex],style: TextStyles(context).googleRubikFontsForText2(fontWeight: FontWeight.w400,fontSize: 20)),
                             Text(" !",style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400,fontSize: 20)),
                           ],
                         ),

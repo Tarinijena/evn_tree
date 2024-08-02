@@ -1,15 +1,20 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:national_wild_animal/app/screens/HomeWidget/BottomAppBar.dart';
 
 import 'package:national_wild_animal/app/screens/profile_screen.dart';
 import 'package:national_wild_animal/app/screens/login_screen.dart';
+import 'package:http/http.dart' as http;
 
 
 class OtpVerificationScreen extends StatefulWidget {
 
-  const OtpVerificationScreen({super.key});
+   String user;
+
+   OtpVerificationScreen({super.key,required this.user});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -17,13 +22,47 @@ class OtpVerificationScreen extends StatefulWidget {
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
+  
+Future<Map<String, dynamic>> registerUser(String userName) async {
+  String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzeXN0ZW0iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9TVVBFUl9BRE1JTiJ9LHsiYXV0aG9yaXR5IjoiVklFVyJ9LHsiYXV0aG9yaXR5IjoiRURJVCJ9LHsiYXV0aG9yaXR5IjoiQ1JFQVRFIn0seyJhdXRob3JpdHkiOiJERUxFVEUifV0sInJlZnJlc2giOmZhbHNlLCJleHAiOjE3MjIzNTAzMjUsImlhdCI6MTcyMjMxNDMyNX0.MjlNY93P_OP4X5nZAgEkI_rmPJoDjNShpGDjooXBIgc";
+
+  Uri url = Uri.parse("http://128.199.18.223:8080/evntree/api/v1/umt/public/login-demo?userName=$userName");
+  print(url);
+
+  try {
+    final response = await http.post(url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      }
+    );
+
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      print(jsonData);
+      return {'success': true, 'data': jsonData};
+    } else {
+      var error = jsonDecode(response.body);
+      print("Unable to Login: ${error['error']}");
+      return {'success': false, 'error': error['error']};
+    }
+  } catch (e) {
+    print("Error: $e");
+    return {'success': false, 'error': e.toString()};
+  }
+}
+
     bool invalidOtp=false;
 
-     TextEditingController num1=TextEditingController();
-     TextEditingController num2=TextEditingController();
-     TextEditingController num3=TextEditingController();
-     TextEditingController num4=TextEditingController();
+     bool _isLoading = false;
 
+     TextEditingController num1=TextEditingController();
+
+     TextEditingController num2=TextEditingController();
+
+     TextEditingController num3=TextEditingController();
+
+     TextEditingController num4=TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +75,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             margin: EdgeInsets.only(top: 40,bottom: 40),
             height:MediaQuery.of(context).size.height*0.7,
             width: double.infinity,
-            child: SingleChildScrollView(
+            child: Stack(
+               children: [
+                  SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Dialog(
                  backgroundColor: const Color(0xFF231D32),
@@ -111,18 +152,78 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     ),
                             child: ElevatedButton(
                               
-                              onPressed: (){
+                              onPressed: () async {
+
+                                 setState(() {
+                                      _isLoading = true;
+                                    });
+
+                                    await Future.delayed(
+                                        const Duration(seconds: 2));
                                   
                                 final otp=num1.text+num2.text+num3.text+num4.text;
+
+                                if(otp!='1234')
+                                {
+
+                                    final snackbar=SnackBar(
+                                        backgroundColor: Colors.red,
+                                        
+                                        content:Text("Invalid otp.....",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.white),),
+                                        action: SnackBarAction(label: "ok",
+                                        
+                                         onPressed:(){
+
+                                             
+                                         }
+                                         ), 
+                                        );
+                                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                                         Navigator.push(context,MaterialPageRoute(builder: (context) =>LoginScreen(),));
+                                   
+                                }
                                   
                                 if(otp=='1234')
                                 {
+                                  
                                     //then go to next screen........
                                     setState(() {
                                      invalidOtp=false;
                                      
                                    });
-                                   Navigator.push(context,MaterialPageRoute(builder: (context) =>BottomAppBarPage(),));
+
+                                   Map<String,dynamic> respond=await registerUser(widget.user.toString());
+
+                                   if(respond['success']){
+                                    
+                                      
+                                      
+                                        
+                                         Navigator.push(context,MaterialPageRoute(builder: (context) =>BottomAppBarPage(),));
+                                       
+                                   }
+
+                                   else{
+                                    final snackbar=SnackBar(
+                                        backgroundColor: Colors.red,
+                                        
+                                        content:Text("Invalid User Name.....",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.white),),
+                                        action: SnackBarAction(label: "ok",
+                                        
+                                         onPressed:(){
+
+                                             
+                                         }
+                                         ), 
+                                        );
+                                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                                         Navigator.push(context,MaterialPageRoute(builder: (context) =>BottomAppBarPage(),));
+                                       
+                                      Navigator.push(context,MaterialPageRoute(builder: (context) =>LoginScreen(),));
+                                   }
+                                   
+                                  
+
                                 }
                                 else
                                 {
@@ -130,6 +231,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                      invalidOtp=true;
                                    });
                                 }
+
+                                setState(() {
+                                  _isLoading=false;
+                                });
                                   
                             } , 
                             
@@ -154,6 +259,18 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               
               ),
             ),
+             //this is the second component for circular progress indicator...........
+              if (_isLoading)
+                  Container(
+                    color: Colors.black54,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 8,
+                      ),
+                    ),
+                  ),
+               ],
+            )
           ),
         ),
       ),

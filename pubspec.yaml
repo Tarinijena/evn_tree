@@ -39,6 +39,7 @@ dependencies:
   percent_indicator:
   font_awesome_flutter:
   get: 
+  http:
 
 dev_dependencies:
   flutter_test:

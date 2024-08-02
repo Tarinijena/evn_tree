@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:national_wild_animal/Demo.dart';
+import 'package:national_wild_animal/GetDatFromList.dart';
 import 'package:national_wild_animal/ProfilePageDate/ProfilePageData.dart';
 
 import 'package:national_wild_animal/app/screens/Demo2.dart';
@@ -11,6 +12,7 @@ import 'package:national_wild_animal/app/screens/EventListed/EventListedDetails.
 import 'package:national_wild_animal/app/screens/ProfilePage.dart';
 import 'package:national_wild_animal/app/screens/EventScreen.dart';
 import 'package:national_wild_animal/app/screens/HomeScreen.dart';
+import 'package:national_wild_animal/app/screens/SplashScreen.dart';
 import 'package:national_wild_animal/app/screens/login_screen.dart';
 import 'package:national_wild_animal/app/screens/profile_screen.dart';
 
@@ -43,7 +45,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:LoginScreen(), 
+      home:SplashScreen(), 
     );
   }
 }

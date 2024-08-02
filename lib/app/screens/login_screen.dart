@@ -15,6 +15,15 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  TextEditingController userName=TextEditingController();
+
+  String? user;
+  bool _isLoading = false;
+
+
+   
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -22,18 +31,29 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF231D32),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
           child: SizedBox(
             height: usableHeight,
             child: BackgroundWidget(size: size,
-              btnOnTap: () {
+              btnOnTap: () async {
                 
+                 setState(() {
+                      _isLoading = true;
+                    });
+
+                    await Future.delayed(const Duration(seconds: 2));
+
+                    setState(() {
+                      _isLoading = false;
+                    });
                 
                  showDialog(context: context, builder:(context) {
 
                         return Hero(
                           tag: 'otp',
-                          child: OtpVerificationScreen());
+                          child:OtpVerificationScreen(user: userName.text,));
                    },);
               }, buttonText: 'Log In', footerOnTap: () {
               
@@ -41,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               footerTextOne: "You don't have an account ? ", footerTextTwo: 'sign-up', widgetLst: [
                 CommonTextFieldView(
-                  controller: TextEditingController(),
+                  controller:userName,
                   // errorText: _errorFName,
                   padding: const EdgeInsets.only(left: 2, right: 2),
                   titleText: "email / phone No",
@@ -56,129 +76,34 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 ),
               ],
-              headerText: 'Welcome Back ! ',)
+              headerText: 'Welcome Back ! ',
+              
+              )
 
 
-
-           /* Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-            Expanded(
-                flex:1,child: Container()),
-                Image.asset("assets/logo1.png"),
-                Expanded(
-                    flex:1,child: Container()),
-                SizedBox(
-                  height: size.height*0.65,
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 16.0,right: 16.0),
-                          child: SizedBox(
-                            height: size.height*0.45,
-                            child: Container(
-                              // height: size.height*0.5,
-                              // width: size.width*0.95,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF231D32),           // Background color
-                                borderRadius: BorderRadius.circular(2),
-                                border: Border.all(color: const Color(0xFF333649))// Rounded corners
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 16.0,right: 16),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    CommonTextFieldView(
-                                      controller: TextEditingController(),
-                                      // errorText: _errorFName,
-                                      padding: const EdgeInsets.only(left: 2, right: 2),
-                                      titleText: "email / phone No",
-                                      hintText:"email / phone No",
-                                      keyboardType: TextInputType.name,
-                                      onChanged: (String txt) {},
-                                      isAllowTopTitleView: false,
-                                      radius: 1,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Positioned(
-                        top: -60,
-                        left: 0,
-                        right: 0,
-
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                'assets/logo2.png',
-                                width: 135,
-                                height: 190,
-                                fit: BoxFit.cover,  // Adjust the fit as per your requirement
-                              ),
-                              Text("Welcome Back!",style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w500,fontSize: 22),)
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                       bottom: 55,
-                        left: 0,
-                        right: 0,
-
-                        child: CommonButton(
-                          padding: const EdgeInsets.only(left: 50, right: 50),
-                          buttonText: "Log In",
-                          radius: 29,
-                          onTap: () {
-
-                          },
-                        ),
-                      ),
-                    ],
+            
+           
+          
+          ),
+          
+        ),
+        if (_isLoading)
+              Container(
+                color: Colors.black54,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.green,
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      "You don't have an account ? ",
-                      textAlign: TextAlign.center,
-                      style: TextStyles(context).googleRubikFontsForButtonText(fontSize: 12,fontWeight: FontWeight.w500),
-                    ),
-                    InkWell(
-                      borderRadius: const BorderRadius.all(Radius.circular(8)),
-                      onTap: () {
-                        Navigator.pushNamed(context, "/signupScreen");
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Text(
-                          "sign-up",
-                          style:TextStyles(context).googleRubikFontsForText2(fontSize: 12,fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Expanded(
-                    flex:1,child: Container()),
-              ],
-            ),*/
-          ),
-        ),
+              ),
+           
+          ],
+        )
+
+          
+
       ),
+
     );
   }
 }
