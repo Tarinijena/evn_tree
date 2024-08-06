@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 
 import '../../api_service/api_end_point.dart';
 import '../../api_service/http_methods.dart';
+import '../../app_utils/shared_preferance.dart';
+import '../../app_utils/utils.dart';
 import '../../common_widgets/opt_text_field.dart';
 import '../../common_widgets/show_snack_bar.dart';
 
@@ -37,18 +39,34 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
   TextEditingController num3 = TextEditingController();
 
   TextEditingController num4 = TextEditingController();
-
+  SharedPref sharedPref = SharedPref();
   callOtpVerify() {
-    String token =
-        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzeXN0ZW0iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9TVVBFUl9BRE1JTiJ9LHsiYXV0aG9yaXR5IjoiVklFVyJ9LHsiYXV0aG9yaXR5IjoiRURJVCJ9LHsiYXV0aG9yaXR5IjoiQ1JFQVRFIn0seyJhdXRob3JpdHkiOiJERUxFVEUifV0sInJlZnJlc2giOmZhbHNlLCJleHAiOjE3MjIzNTAzMjUsImlhdCI6MTcyMjMxNDMyNX0.MjlNY93P_OP4X5nZAgEkI_rmPJoDjNShpGDjooXBIgc";
-
-    HttpMethodsDio().getMethodWithToken(
-        api: ApiEndPoint.signUpUrl(widget.userId ?? ""),
-        fun: (map, code) {
-          debugPrint(">>>>>map$map");
-          if (code == 200) {}
-        },
-        token: token);
+    try {
+      HttpMethodsDio().postMethod(
+          api: ApiEndPoint.signUpUrl(widget.userId ?? ""),
+          fun: (map, code) async {
+            Utils.showProgressIndicator();
+            debugPrint(">>>>>map$map");
+            if (code == 200) {
+              debugPrint(">>>>>map${map['data']['token']}");
+              if (map is Map && map['data'] != null && map['data']['token'] != null) {
+                await sharedPref.save("isLogIn", "true");
+                await sharedPref.save("token", map['data']['token']);
+                Utils.disMissProgressIndicator();
+                Navigator.pushNamed(context, "/bottomAppBarProvider");
+              } else {
+                Utils.disMissProgressIndicator();
+                ShowSnackBar.showError(context, "Something went wrong");
+              }
+            } else {
+              Utils.disMissProgressIndicator();
+              ShowSnackBar.showError(context, "Something went wrong");
+            }
+          });
+    }catch(e){
+      Utils.disMissProgressIndicator();
+      ShowSnackBar.showError(context, "Something went wrong");
+    }
   }
 
   @override
@@ -147,7 +165,6 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
                                   } else if (otp == '1234') {
                                     context.read<OtpDialogProvider>().changeStatus(status: false);
                                     callOtpVerify();
-                                    // Navigator.pushNamed(context, "/bottomAppBarProvider");
                                   } else {
                                     context.read<OtpDialogProvider>().changeStatus(status: true);
                                   }
