@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../app_utils/utils.dart';
 import '../../common_widgets/background_widget.dart';
 import '../../common_widgets/common_text_field_view.dart';
+import '../../common_widgets/show_snack_bar.dart';
 import 'login_otp_verification.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -29,12 +31,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: BackgroundWidget(
                   size: size,
                   btnOnTap: () async {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Hero(tag: 'otp', child: LoginOtpVerification.builder(context, userName.text));
-                      },
-                    );
+                    if (userName.text == "") {
+                      ShowSnackBar.showError(context, "Please enter email / phone No");
+                    } else {
+                      Utils.showProgressIndicator();
+                      await Future.delayed(Duration(seconds: 2));
+                      Utils.disMissProgressIndicator();
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Hero(tag: 'otp', child: LoginOtpVerification.builder(context, userName.text));
+                        },
+                      );
+                    }
                   },
                   buttonText: 'Log In',
                   footerOnTap: () {

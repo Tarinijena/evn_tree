@@ -42,12 +42,13 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
     String token =
         "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzeXN0ZW0iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9TVVBFUl9BRE1JTiJ9LHsiYXV0aG9yaXR5IjoiVklFVyJ9LHsiYXV0aG9yaXR5IjoiRURJVCJ9LHsiYXV0aG9yaXR5IjoiQ1JFQVRFIn0seyJhdXRob3JpdHkiOiJERUxFVEUifV0sInJlZnJlc2giOmZhbHNlLCJleHAiOjE3MjIzNTAzMjUsImlhdCI6MTcyMjMxNDMyNX0.MjlNY93P_OP4X5nZAgEkI_rmPJoDjNShpGDjooXBIgc";
 
-    HttpMethodsDio().getMethodWithToken(api: ApiEndPoint.signUpUrl(widget.userId??""),
+    HttpMethodsDio().getMethodWithToken(
+        api: ApiEndPoint.signUpUrl(widget.userId ?? ""),
         fun: (map, code) {
-           if(code == 200){
-
-           }
-        }, token: token);
+          debugPrint(">>>>>map$map");
+          if (code == 200) {}
+        },
+        token: token);
   }
 
   @override
@@ -145,7 +146,8 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
                                     // Navigator.pop(context);
                                   } else if (otp == '1234') {
                                     context.read<OtpDialogProvider>().changeStatus(status: false);
-                                    Navigator.pushNamed(context, "/bottomAppBarProvider");
+                                    callOtpVerify();
+                                    // Navigator.pushNamed(context, "/bottomAppBarProvider");
                                   } else {
                                     context.read<OtpDialogProvider>().changeStatus(status: true);
                                   }
