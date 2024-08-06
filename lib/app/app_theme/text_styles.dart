@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_themes.dart';
+import 'colors.dart';
 
 class TextStyles{
   late final BuildContext context;
@@ -73,6 +74,10 @@ class TextStyles{
 
   TextStyle googleRubikFontsForText5({double ?fontSize , FontWeight? fontWeight}){
     return GoogleFonts.rubik(textStyle: TextStyle(fontWeight: fontWeight??FontWeight.w500,fontSize: fontSize??16,color: const Color(0xFF43CC7B),decorationColor: const Color(0xFF43CC7B)));
+  }
+
+  TextStyle googleRubikFontsForDialog({double ?fontSize , FontWeight? fontWeight}){
+    return GoogleFonts.rubik(textStyle: TextStyle(fontWeight: fontWeight??FontWeight.w600,fontSize: fontSize??20,color:ColorsGroup.primaryColor));
   }
 
 

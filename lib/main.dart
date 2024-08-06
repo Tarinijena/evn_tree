@@ -1,37 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:national_wild_animal/Demo.dart';
-import 'package:national_wild_animal/GetDatFromList.dart';
-import 'package:national_wild_animal/ProfilePageDate/ProfilePageData.dart';
-
-import 'package:national_wild_animal/app/screens/Demo2.dart';
-import 'package:national_wild_animal/app/screens/EventListed/EventCard.dart';
-import 'package:national_wild_animal/app/screens/EventListed/EventDetails.dart';
-import 'package:national_wild_animal/app/screens/EventListed/EventListed.dart';
-import 'package:national_wild_animal/app/screens/EventListed/EventListedDetails.dart';
-import 'package:national_wild_animal/app/screens/ProfilePage.dart';
-import 'package:national_wild_animal/app/screens/EventScreen.dart';
-import 'package:national_wild_animal/app/screens/HomeScreen.dart';
-import 'package:national_wild_animal/app/screens/SplashScreen.dart';
-import 'package:national_wild_animal/app/screens/login_screen.dart';
-import 'package:national_wild_animal/app/screens/profile_screen.dart';
-
-
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'app/app_routes/app_routes.dart';
+import 'app/app_theme/app_themes.dart';
+import 'app/module/splash_screen/splash_screen.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
-    statusBarIconBrightness:  Brightness.dark,
-    statusBarBrightness:  Brightness.dark,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
     // systemNavigationBarColor: themeData.scaffoldBackgroundColor,
     systemNavigationBarDividerColor: Colors.transparent,
-    systemNavigationBarIconBrightness:  Brightness.dark,
+    systemNavigationBarIconBrightness: Brightness.dark,
   ));
   runApp(const MyApp());
 }
-
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 class MyApp extends StatelessWidget {
-  
   const MyApp({super.key});
 
   // This widget is the root of your application.
@@ -39,15 +25,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-       
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home:SplashScreen(), 
+      title: 'EVN-TREE',
+      theme: AppTheme.getAppTheme(),
+      routes: AppRoutes.appRoutes,
+      navigatorKey: navigatorKey,
+      builder: EasyLoading.init(builder: (context, widget) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
+          child: widget ?? Container(),
+        );
+      }),
+      initialRoute: "/splashScreen",
+      home: SplashScreen(),
     );
   }
 }
-
-
