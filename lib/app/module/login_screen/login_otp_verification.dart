@@ -43,7 +43,7 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
   callOtpVerify() {
     try {
       HttpMethodsDio().postMethod(
-          api: ApiEndPoint.signUpUrl(widget.userId ?? ""),
+          api: ApiEndPoint.signUpUrl(widget.userId ?? ""), 
           fun: (map, code) async {
             Utils.showProgressIndicator();
             debugPrint(">>>>>map$map");
@@ -52,6 +52,10 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
               if (map is Map && map['data'] != null && map['data']['token'] != null) {
                 await sharedPref.save("isLogIn", "true");
                 await sharedPref.save("token", map['data']['token']);
+                if(map['data']['roles']!=null&&map['data']['roles'].length>0)
+                {
+                    await sharedPref.save('roles', map['data']['roles'][0]["roleName"]);
+                }
                 Utils.disMissProgressIndicator();
                 Navigator.pushNamed(context, "/bottomAppBarProvider");
               } else {

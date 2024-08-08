@@ -5,6 +5,10 @@ import 'app/app_routes/app_routes.dart';
 import 'app/app_theme/app_themes.dart';
 import 'app/module/splash_screen/splash_screen.dart';
 
+//SWAGGER UI BACKEND URL FOR THIS APPLICATION
+//http://128.199.18.223:8080/evntree/swagger-ui/index.html#/
+//          /evntree/v3/api-docs/
+
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,

@@ -43,6 +43,7 @@ dependencies:
   provider:
   shared_preferences:
   flutter_easyloading:
+  geolocator:
 
 dev_dependencies:
   flutter_test:

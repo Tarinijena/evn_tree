@@ -1,4 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:national_wild_animal/app/api_service/api_end_point.dart';
+import 'package:national_wild_animal/app/api_service/http_methods.dart';
+import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
+import 'package:national_wild_animal/app/app_utils/utils.dart';
+import 'package:national_wild_animal/app/common_widgets/show_snack_bar.dart';
 
 import '../../common_widgets/background_widget.dart';
 import '../../common_widgets/common_text_field_view.dart';
@@ -12,6 +19,64 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+
+  TextEditingController nameController=TextEditingController();
+  
+  TextEditingController emailController=TextEditingController();
+
+  TextEditingController passwordController=TextEditingController();
+
+  
+  
+  
+  
+   
+   SharedPref sharedPref = SharedPref();
+  signupUser() {
+    try {
+
+          // Prepare the JSON data from the input fields
+    Map<String, dynamic> jsonData = {
+       "fullName": nameController.text,
+      "emailOrMobile": emailController.text,
+       "password": passwordController.text,
+    };
+
+      HttpMethodsDio().postMethod(
+          api: ApiEndPoint.signUrl,
+          json: jsonData,
+          fun: (map, code) async {
+            Utils.showProgressIndicator();
+            print(code);
+            if (code == 200) {
+              print("Data store in database successfully..........");
+              debugPrint(">>>>>map${map['data']['token']}");
+              if (map is Map && map['data'] != null && map['data']['token'] != null) {
+                /*await sharedPref.save("isLogIn", "true");
+                await sharedPref.save("token", map['data']['token']);
+                if(map['data']['roles']!=null&&map['data']['roles'].length>0)
+                {
+                    await sharedPref.save('roles', map['data']['roles'][0]["roleName"]);
+                }
+                Utils.disMissProgressIndicator();
+                Navigator.pushNamed(context, "/bottomAppBarProvider");*/
+              } else {
+                Utils.disMissProgressIndicator();
+                ShowSnackBar.showError(context, "Something went wrong");
+              }
+            } else {
+              print("Unable to store data in database........");
+              Utils.disMissProgressIndicator();
+              ShowSnackBar.showError(context, "Something went wrong");
+            }
+          });
+    }catch(e){
+      Utils.disMissProgressIndicator();
+      ShowSnackBar.showError(context, "Something went wrong");
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -24,6 +89,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               height: usableHeight,
               child: BackgroundWidget(size: size,
                 btnOnTap: () {
+                  signupUser();
                   Navigator.pushNamed(context, "/logInScreen");
                   debugPrint(">>>>>>>>>>>>>btnOnTap Call");
                 }, buttonText: 'Sign UP', footerOnTap: () {
@@ -33,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 footerTextOne: "Already have an account ? ", footerTextTwo: 'sign-in', widgetLst: [
                   SizedBox(height: 25,),
                   CommonTextFieldView(
-                    controller: TextEditingController(),
+                    controller: nameController,
                     // errorText: _errorFName,
                     padding: const EdgeInsets.only(left: 2, right: 2),
                     titleText: "Full Name",
@@ -50,7 +116,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 5,
                   ),
                   CommonTextFieldView(
-                    controller: TextEditingController(),
+                    controller:emailController,
                     // errorText: _errorFName,
                     padding: const EdgeInsets.only(left: 2, right: 2),
                     titleText: "email",
@@ -67,7 +133,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 5,
                   ),
                   CommonTextFieldView(
-                    controller: TextEditingController(),
+                    controller: passwordController,
                     // errorText: _errorFName,
                     padding: const EdgeInsets.only(left: 2, right: 2),
                     titleText: "password",

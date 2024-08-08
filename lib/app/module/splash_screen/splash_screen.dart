@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   setRoute() async {
-    String isLogIn = await sharedPref.getKey("isLogIn");
+    String ?isLogIn = await sharedPref.getKey("isLogIn");
     if (isLogIn.toString().contains("true")) {
       Navigator.pushNamedAndRemoveUntil(
         context,

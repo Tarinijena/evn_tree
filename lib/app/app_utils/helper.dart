@@ -15,10 +15,13 @@ mixin Helper {
     return await showDialog(
       context: context,
       barrierDismissible: barrierDismissible,
+      
       builder: (BuildContext context) => CustomDialog(
+        
         title: title,
-        topWidget: Image.asset("assets/images/logo.png"),
+        topWidget: Image.asset("assets/logo1.png"),
         description: descriptionText,
+        
         onCloseClick: () {
           Navigator.of(context).pop();
         },

@@ -92,7 +92,7 @@ class _CustomDialogState extends State<CustomDialog>
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.4),
+              color: Color(0xFF231D32),
               borderRadius: (widget.topWidget == null)
                   ? null
                   : const BorderRadius.only(
