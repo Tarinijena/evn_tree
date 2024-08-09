@@ -16,6 +16,7 @@ class CustomTextField extends StatelessWidget {
   final TextStyle? hintStyle;
   final Function(String)? onChanged;
   final bool? readOnly;
+  final bool? enable;
 
   const CustomTextField({
     super.key,
@@ -35,7 +36,7 @@ class CustomTextField extends StatelessWidget {
     this.focusedBorder,
     this.enabledBorder,
     this.onChanged,
-    this.readOnly
+    this.readOnly, this.enable
   });
 
   @override
@@ -62,6 +63,7 @@ class CustomTextField extends StatelessWidget {
             inputHint: inputHint,
             obscureText: obscureText,
             inputKeyboardType: inputKeyBoardType,
+            enable: enable,
             contentPadding: const EdgeInsets.only(
               top: 10,
               left: 19,

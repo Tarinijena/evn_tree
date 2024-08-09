@@ -1,12 +1,20 @@
 
 
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:national_wild_animal/app/common_widgets/common_button.dart';
 import 'package:national_wild_animal/app/screens/EventListed/EventListed.dart';
 
 import 'package:national_wild_animal/app/common_widgets/custom_text_field.dart';
 import 'package:national_wild_animal/app/screens/profile_screen.dart';
+
+import '../../app_utils/utils.dart';
 
 class EventScreen extends StatefulWidget {
   EventScreen({super.key});
@@ -30,6 +38,54 @@ class _EventScreenState extends State<EventScreen> {
 
   int current = 0;
   String? selectedCountry;
+
+  Future pickImage(ImageSource source) async {
+    try {
+      final image = await ImagePicker().pickImage(source: source, imageQuality: 20);
+      if (image == null) return;
+      final imageTemporary = File(image.path);
+      Utils.disMissProgressIndicator();
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        print("Failed  to pick image: $e");
+      }
+    }
+  }
+
+  void showModalPop({bool profile = false, required BuildContext context}) {
+    showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoActionSheet(
+            actions: [
+              CupertinoActionSheetAction(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Utils.showProgressIndicator();
+                  pickImage(ImageSource.camera);
+                  Navigator.of(context).pop;
+                },
+                child: const Text('Use Camera'),
+              ),
+              CupertinoActionSheetAction(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Utils.showProgressIndicator();
+                  pickImage(ImageSource.gallery);
+                  Navigator.of(context).pop;
+                },
+                child: const Text('Upload from files'),
+              ),
+            ],
+            cancelButton: CupertinoActionSheetAction(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel', style: TextStyle(color: Colors.red)),
+            ),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -408,18 +464,24 @@ class _EventScreenState extends State<EventScreen> {
                         Row(
                           children: [
                             Expanded(
-                              child: CustomTextField(
-                                readOnly: true,
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Color(0xffB74BFF)),
+                              child: GestureDetector(
+                                onTap: (){
+                                  showModalPop(context: context);
+                                },
+                                child: CustomTextField(
+                                  enable: false,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Color(0xffB74BFF)),
+                                  ),
+                                  inputHint: "Upload Image",
+                                  suffixIcon: InkWell(
+                                      onTap: () {
+                                      },
+                                      child: Icon(
+                                        Icons.upload_file,
+                                        color: Colors.white,
+                                      )),
                                 ),
-                                inputHint: "Upload Image",
-                                suffixIcon: InkWell(
-                                    onTap: () {},
-                                    child: Icon(
-                                      Icons.upload_file,
-                                      color: Colors.white,
-                                    )),
                               ),
                             ),
                             Expanded(

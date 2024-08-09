@@ -6,6 +6,7 @@ class MyFormField extends StatelessWidget {
   final bool? obscureText;
   final bool? inputSuggestions;
   final bool? readOnly;
+  final bool? enable;
   final InputBorder? border,
       focusedBorder,
       enabledBorder,
@@ -54,7 +55,7 @@ class MyFormField extends StatelessWidget {
     this.maxLength,
     this.readOnly,
     this.initialValue,
-    this.inputCapitalization,
+    this.inputCapitalization, this.enable,
   });
 
   @override
@@ -75,6 +76,7 @@ class MyFormField extends StatelessWidget {
       textInputAction: inputAction,
       textCapitalization: inputCapitalization ?? TextCapitalization.none,
       style: inputTextStyle,
+      enabled: enable??true,
       
       decoration: InputDecoration(
         labelText: inputLabel,

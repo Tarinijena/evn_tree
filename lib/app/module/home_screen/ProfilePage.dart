@@ -1,6 +1,14 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:national_wild_animal/app/common_widgets/common_button.dart';
 import 'package:national_wild_animal/app/common_widgets/custom_text_field.dart';
+
+import '../../app_utils/utils.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -119,6 +127,8 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
+
+
 }
 
 class RectangularContainerWithImage extends StatelessWidget {
