@@ -36,7 +36,7 @@ class BottomAppBarPage extends StatefulWidget {
   }
 }
 
-class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
+class _BottomAppBarPageState extends State<BottomAppBarPage>  {
   SharedPref pref = SharedPref();
   Future<void>? _userRoleFuture;
 
@@ -100,16 +100,12 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
                           }
                         },
                       ),
-                      _buildIconButton(
-                        icon: Icons.person,
-                        index: 2,
-                      ),
+
                     ],
                   ),
                   _buildIconButton(
-                    icon: Icons.logout,
-                    index: null,
-                    onPressed: gotoSplashScreen,
+                    icon: Icons.person,
+                    index: 2,
                   ),
                 ],
               ),
@@ -149,23 +145,5 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
     );
   }
 
-  void gotoSplashScreen() async {
-    bool isOk = await showCommonPopupNew(
-      "Are you sure?",
-      "You want to Sign Out?",
-      context,
-      barrierDismissible: true,
-      isYesOrNoPopup: true,
-    );
-    if (isOk) {
-      SharedPref sharedPref = SharedPref();
-      await sharedPref.save("isLogIn", "false");
 
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        "/splashScreen",
-        (Route<dynamic> route) => false,
-      );
-    }
-  }
 }

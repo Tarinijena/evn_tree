@@ -45,14 +45,14 @@ class Data {
     return data;
   }
 
-    @override
+  @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (runtimeType != other.runtimeType) return false;
     final Data otherData = other as Data;
-    return cityCode == otherData.cityCode;
+    return cityName == otherData.cityName && cityCode == otherData.cityCode && cityId == otherData.cityId;
   }
 
   @override
-  int get hashCode => cityCode.hashCode;
+  int get hashCode => cityName.hashCode ^ cityCode.hashCode ^ cityId.hashCode;
 }

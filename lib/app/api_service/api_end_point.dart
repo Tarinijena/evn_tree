@@ -8,6 +8,7 @@ class ApiEndPoint {
   static String signUpUrl(String userId) => "$baseUrl/umt/public/login-demo?userName=$userId";
 
   static String citiesUrl= "$baseUrl/event/master/cities";
+  static String categoryLst = "$baseUrl/event/master/eventCategories";
 
   static String signUrl="$baseUrl/umt/public/signup-user";
 }

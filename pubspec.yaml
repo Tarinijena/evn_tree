@@ -44,6 +44,8 @@ dependencies:
   shared_preferences:
   flutter_easyloading:
   geolocator:
+  animated_text_kit:
+  dropdown_button2:
 
 dev_dependencies:
   flutter_test:

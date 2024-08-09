@@ -1,22 +1,23 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:national_wild_animal/ProfilePageDate/ProfilePageData.dart';
 import 'package:national_wild_animal/app/api_service/api_end_point.dart';
 import 'package:national_wild_animal/app/api_service/http_methods.dart';
 import 'package:national_wild_animal/app/app_theme/colors.dart';
 import 'package:national_wild_animal/app/app_theme/text_styles.dart';
-import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 import 'package:national_wild_animal/app/common_widgets/common_text_field_view.dart';
 import 'package:national_wild_animal/app/common_widgets/CustomAppBar.dart';
 import 'package:national_wild_animal/app/module/home_screen/LocationModel/location_model.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../app_utils/shared_preferance.dart';
 import '../login_screen/provider/home_screen_provider.dart';
 
-class HomeScreen extends StatefulWidget { 
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
@@ -33,66 +34,62 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //bool isSelected=false;
 
-  List<DropdownMenuItem<String>> dropdownItems = [];
-
-  getCurrentLocation(){
-    try{
-
-         HttpMethodsDio().getMethod(api: ApiEndPoint.citiesUrl, fun:(map,code){
-              if(code == 200){
-              GetLocationModel citiesName=GetLocationModel.fromJson(map);
-              var parsedJson=json.decode(citiesName.toString());
-              var cities=parsedJson['data'];
-
-              for(var city in cities){
-                 dropdownItems.add(city);
-              }
-
-              }
-         });
-
-    }catch(e){
-
-    }
-  }
-
-  
-  List<DataLstClass> dataLst = [
+  List<DataLstClass> categoryList = [
     DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
-    DataLstClass(icon: Icons.music_note_outlined, nameStr: "Connect"),
-    DataLstClass(icon: Icons.theater_comedy_outlined, nameStr: "Theatre"),
-    DataLstClass(icon: Icons.sports, nameStr: "Sports"),
-    DataLstClass(icon: Icons.music_note_outlined, nameStr: "Magic Show"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
-    DataLstClass(icon: Icons.games, nameStr: "Circus"),
   ];
   double maxScrollExtent = 0.0;
   ScrollController scrollController = ScrollController();
   TextEditingController textEditingController = TextEditingController();
 
-  List<String> data = ["event", "festival", "google", "chrome", "makarasankranti"];
+  List<RotateAnimatedText> data = [
+    RotateAnimatedText("event"),
+    RotateAnimatedText("festival"),
+    RotateAnimatedText("google"),
+    RotateAnimatedText("chrome"),
+    RotateAnimatedText("makarasankranti")
+  ];
   Timer? timer;
+
+  SharedPref sharedPref = SharedPref();
+
+  getCategoryList() async {
+    try {
+      String data = await sharedPref.getKey("token");
+      String token = json.decode(data);
+      HttpMethodsDio().getMethodWithToken(
+          api: ApiEndPoint.categoryLst,
+          fun: (map, code) {
+            if (code == 200 && map['data'] != null && map['data'].length > 0) {
+              categoryList.clear();
+              map['data'].forEach((e) {
+                categoryList.add(DataLstClass(nameStr: e['categoryName'], icon: Icons.category_outlined));
+              });
+              categoryList.insert(
+                0,
+                DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
+              );
+            } else {
+              categoryList = [
+                DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
+              ];
+            }
+            setState(() {});
+          },
+          token: token);
+    } catch (e) {
+      categoryList = [
+        DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
+      ];
+      setState(() {});
+    }
+  }
 
   @override
   void initState() {
-    // Start the timer when the widget is initialized
-    timer = Timer.periodic(Duration(seconds: 2), (Timer t) {
-      context.read<HomeScreenProvider>().changeIndex(lstLength: data.length);
-    });
     scrollController.addListener(() {
       maxScrollExtent = scrollController.position.maxScrollExtent;
     });
-
+    getCategoryList();
     // getLatLong();
 
     super.initState();
@@ -139,6 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       SizedBox(
                         width: size.width * 0.9,
+                        height: 35,
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
@@ -148,12 +146,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style:
                                     TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400, fontSize: 20),
                               ),
-                              Consumer<HomeScreenProvider>(
-                                builder: (context, provider, child) {
-                                  return Text(data[context.read<HomeScreenProvider>().currentIndex].toUpperCase(),
-                                      style: TextStyles(context)
-                                          .googleRubikFontsForText2(fontWeight: FontWeight.w400, fontSize: 20));
-                                },
+                              SizedBox(
+                                width: 500,
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: DefaultTextStyle(
+                                    style:
+                                        TextStyles(context).googleRubikFontsForText2(fontWeight: FontWeight.w400, fontSize: 20),
+                                    child: AnimatedTextKit(
+                                      animatedTexts: data,
+                                      isRepeatingAnimation: true,
+                                      repeatForever: true,
+                                      onTap: () {
+                                        print("Tap Event");
+                                      },
+                                    ),
+                                  ),
+                                ),
                               ),
                               Text(" !",
                                   style: TextStyles(context)
@@ -189,13 +198,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 60,
                             width: size.width * 0.8,
                             child: ListView.builder(
-                                itemCount: dataLst.length,
+                                itemCount: categoryList.length,
                                 controller: scrollController,
                                 scrollDirection: Axis.horizontal,
                                 itemBuilder: (BuildContext context, int index) {
                                   return GestureDetector(
                                     onTap: () {
-                                      context.read<HomeScreenProvider>().selectedIndex = index;
+                                      context.read<HomeScreenProvider>().changeSelectedIndex(index: index);
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.only(right: 19.0),
@@ -213,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   child: Padding(
                                                     padding: const EdgeInsets.all(4.0),
                                                     child: Icon(
-                                                      dataLst[index].icon,
+                                                      categoryList[index].icon,
                                                       size: 30,
                                                       color: Colors.white,
                                                     ),
@@ -221,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             },
                                           ),
                                           Text(
-                                            dataLst[index].nameStr ?? "",
+                                            categoryList[index].nameStr ?? "",
                                             style: TextStyles(context)
                                                 .googleRubikFontsForButtonText(fontSize: 9, fontWeight: FontWeight.w600),
                                           )
@@ -231,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 }),
                           ),
-                          (dataLst.length > 4)
+                          (categoryList.length > 4)
                               ? GestureDetector(
                                   onTap: () {
                                     double currentOffset = scrollController.offset;
@@ -468,48 +477,45 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Determine the current position of the device.
+  ///
+  /// When the location services are not enabled or permissions
+  /// are denied the `Future` will return an error.
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-   /// Determine the current position of the device.
-///
-/// When the location services are not enabled or permissions
-/// are denied the `Future` will return an error.
-Future<Position> _determinePosition() async {
-  bool serviceEnabled;
-  LocationPermission permission;
-
-  // Test if location services are enabled.
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    // Location services are not enabled don't continue
-    // accessing the position and request users of the 
-    // App to enable the location services.
-    return Future.error('Location services are disabled.');
-  }
-
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      // Permissions are denied, next time you could try
-      // requesting permissions again (this is also where
-      // Android's shouldShowRequestPermissionRationale 
-      // returned true. According to Android guidelines
-      // your App should show an explanatory UI now.
-      return Future.error('Location permissions are denied');
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
     }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error('Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
   }
-  
-  if (permission == LocationPermission.deniedForever) {
-    // Permissions are denied forever, handle appropriately. 
-    return Future.error(
-      'Location permissions are permanently denied, we cannot request permissions.');
-  } 
-
-  // When we reach here, permissions are granted and we can
-  // continue accessing the position of the device.
-  return await Geolocator.getCurrentPosition();
-}
-
 }
 
 class DataLstClass {
