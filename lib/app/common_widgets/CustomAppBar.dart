@@ -11,8 +11,11 @@ import '../app_utils/helper.dart';
 import '../app_utils/shared_preferance.dart';
 
 class CustomAppBar extends StatefulWidget {
+  final List<Data> cityLst;
+  final Data? dropdownValue;
+  final Function( Data? val)? onChange;
   const CustomAppBar({
-    super.key,
+    super.key, required this.cityLst, this.dropdownValue, required this.onChange,
   });
 
   @override
@@ -20,48 +23,10 @@ class CustomAppBar extends StatefulWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> with Helper {
-  Data? dropdownValue;
 
-  SharedPref sharedPref = SharedPref();
-  getCityLst() async {
-    try {
-      String data = await sharedPref.getKey("token");
-      String token = json.decode(data);
-      HttpMethodsDio().getMethodWithToken(
-          api: ApiEndPoint.citiesUrl,
-          fun: (map, code) {
-            if (code == 200 && map is Map && map['data'] != null && map["data"].length > 0) {
-              GetLocationModel citiesName = GetLocationModel.fromJson(map as Map<String, dynamic>);
-              cityLst = citiesName.data ?? [];
-              cityLst.insert(0, Data(cityCode: "0", cityId: "0", cityName: "Select City"));
-              dropdownValue = cityLst[0];
-            } else {
-              cityLst = [Data(cityCode: "0", cityId: "0", cityName: "Select City")];
-              dropdownValue = cityLst[0];
-            }
-            setState(() {
-
-            });
-          },
-          token: token);
-    } catch (e) {
-      cityLst = [Data(cityCode: "0", cityId: "0", cityName: "Select City")];
-      dropdownValue = cityLst[0];
-      setState(() {
-
-      });
-    }
-  }
-
-  List<Data> cityLst = [Data(cityCode: "0", cityId: "0", cityName: "Select City")];
   final valueListenable = ValueNotifier<String?>(null);
   final TextEditingController textEditingController = TextEditingController();
 
-  @override
-  void initState() {
-    getCityLst();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +64,7 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
                         ),
                         DropdownButtonHideUnderline(
                           child: DropdownButton2<Data>(
-                            value: dropdownValue,
+                            value: widget.dropdownValue,
                             style: TextStyle(color: Colors.white, fontSize: 12),
                             alignment: Alignment.centerLeft,
                             dropdownStyleData: DropdownStyleData(
@@ -118,11 +83,7 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
                               height: 40,
                               padding: EdgeInsets.only(left: 8, right: 4),
                             ),
-                            onChanged: (Data? value) {
-                              setState(() {
-                                dropdownValue = value;
-                              });
-                            },
+                            onChanged: widget.onChange,
                             iconStyleData: IconStyleData(
                               icon: Icon(
                                 Icons.arrow_drop_down_outlined,
@@ -173,7 +134,7 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
                               }
                             },
 
-                            items: cityLst.map<DropdownMenuItem<Data>>((Data value) {
+                            items: widget.cityLst.map<DropdownMenuItem<Data>>((Data value) {
                               return DropdownMenuItem<Data>(
                                 value: value,
                                 child: Text(value.cityName ?? ""),

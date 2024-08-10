@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../app_utils/shared_preferance.dart';
-import '../login_screen/provider/home_screen_provider.dart';
+import 'provider/home_screen_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,9 +34,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //bool isSelected=false;
 
-  List<DataLstClass> categoryList = [
-    DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
-  ];
   double maxScrollExtent = 0.0;
   ScrollController scrollController = ScrollController();
   TextEditingController textEditingController = TextEditingController();
@@ -52,36 +49,76 @@ class _HomeScreenState extends State<HomeScreen> {
 
   SharedPref sharedPref = SharedPref();
 
-  getCategoryList() async {
+  Future<bool> getCategoryList() async {
+    Completer<bool> completer = Completer<bool>();
+    List<DataLstClass> categoryListTemp = [];
     try {
       String data = await sharedPref.getKey("token");
       String token = json.decode(data);
+
       HttpMethodsDio().getMethodWithToken(
           api: ApiEndPoint.categoryLst,
           fun: (map, code) {
             if (code == 200 && map['data'] != null && map['data'].length > 0) {
-              categoryList.clear();
+              context.read<HomeScreenProvider>().categoryList.clear();
+
               map['data'].forEach((e) {
-                categoryList.add(DataLstClass(nameStr: e['categoryName'], icon: Icons.category_outlined));
+                categoryListTemp.add(DataLstClass(nameStr: e['categoryName'], icon: Icons.category_outlined));
               });
-              categoryList.insert(
+              categoryListTemp.insert(
                 0,
                 DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
               );
+              context.read<HomeScreenProvider>().setCategoryList(categoryListData: categoryListTemp);
             } else {
-              categoryList = [
+              categoryListTemp = [
                 DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
               ];
+              context.read<HomeScreenProvider>().setCategoryList(categoryListData: categoryListTemp);
             }
-            setState(() {});
+            completer.complete(true);
           },
           token: token);
     } catch (e) {
-      categoryList = [
+      categoryListTemp = [
         DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
       ];
-      setState(() {});
+      context.read<HomeScreenProvider>().setCategoryList(categoryListData: categoryListTemp);
+      completer.complete(false);
     }
+    return completer.future;
+  }
+
+  Future<bool> getCityLst() async {
+    Completer<bool> completer = Completer<bool>();
+    List<Data> cityDatTemp = [];
+    Data? dropDownValTemp;
+    try {
+      String data = await sharedPref.getKey("token");
+      String token = json.decode(data);
+      HttpMethodsDio().getMethodWithToken(
+          api: ApiEndPoint.citiesUrl,
+          fun: (map, code) {
+            if (code == 200 && map is Map && map['data'] != null && map["data"].length > 0) {
+              GetLocationModel citiesName = GetLocationModel.fromJson(map as Map<String, dynamic>);
+              cityDatTemp = citiesName.data ?? [];
+              cityDatTemp.insert(0, Data(cityCode: "0", cityId: "0", cityName: "Select City"));
+              dropDownValTemp = cityDatTemp[0];
+            } else {
+              cityDatTemp = [Data(cityCode: "0", cityId: "0", cityName: "Select City")];
+              dropDownValTemp = cityDatTemp[0];
+            }
+            context.read<HomeScreenProvider>().setCityList(cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
+            completer.complete(true);
+          },
+          token: token);
+    } catch (e) {
+      cityDatTemp = [Data(cityCode: "0", cityId: "0", cityName: "Select City")];
+      dropDownValTemp = cityDatTemp[0];
+      context.read<HomeScreenProvider>().setCityList(cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
+      completer.complete(false);
+    }
+    return completer.future;
   }
 
   @override
@@ -89,10 +126,18 @@ class _HomeScreenState extends State<HomeScreen> {
     scrollController.addListener(() {
       maxScrollExtent = scrollController.position.maxScrollExtent;
     });
-    getCategoryList();
-    // getLatLong();
+
+    callApi();
 
     super.initState();
+  }
+
+  callApi() async {
+    await Future.wait([
+      getCategoryList(),
+      getCityLst(),
+    ]);
+    setState(() {});
   }
 
   @override
@@ -116,7 +161,17 @@ class _HomeScreenState extends State<HomeScreen> {
             scrollDirection: Axis.vertical,
             child: Column(
               children: [
-                CustomAppBar(),
+                Consumer<HomeScreenProvider>(
+                  builder: (context, provider, child) {
+                    return CustomAppBar(
+                      cityLst: context.read<HomeScreenProvider>().cityLst,
+                      dropdownValue: context.read<HomeScreenProvider>().dropdownValue,
+                      onChange: (Data? val) {
+                        context.read<HomeScreenProvider>().setDropDownVal(val: val);
+                      },
+                    );
+                  },
+                ),
                 Padding(
                   padding: const EdgeInsets.only(left: 24.0, top: 12, right: 18),
                   child: Column(
@@ -191,93 +246,97 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(
                         height: 8,
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 60,
-                            width: size.width * 0.8,
-                            child: ListView.builder(
-                                itemCount: categoryList.length,
-                                controller: scrollController,
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      context.read<HomeScreenProvider>().changeSelectedIndex(index: index);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(right: 19.0),
-                                      child: Column(
-                                        children: [
-                                          Consumer<HomeScreenProvider>(
-                                            builder: (context, provider, child) {
-                                              return Container(
-                                                  decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(2),
-                                                      border: Border.all(width: 1, color: const Color(0xFF362B51)),
-                                                      color: (context.read<HomeScreenProvider>().selectedIndex == index)
-                                                          ? const Color(0xFFB74BFF)
-                                                          : const Color(0xFF221D31)),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(4.0),
-                                                    child: Icon(
-                                                      categoryList[index].icon,
-                                                      size: 30,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ));
-                                            },
+                      Consumer<HomeScreenProvider>(
+                        builder: (context, provider, child) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 60,
+                                width: size.width * 0.8,
+                                child: ListView.builder(
+                                    itemCount: context.read<HomeScreenProvider>().categoryList.length,
+                                    controller: scrollController,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (BuildContext context, int index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          context.read<HomeScreenProvider>().changeSelectedIndex(index: index);
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(right: 19.0),
+                                          child: Column(
+                                            children: [
+                                              Consumer<HomeScreenProvider>(
+                                                builder: (context, provider, child) {
+                                                  return Container(
+                                                      decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(2),
+                                                          border: Border.all(width: 1, color: const Color(0xFF362B51)),
+                                                          color: (context.read<HomeScreenProvider>().selectedIndex == index)
+                                                              ? const Color(0xFFB74BFF)
+                                                              : const Color(0xFF221D31)),
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.all(4.0),
+                                                        child: Icon(
+                                                          context.read<HomeScreenProvider>().categoryList[index].icon,
+                                                          size: 30,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ));
+                                                },
+                                              ),
+                                              Text(
+                                                context.read<HomeScreenProvider>().categoryList[index].nameStr ?? "",
+                                                style: TextStyles(context)
+                                                    .googleRubikFontsForButtonText(fontSize: 9, fontWeight: FontWeight.w600),
+                                              )
+                                            ],
                                           ),
-                                          Text(
-                                            categoryList[index].nameStr ?? "",
-                                            style: TextStyles(context)
-                                                .googleRubikFontsForButtonText(fontSize: 9, fontWeight: FontWeight.w600),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }),
-                          ),
-                          (categoryList.length > 4)
-                              ? GestureDetector(
-                                  onTap: () {
-                                    double currentOffset = scrollController.offset;
-                                    double newOffset = currentOffset + 30.0;
-
-                                    if (maxScrollExtent == 0) {
-                                      scrollController.jumpTo(
-                                        30,
+                                        ),
                                       );
-                                    }
+                                    }),
+                              ),
+                              (context.read<HomeScreenProvider>().categoryList.length > 4)
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        double currentOffset = scrollController.offset;
+                                        double newOffset = currentOffset + 30.0;
 
-                                    if (newOffset <= maxScrollExtent) {
-                                      scrollController.animateTo(
-                                        newOffset,
-                                        duration: const Duration(milliseconds: 500),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    } else {
-                                      // If reached the end, stop scrolling further
-                                      scrollController.jumpTo(maxScrollExtent);
-                                    }
-                                  },
-                                  child: Container(
-                                    color: const Color(0xFF362B51),
-                                    height: 40,
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(4.0),
-                                      child: Icon(
-                                        Icons.arrow_forward_sharp,
-                                        size: 18,
-                                        color: Colors.white,
+                                        if (maxScrollExtent == 0) {
+                                          scrollController.jumpTo(
+                                            30,
+                                          );
+                                        }
+
+                                        if (newOffset <= maxScrollExtent) {
+                                          scrollController.animateTo(
+                                            newOffset,
+                                            duration: const Duration(milliseconds: 500),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        } else {
+                                          // If reached the end, stop scrolling further
+                                          scrollController.jumpTo(maxScrollExtent);
+                                        }
+                                      },
+                                      child: Container(
+                                        color: const Color(0xFF362B51),
+                                        height: 40,
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(4.0),
+                                          child: Icon(
+                                            Icons.arrow_forward_sharp,
+                                            size: 18,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                )
-                              : Container()
-                        ],
+                                    )
+                                  : Container()
+                            ],
+                          );
+                        },
                       ),
                       Column(
                         children: [
