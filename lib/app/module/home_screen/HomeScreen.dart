@@ -63,18 +63,23 @@ class _HomeScreenState extends State<HomeScreen> {
               context.read<HomeScreenProvider>().categoryList.clear();
 
               map['data'].forEach((e) {
-                categoryListTemp.add(DataLstClass(nameStr: e['categoryName'], icon: Icons.category_outlined));
+                categoryListTemp.add(DataLstClass(
+                    nameStr: e['categoryName'], icon: Icons.category_outlined));
               });
               categoryListTemp.insert(
                 0,
                 DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
               );
-              context.read<HomeScreenProvider>().setCategoryList(categoryListData: categoryListTemp);
+              context
+                  .read<HomeScreenProvider>()
+                  .setCategoryList(categoryListData: categoryListTemp);
             } else {
               categoryListTemp = [
                 DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
               ];
-              context.read<HomeScreenProvider>().setCategoryList(categoryListData: categoryListTemp);
+              context
+                  .read<HomeScreenProvider>()
+                  .setCategoryList(categoryListData: categoryListTemp);
             }
             completer.complete(true);
           },
@@ -83,7 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
       categoryListTemp = [
         DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
       ];
-      context.read<HomeScreenProvider>().setCategoryList(categoryListData: categoryListTemp);
+      context
+          .read<HomeScreenProvider>()
+          .setCategoryList(categoryListData: categoryListTemp);
       completer.complete(false);
     }
     return completer.future;
@@ -99,23 +106,32 @@ class _HomeScreenState extends State<HomeScreen> {
       HttpMethodsDio().getMethodWithToken(
           api: ApiEndPoint.citiesUrl,
           fun: (map, code) {
-            if (code == 200 && map is Map && map['data'] != null && map["data"].length > 0) {
-              GetLocationModel citiesName = GetLocationModel.fromJson(map as Map<String, dynamic>);
+            if (code == 200 &&
+                map is Map &&
+                map['data'] != null &&
+                map["data"].length > 0) {
+              GetLocationModel citiesName =
+                  GetLocationModel.fromJson(map as Map<String, dynamic>);
               cityDatTemp = citiesName.data ?? [];
-              cityDatTemp.insert(0, Data(cityCode: "0", cityId: "0", cityName: "Select City"));
+              cityDatTemp.insert(
+                  0, Data(cityCode: "0", cityId: "0", cityName: "Select City"));
               dropDownValTemp = cityDatTemp[0];
             } else {
-              cityDatTemp = [Data(cityCode: "0", cityId: "0", cityName: "Select City")];
+              cityDatTemp = [
+                Data(cityCode: "0", cityId: "0", cityName: "Select City")
+              ];
               dropDownValTemp = cityDatTemp[0];
             }
-            context.read<HomeScreenProvider>().setCityList(cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
+            context.read<HomeScreenProvider>().setCityList(
+                cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
             completer.complete(true);
           },
           token: token);
     } catch (e) {
       cityDatTemp = [Data(cityCode: "0", cityId: "0", cityName: "Select City")];
       dropDownValTemp = cityDatTemp[0];
-      context.read<HomeScreenProvider>().setCityList(cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
+      context.read<HomeScreenProvider>().setCityList(
+          cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
       completer.complete(false);
     }
     return completer.future;
@@ -132,11 +148,16 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
+  String? fullName;
   callApi() async {
     await Future.wait([
       getCategoryList(),
       getCityLst(),
     ]);
+    fullName = await sharedPref.getKey("fullName");
+    if (fullName != null && fullName != "") {
+      fullName = jsonDecode(fullName!);
+    }
     setState(() {});
   }
 
@@ -148,6 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     super.dispose();
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -165,28 +187,39 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, provider, child) {
                     return CustomAppBar(
                       cityLst: context.read<HomeScreenProvider>().cityLst,
-                      dropdownValue: context.read<HomeScreenProvider>().dropdownValue,
+                      dropdownValue:
+                          context.read<HomeScreenProvider>().dropdownValue,
                       onChange: (Data? val) {
-                        context.read<HomeScreenProvider>().setDropDownVal(val: val);
+                        context
+                            .read<HomeScreenProvider>()
+                            .setDropDownVal(val: val);
                       },
                     );
                   },
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 24.0, top: 12, right: 18),
+                  padding:
+                      const EdgeInsets.only(left: 24.0, top: 12, right: 18),
                   child: Column(
                     children: [
                       Row(
                         children: [
                           Text(
                             "Hello",
-                            style: TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400, fontSize: 20),
+                            style: TextStyles(context)
+                                .googleRubikFontsForButtonText(
+                                    fontWeight: FontWeight.w400, fontSize: 20),
                           ),
-                          Text(" Jay",
-                              style: TextStyles(context).googleRubikFontsForText2(fontWeight: FontWeight.w400, fontSize: 20)),
+                          Text(" ${fullName ?? "XXXX"}",
+                              style: TextStyles(context)
+                                  .googleRubikFontsForText2(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 20)),
                           Text(",",
-                              style:
-                                  TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400, fontSize: 20)),
+                              style: TextStyles(context)
+                                  .googleRubikFontsForButtonText(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 20)),
                         ],
                       ),
                       SizedBox(
@@ -198,16 +231,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Text(
                                 "Let’s explore your fav ",
-                                style:
-                                    TextStyles(context).googleRubikFontsForButtonText(fontWeight: FontWeight.w400, fontSize: 20),
+                                style: TextStyles(context)
+                                    .googleRubikFontsForButtonText(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 20),
                               ),
                               SizedBox(
                                 width: 500,
                                 child: SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
                                   child: DefaultTextStyle(
-                                    style:
-                                        TextStyles(context).googleRubikFontsForText2(fontWeight: FontWeight.w400, fontSize: 20),
+                                    style: TextStyles(context)
+                                        .googleRubikFontsForText2(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 20),
                                     child: AnimatedTextKit(
                                       animatedTexts: data,
                                       isRepeatingAnimation: true,
@@ -221,7 +258,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Text(" !",
                                   style: TextStyles(context)
-                                      .googleRubikFontsForButtonText(fontWeight: FontWeight.w400, fontSize: 20)),
+                                      .googleRubikFontsForButtonText(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 20)),
                             ],
                           ),
                         ),
@@ -255,31 +294,58 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 60,
                                 width: size.width * 0.8,
                                 child: ListView.builder(
-                                    itemCount: context.read<HomeScreenProvider>().categoryList.length,
+                                    itemCount: context
+                                        .read<HomeScreenProvider>()
+                                        .categoryList
+                                        .length,
                                     controller: scrollController,
                                     scrollDirection: Axis.horizontal,
-                                    itemBuilder: (BuildContext context, int index) {
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
                                       return GestureDetector(
                                         onTap: () {
-                                          context.read<HomeScreenProvider>().changeSelectedIndex(index: index);
+                                          context
+                                              .read<HomeScreenProvider>()
+                                              .changeSelectedIndex(
+                                                  index: index);
                                         },
                                         child: Padding(
-                                          padding: const EdgeInsets.only(right: 19.0),
+                                          padding: const EdgeInsets.only(
+                                              right: 19.0),
                                           child: Column(
                                             children: [
                                               Consumer<HomeScreenProvider>(
-                                                builder: (context, provider, child) {
+                                                builder:
+                                                    (context, provider, child) {
                                                   return Container(
                                                       decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(2),
-                                                          border: Border.all(width: 1, color: const Color(0xFF362B51)),
-                                                          color: (context.read<HomeScreenProvider>().selectedIndex == index)
-                                                              ? const Color(0xFFB74BFF)
-                                                              : const Color(0xFF221D31)),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(2),
+                                                          border: Border.all(
+                                                              width: 1,
+                                                              color: const Color(
+                                                                  0xFF362B51)),
+                                                          color: (context
+                                                                      .read<
+                                                                          HomeScreenProvider>()
+                                                                      .selectedIndex ==
+                                                                  index)
+                                                              ? const Color(
+                                                                  0xFFB74BFF)
+                                                              : const Color(
+                                                                  0xFF221D31)),
                                                       child: Padding(
-                                                        padding: const EdgeInsets.all(4.0),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(4.0),
                                                         child: Icon(
-                                                          context.read<HomeScreenProvider>().categoryList[index].icon,
+                                                          context
+                                                              .read<
+                                                                  HomeScreenProvider>()
+                                                              .categoryList[
+                                                                  index]
+                                                              .icon,
                                                           size: 30,
                                                           color: Colors.white,
                                                         ),
@@ -287,9 +353,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 },
                                               ),
                                               Text(
-                                                context.read<HomeScreenProvider>().categoryList[index].nameStr ?? "",
+                                                context
+                                                        .read<
+                                                            HomeScreenProvider>()
+                                                        .categoryList[index]
+                                                        .nameStr ??
+                                                    "",
                                                 style: TextStyles(context)
-                                                    .googleRubikFontsForButtonText(fontSize: 9, fontWeight: FontWeight.w600),
+                                                    .googleRubikFontsForButtonText(
+                                                        fontSize: 9,
+                                                        fontWeight:
+                                                            FontWeight.w600),
                                               )
                                             ],
                                           ),
@@ -297,10 +371,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                       );
                                     }),
                               ),
-                              (context.read<HomeScreenProvider>().categoryList.length > 4)
+                              (context
+                                          .read<HomeScreenProvider>()
+                                          .categoryList
+                                          .length >
+                                      4)
                                   ? GestureDetector(
                                       onTap: () {
-                                        double currentOffset = scrollController.offset;
+                                        double currentOffset =
+                                            scrollController.offset;
                                         double newOffset = currentOffset + 30.0;
 
                                         if (maxScrollExtent == 0) {
@@ -312,12 +391,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         if (newOffset <= maxScrollExtent) {
                                           scrollController.animateTo(
                                             newOffset,
-                                            duration: const Duration(milliseconds: 500),
+                                            duration: const Duration(
+                                                milliseconds: 500),
                                             curve: Curves.easeInOut,
                                           );
                                         } else {
                                           // If reached the end, stop scrolling further
-                                          scrollController.jumpTo(maxScrollExtent);
+                                          scrollController
+                                              .jumpTo(maxScrollExtent);
                                         }
                                       },
                                       child: Container(
@@ -345,7 +426,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Container(
                             height: 33,
-                            decoration: BoxDecoration(color: Colors.transparent),
+                            decoration:
+                                BoxDecoration(color: Colors.transparent),
                             child: TabBar(
                                 physics: ClampingScrollPhysics(),
                                 unselectedLabelColor: Color(0xffB74BFF),
@@ -354,15 +436,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 indicator: BoxDecoration(
                                     borderRadius: BorderRadius.circular(30),
                                     color: Color(0xffB74BFF),
-                                    border: Border(bottom: BorderSide(color: Colors.transparent))),
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            color: Colors.transparent))),
                                 tabs: [
                                   Tab(
                                     child: Container(
                                       height: 33,
                                       width: 100,
                                       decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(30),
-                                          border: Border.all(color: Color(0xffB74BFF), width: 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          border: Border.all(
+                                              color: Color(0xffB74BFF),
+                                              width: 1)),
                                       child: Align(
                                         alignment: Alignment.center,
                                         child: Text(
@@ -377,11 +464,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                       height: 33,
                                       width: 100,
                                       decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(30),
-                                          border: Border.all(color: Color(0xffB74BFF), width: 1)),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          border: Border.all(
+                                              color: Color(0xffB74BFF),
+                                              width: 1)),
                                       child: Align(
                                         alignment: Alignment.center,
-                                        child: Text("Upcomeing", style: TextStyle(color: Colors.white)),
+                                        child: Text("Upcomeing",
+                                            style:
+                                                TextStyle(color: Colors.white)),
                                       ),
                                     ),
                                   ),
@@ -400,11 +492,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                       padding: const EdgeInsets.only(top: 25),
                                       child: Container(
                                         height: 90,
-                                        decoration:
-                                            BoxDecoration(borderRadius: BorderRadius.circular(7), color: Color(0xFF2A233D)),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(7),
+                                            color: Color(0xFF2A233D)),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Column(
                                               children: [
@@ -414,7 +510,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   decoration: BoxDecoration(
                                                       image: DecorationImage(
                                                           image: AssetImage(
-                                                            festivalData[index].imagePath,
+                                                            festivalData[index]
+                                                                .imagePath,
                                                           ),
                                                           fit: BoxFit.cover)),
                                                 ),
@@ -429,7 +526,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   Text(
                                                     "Adibasi Mela",
                                                     style: TextStyle(
-                                                        color: ColorsGroup.whiteColor, fontSize: 15, fontWeight: FontWeight.bold),
+                                                        color: ColorsGroup
+                                                            .whiteColor,
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold),
                                                   ),
                                                   SizedBox(
                                                     height: 5,
@@ -438,7 +539,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     children: [
                                                       Icon(
                                                         Icons.location_on,
-                                                        color: Color(0xFFB74BFF),
+                                                        color:
+                                                            Color(0xFFB74BFF),
                                                         size: 20,
                                                       ),
                                                       SizedBox(
@@ -446,10 +548,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       ),
                                                       Expanded(
                                                         child: Text(
-                                                          festivalData[index].festivalLocation,
+                                                          festivalData[index]
+                                                              .festivalLocation,
                                                           style: TextStyle(
-                                                              fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
-                                                          overflow: TextOverflow.ellipsis,
+                                                              fontSize: 10,
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                         ),
                                                       )
                                                     ],
@@ -458,7 +567,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     children: [
                                                       Icon(
                                                         Icons.date_range,
-                                                        color: Color(0xFFB74BFF),
+                                                        color:
+                                                            Color(0xFFB74BFF),
                                                         size: 20,
                                                       ),
                                                       SizedBox(
@@ -466,10 +576,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       ),
                                                       Expanded(
                                                         child: Text(
-                                                          festivalData[index].festivalLocation,
+                                                          festivalData[index]
+                                                              .festivalLocation,
                                                           style: TextStyle(
-                                                              fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
-                                                          overflow: TextOverflow.ellipsis,
+                                                              fontSize: 10,
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                         ),
                                                       )
                                                     ],
@@ -478,7 +595,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                             ),
                                             Column(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 SizedBox(
                                                   height: 8,
@@ -489,14 +608,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         height: 20,
                                                         width: 60,
                                                         decoration: BoxDecoration(
-                                                            color: Colors.grey.shade800, borderRadius: BorderRadius.circular(2)),
+                                                            color: Colors
+                                                                .grey.shade800,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        2)),
                                                         child: Center(
                                                             child: Text(
-                                                          festivalData[index].festival,
+                                                          festivalData[index]
+                                                              .festival,
                                                           style: TextStyle(
-                                                              color: ColorsGroup.whiteColor,
+                                                              color: ColorsGroup
+                                                                  .whiteColor,
                                                               fontSize: 14,
-                                                              fontWeight: FontWeight.bold),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
                                                         ))),
                                                     SizedBox(
                                                       width: 8,
@@ -568,7 +696,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (permission == LocationPermission.deniedForever) {
       // Permissions are denied forever, handle appropriately.
-      return Future.error('Location permissions are permanently denied, we cannot request permissions.');
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
     }
 
     // When we reach here, permissions are granted and we can

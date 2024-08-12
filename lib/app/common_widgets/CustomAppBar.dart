@@ -13,9 +13,12 @@ import '../app_utils/shared_preferance.dart';
 class CustomAppBar extends StatefulWidget {
   final List<Data> cityLst;
   final Data? dropdownValue;
-  final Function( Data? val)? onChange;
+  final Function(Data? val)? onChange;
   const CustomAppBar({
-    super.key, required this.cityLst, this.dropdownValue, required this.onChange,
+    super.key,
+    required this.cityLst,
+    this.dropdownValue,
+    required this.onChange,
   });
 
   @override
@@ -23,15 +26,15 @@ class CustomAppBar extends StatefulWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> with Helper {
-
   final valueListenable = ValueNotifier<String?>(null);
   final TextEditingController textEditingController = TextEditingController();
-
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(1), color: const Color(0xFF2A233D)),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(1),
+          color: const Color(0xFF2A233D)),
       height: 55,
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 12),
@@ -50,10 +53,13 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
                   width: 13,
                 ),
                 Container(
-                  decoration: BoxDecoration(color: const Color(0xFF1F1734), borderRadius: BorderRadius.circular(8.5)),
+                  decoration: BoxDecoration(
+                      color: const Color(0xFF1F1734),
+                      borderRadius: BorderRadius.circular(8.5)),
                   height: 30,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 4.0, bottom: 4, right: 2, left: 4),
+                    padding: const EdgeInsets.only(
+                        top: 4.0, bottom: 4, right: 2, left: 4),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -76,8 +82,10 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
                                 offset: const Offset(-20, 0),
                                 scrollbarTheme: ScrollbarThemeData(
                                     radius: const Radius.circular(40),
-                                    thickness: WidgetStateProperty.all<double>(8),
-                                    thumbVisibility: WidgetStateProperty.all<bool>(true)),
+                                    thickness:
+                                        WidgetStateProperty.all<double>(8),
+                                    thumbVisibility:
+                                        WidgetStateProperty.all<bool>(true)),
                                 scrollPadding: EdgeInsets.all(3)),
                             menuItemStyleData: const MenuItemStyleData(
                               height: 40,
@@ -113,9 +121,11 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
                                       vertical: 8,
                                     ),
                                     hintText: 'Search ...',
-                                    hintStyle: const TextStyle(fontSize: 12, color: Colors.white),
+                                    hintStyle: const TextStyle(
+                                        fontSize: 12, color: Colors.white),
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(5)),
                                     ),
                                   ),
                                 ),
@@ -124,7 +134,8 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
                                 return item.value!.cityName
                                     .toString()
                                     .toLowerCase()
-                                    .contains(searchValue.toString().toLowerCase());
+                                    .contains(
+                                        searchValue.toString().toLowerCase());
                               },
                             ),
                             //This to clear the search value when you close the menu
@@ -134,7 +145,8 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
                               }
                             },
 
-                            items: widget.cityLst.map<DropdownMenuItem<Data>>((Data value) {
+                            items: widget.cityLst
+                                .map<DropdownMenuItem<Data>>((Data value) {
                               return DropdownMenuItem<Data>(
                                 value: value,
                                 child: Text(value.cityName ?? ""),
@@ -201,7 +213,8 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
     }
   }
 
-  Widget _buildIconButton({required IconData icon, int? index, void Function()? onPressed}) {
+  Widget _buildIconButton(
+      {required IconData icon, int? index, void Function()? onPressed}) {
     return Container(
       height: 50,
       width: 50,

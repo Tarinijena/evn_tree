@@ -52,6 +52,8 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
               if (map is Map && map['data'] != null && map['data']['token'] != null) {
                 await sharedPref.save("isLogIn", "true");
                 await sharedPref.save("token", map['data']['token']);
+                await sharedPref.save("fullName", map['data']['fullName']);
+                await sharedPref.save("logInTime", (DateTime.now().toString()));
                 if(map['data']['roles']!=null&&map['data']['roles'].length>0)
                 {
                     await sharedPref.save('roles', map['data']['roles'][0]["roleName"]);
