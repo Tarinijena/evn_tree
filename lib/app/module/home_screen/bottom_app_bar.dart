@@ -29,20 +29,19 @@ class BottomAppBarPage extends StatefulWidget {
         ),
       ],
       child: BottomAppBarPage(
-         
-        screens: [HomeScreen.builder(context), EventScreen(), ProfilePage()],
+        screens: [HomeScreen.builder(context), EventScreen.builder(context), ProfilePage()],
       ),
     );
   }
 }
 
-class _BottomAppBarPageState extends State<BottomAppBarPage>  {
+class _BottomAppBarPageState extends State<BottomAppBarPage> {
   SharedPref pref = SharedPref();
   Future<void>? _userRoleFuture;
 
-   @override
+  @override
   void initState() {
-    _userRoleFuture=getUserRole();
+    _userRoleFuture = getUserRole();
     super.initState();
   }
 
@@ -57,9 +56,7 @@ class _BottomAppBarPageState extends State<BottomAppBarPage>  {
     print(">>>>>>>>>>>>>${Key}");
   }
 
- 
-
- @override
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<void>(
       future: _userRoleFuture,
@@ -100,7 +97,6 @@ class _BottomAppBarPageState extends State<BottomAppBarPage>  {
                           }
                         },
                       ),
-
                     ],
                   ),
                   _buildIconButton(
@@ -121,7 +117,8 @@ class _BottomAppBarPageState extends State<BottomAppBarPage>  {
     );
   }
 
-  Widget _buildIconButton({required IconData icon, int? index, void Function()? onPressed}) {
+  Widget _buildIconButton(
+      {required IconData icon, int? index, void Function()? onPressed}) {
     return Container(
       height: 50,
       width: 50,
@@ -133,7 +130,9 @@ class _BottomAppBarPageState extends State<BottomAppBarPage>  {
         onPressed: onPressed ??
             () {
               if (index != null) {
-                context.read<BottomAppBarProvider>().changePageOnClick(index: index);
+                context
+                    .read<BottomAppBarProvider>()
+                    .changePageOnClick(index: index);
               }
             },
         icon: Icon(
@@ -144,6 +143,4 @@ class _BottomAppBarPageState extends State<BottomAppBarPage>  {
       ),
     );
   }
-
-
 }

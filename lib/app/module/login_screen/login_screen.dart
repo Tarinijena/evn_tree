@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:national_wild_animal/app/api_service/api_end_point.dart';
+import 'package:national_wild_animal/app/api_service/http_methods.dart';
+import 'package:national_wild_animal/app/module/home_screen/HomeScreen.dart';
 
 import '../../app_utils/utils.dart';
 import '../../common_widgets/background_widget.dart';
 import '../../common_widgets/common_text_field_view.dart';
 import '../../common_widgets/show_snack_bar.dart';
-import 'login_otp_verification.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,7 +17,47 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  
   TextEditingController userName = TextEditingController();
+  TextEditingController password = TextEditingController();
+
+
+   loginUser(){
+       try {
+      // Prepare the JSON data from the input fields
+    
+
+      HttpMethodsDio().postMethod(
+          api: ApiEndPoint.loginVerify(userName.text, password.text),
+          
+          fun: (map, code) async {
+           Utils.showProgressIndicator();
+                      await Future.delayed(Duration(seconds: 2));
+                      Utils.disMissProgressIndicator();
+            print(code);
+            if (code == 200) {
+              print("User Login Successfully...........");
+
+              
+              Utils.disMissProgressIndicator();
+              
+              Navigator.pushNamed(context, "/homeScreen");
+              debugPrint(">>>>>>>>>>>>>footerOnTap Call");
+              
+            } else {
+              print("Unable to store data in database........");
+              Utils.disMissProgressIndicator();
+              ShowSnackBar.showError(context, "Something went wrong");
+            }
+          });
+    } catch (e) {
+      Utils.disMissProgressIndicator();
+      ShowSnackBar.showError(context, "Something went wrong");
+    }
+   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,18 +75,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   size: size,
                   btnOnTap: () async {
                     if (userName.text == "") {
+
                       ShowSnackBar.showError(context, "Please enter email / phone No");
+                    } else if (password.text == "") {
+                      ShowSnackBar.showError(context, "Please enter Password");
                     } else {
-                      Utils.showProgressIndicator();
-                      await Future.delayed(Duration(seconds: 2));
-                      Utils.disMissProgressIndicator();
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Hero(tag: 'otp', child: LoginOtpVerification.builder(context, userName.text));
-                        },
-                      );
+                      loginUser();
+                      
                     }
+                    
+                    
+                    
+                    
+
+                   
                   },
                   buttonText: 'Log In',
                   footerOnTap: () {
@@ -52,6 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   footerTextOne: "You don't have an account ? ",
                   footerTextTwo: 'sign-up',
                   widgetLst: [
+
                     CommonTextFieldView(
                       controller: userName,
                       // errorText: _errorFName,
@@ -66,6 +112,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       //height: 50,
                       suffixIconColor: null,
                     ),
+                    CommonTextFieldView(
+                      controller: password,
+                      // errorText: _errorFName,
+                      padding: const EdgeInsets.only(left: 2, right: 2),
+                      titleText: "4-digit Password",
+                      hintText: "4-digit Password",
+                      keyboardType: TextInputType.name,
+                      onChanged: (String txt) {},
+                      isAllowTopTitleView: false,
+                      suffixIcon: Icons.key,
+                      radius: 1,
+                      //height: 50,
+                      suffixIconColor: null,
+                    )
                   ],
                   headerText: 'Welcome Back ! ',
                 )),

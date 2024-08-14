@@ -30,7 +30,7 @@ class BackgroundWidget extends StatelessWidget {
         Expanded(
             flex:1,child: Container()),
         SizedBox(
-          height: size.height*0.65,
+          height: size.height*0.8,
           child: Stack(
             children: [
               Align(
@@ -38,7 +38,7 @@ class BackgroundWidget extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16.0,right: 16.0),
                   child: SizedBox(
-                    height: size.height*0.45,
+                    height: size.height*0.60,
                     child: Container(
                       // height: size.height*0.5,
                       // width: size.width*0.95,

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:national_wild_animal/ProfilePageDate/ProfilePageData.dart';
+import 'package:national_wild_animal/app/module/home_screen/LocationModel/location_model.dart';
 
 import '../app_theme/colors.dart';
 import '../app_theme/text_styles.dart';
@@ -112,7 +113,9 @@ class _HomeScreenState extends State<ProfileScreen> {
             scrollDirection: Axis.vertical,
             child: Column(
               children: [
-                CustomAppBar(),
+                CustomAppBar(cityLst: [],onChange: (val) {
+                  
+                },),
                 Padding(
                   padding: const EdgeInsets.only(left: 24.0,top: 12,right: 18),
                   child: Column(
@@ -384,7 +387,7 @@ class _HomeScreenState extends State<ProfileScreen> {
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({
-    super.key,
+    super.key, required List<Data> cityLst, Data? dropdownValue, required Null Function(Data? val) onChange,
   });
 
   @override

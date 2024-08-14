@@ -1,24 +1,42 @@
-import 'dart:io';
+import 'dart:async';
+import 'dart:convert';
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:national_wild_animal/app/api_service/api_end_point.dart';
+import 'package:national_wild_animal/app/api_service/http_methods.dart';
+import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 
 import 'package:national_wild_animal/app/common_widgets/common_button.dart';
+import 'package:national_wild_animal/app/module/home_screen/LocationModel/location_model.dart';
+
+import 'package:national_wild_animal/app/module/login_screen/provider/event_screen_provider.dart';
 import 'package:national_wild_animal/app/screens/EventListed/EventListed.dart';
 
 import 'package:national_wild_animal/app/common_widgets/custom_text_field.dart';
 import 'package:national_wild_animal/app/screens/profile_screen.dart';
+import 'package:provider/provider.dart';
 
 import '../../app_utils/utils.dart';
 
 class EventScreen extends StatefulWidget {
-  EventScreen({super.key});
+const  EventScreen({super.key});
 
   @override
   State<EventScreen> createState() => _EventScreenState();
+   
+   static Widget builder(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => EventScreenProvider(),
+      child: EventScreen(),
+    );
+  }
+
+
 }
 
 class _EventScreenState extends State<EventScreen> {
@@ -36,6 +54,8 @@ class _EventScreenState extends State<EventScreen> {
 
   int current = 0;
   String? selectedCountry;
+
+  SharedPref sharedPref = SharedPref();
 
   Future pickImage(ImageSource source) async {
     try {
@@ -91,6 +111,53 @@ class _EventScreenState extends State<EventScreen> {
         });
   }
 
+   Future<bool> getCityLst() async {
+    Completer<bool> completer = Completer<bool>();
+    List<Data> cityDatTemp = [];
+    Data? dropDownValTemp;
+    try {
+      String data = await sharedPref.getKey("token");
+      String token = json.decode(data);
+      HttpMethodsDio().getMethodWithToken(
+          api: ApiEndPoint.citiesUrl,
+          fun: (map, code) {
+            if (code == 200 &&
+                map is Map &&
+                map['data'] != null &&
+                map["data"].length > 0) {
+              GetLocationModel citiesName =
+                  GetLocationModel.fromJson(map as Map<String, dynamic>);
+              cityDatTemp = citiesName.data ?? [];
+              cityDatTemp.insert(
+                  0, Data(cityCode: "0", cityId: "0", cityName: "Select City"));
+              dropDownValTemp = cityDatTemp[0];
+            } else {
+              cityDatTemp = [
+                Data(cityCode: "0", cityId: "0", cityName: "Select City")
+              ];
+              dropDownValTemp = cityDatTemp[0];
+            }
+            context.read<EventScreenProvider>().setCityList(
+                cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
+                completer.complete(true);
+          },
+          token: token);
+    } catch (e) {
+      cityDatTemp = [Data(cityCode: "0", cityId: "0", cityName: "Select City")];
+      dropDownValTemp = cityDatTemp[0];
+      context.read<EventScreenProvider>().setCityList(
+          cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
+      completer.complete(false);
+    }
+    return completer.future;
+  }
+
+  @override
+  void initState() {
+   // getCityLst();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -102,7 +169,26 @@ class _EventScreenState extends State<EventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomAppBar(),
+              /*Consumer<EventScreenProvider>(
+                  builder: (context, provider, child) {
+                    return CustomAppBar(
+                      cityLst: context.read<EventScreenProvider>().cityLst,
+                      dropdownValue:
+                          context.read<EventScreenProvider>().dropdownValue,
+                      onChange: (Data? val) {
+                        context
+                            .read<EventScreenProvider>()
+                            .setDropDownVal(val: val);
+                      },
+                    );
+                  },
+                ),*/
+
+                CustomAppBar(cityLst: List.empty(), onChange: (val) {
+                  
+                },),
+               
+                
               SizedBox(
                 height: 20,
               ),

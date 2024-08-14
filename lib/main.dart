@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:national_wild_animal/app/module/home_screen/EventScreen.dart';
 import 'app/app_routes/app_routes.dart';
 import 'app/app_theme/app_themes.dart';
 import 'app/module/splash_screen/splash_screen.dart';
@@ -60,7 +61,7 @@ class MyApp extends StatelessWidget {
         );
       }),
       initialRoute: "/splashScreen",
-      home: SplashScreen(),
+      home: EventScreen(),
     );
   }
 }

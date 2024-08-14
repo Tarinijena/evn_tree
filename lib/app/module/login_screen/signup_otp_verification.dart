@@ -13,25 +13,25 @@ import '../../app_utils/utils.dart';
 import '../../common_widgets/opt_text_field.dart';
 import '../../common_widgets/show_snack_bar.dart';
 
-class LoginOtpVerification extends StatefulWidget {
-  final String? userId;
+class SignupOtpVerification extends StatefulWidget {
+  final String? userEmail;
 
-  LoginOtpVerification({super.key, this.userId});
+  SignupOtpVerification({super.key, this.userEmail});
 
   @override
-  State<LoginOtpVerification> createState() => _LoginOtpVerificationState();
+  State<SignupOtpVerification> createState() => _LoginOtpVerificationState();
 
-  static Widget builder(BuildContext context, String userId) {
+  static Widget builder(BuildContext context, String emailId) {
     return ChangeNotifierProvider(
       create: (context) => OtpDialogProvider(),
-      child: LoginOtpVerification(
-        userId: userId,
+      child: SignupOtpVerification(
+        userEmail: emailId,
       ),
     );
   }
 }
 
-class _LoginOtpVerificationState extends State<LoginOtpVerification> {
+class _LoginOtpVerificationState extends State<SignupOtpVerification> {
   TextEditingController num1 = TextEditingController();
 
   TextEditingController num2 = TextEditingController();
@@ -39,37 +39,37 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
   TextEditingController num3 = TextEditingController();
 
   TextEditingController num4 = TextEditingController();
+
+  TextEditingController num5 = TextEditingController();
+
+  TextEditingController num6 = TextEditingController();
   SharedPref sharedPref = SharedPref();
+
   callOtpVerify() {
+    String otp = num1.text +
+        num2.text +
+        num3.text +
+        num4.text +
+        num5.text +
+        num6.text;
     try {
-      HttpMethodsDio().postMethod(
-          api: ApiEndPoint.signUpUrl(widget.userId ?? ""), 
+      HttpMethodsDio().getMethod(
+          api: ApiEndPoint.signUpVerify(otp, widget.userEmail ?? ""),
           fun: (map, code) async {
             Utils.showProgressIndicator();
             debugPrint(">>>>>map$map");
             if (code == 200) {
-              debugPrint(">>>>>map${map['data']['token']}");
-              if (map is Map && map['data'] != null && map['data']['token'] != null) {
-                await sharedPref.save("isLogIn", "true");
-                await sharedPref.save("token", map['data']['token']);
-                await sharedPref.save("fullName", map['data']['fullName']);
-                await sharedPref.save("logInTime", (DateTime.now().toString()));
-                if(map['data']['roles']!=null&&map['data']['roles'].length>0)
-                {
-                    await sharedPref.save('roles', map['data']['roles'][0]["roleName"]);
-                }
-                Utils.disMissProgressIndicator();
-                Navigator.pushNamed(context, "/bottomAppBarProvider");
-              } else {
-                Utils.disMissProgressIndicator();
-                ShowSnackBar.showError(context, "Something went wrong");
-              }
+              print("User Signup verified successfully..........");
+
+              Utils.disMissProgressIndicator();
+              Navigator.pushNamed(context, "/logInScreen");
+              debugPrint(">>>>>>>>>>>>>footerOnTap Call");
             } else {
               Utils.disMissProgressIndicator();
               ShowSnackBar.showError(context, "Something went wrong");
             }
           });
-    }catch(e){
+    } catch (e) {
       Utils.disMissProgressIndicator();
       ShowSnackBar.showError(context, "Something went wrong");
     }
@@ -89,7 +89,8 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
                   backgroundColor: const Color(0xFF231D32),
                   insetPadding: EdgeInsets.all(15),
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 40, left: 20, right: 20, bottom: 40),
+                    padding: const EdgeInsets.only(
+                        top: 40, left: 20, right: 20, bottom: 40),
                     child: Column(
                       children: [
                         Row(
@@ -106,7 +107,10 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
                           children: [
                             Text(
                               "Enter OTP",
-                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 30),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 30),
                             ),
                             SizedBox(
                               height: 40,
@@ -135,6 +139,18 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
                                 OptTextField(
                                   controller: num4,
                                 ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                OptTextField(
+                                  controller: num5,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                OptTextField(
+                                  controller: num6,
+                                ),
                               ],
                             ),
                             SizedBox(
@@ -143,8 +159,11 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
                             Consumer<OtpDialogProvider>(
                               builder: (context, provider, child) {
                                 return Text(
-                                  context.read<OtpDialogProvider>().invalidOtp ? 'Invalid OTP' : '',
-                                  style: TextStyle(fontSize: 15, color: Colors.red),
+                                  context.read<OtpDialogProvider>().invalidOtp
+                                      ? 'Invalid OTP'
+                                      : '',
+                                  style: TextStyle(
+                                      fontSize: 15, color: Colors.red),
                                 );
                               },
                             ),
@@ -154,7 +173,10 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(25),
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF760ABE), Color(0xFFB74BFF)], // Define your gradient colors here
+                                  colors: [
+                                    Color(0xFF760ABE),
+                                    Color(0xFFB74BFF)
+                                  ], // Define your gradient colors here
                                 ),
                                 //borderRadius: BorderRadius.circular(radius),
                               ),
@@ -162,22 +184,29 @@ class _LoginOtpVerificationState extends State<LoginOtpVerification> {
                                 onPressed: () async {
                                   // await Future.delayed(const Duration(seconds: 2));
 
-                                  final otp = num1.text + num2.text + num3.text + num4.text;
+                                  final otp = num1.text +
+                                      num2.text +
+                                      num3.text +
+                                      num4.text+
+                                       num5.text+
+                                        num6.text;
 
-                                  if (otp != '1234') {
-                                    context.read<OtpDialogProvider>().changeStatus(status: true);
-                                    // ShowSnackBar.showError(context, "Invalid otp.....");
-                                    // Navigator.pop(context);
-                                  } else if (otp == '1234') {
-                                    context.read<OtpDialogProvider>().changeStatus(status: false);
-                                    callOtpVerify();
+                                  if (otp =="" ) {
+                                    context
+                                        .read<OtpDialogProvider>()
+                                        .changeStatus(status: true);
+                                   
                                   } else {
-                                    context.read<OtpDialogProvider>().changeStatus(status: true);
+                                    context
+                                        .read<OtpDialogProvider>()
+                                        .changeStatus(status: false);
+                                         callOtpVerify();
                                   }
                                 },
                                 child: const Text(
                                   "Verify",
-                                  style: TextStyle(fontSize: 20, color: Colors.white),
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.white),
                                 ),
                                 style: ElevatedButton.styleFrom(
                                     elevation: 3,

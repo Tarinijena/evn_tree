@@ -6,12 +6,12 @@ import 'package:national_wild_animal/app/api_service/http_methods.dart';
 import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 import 'package:national_wild_animal/app/app_utils/utils.dart';
 import 'package:national_wild_animal/app/common_widgets/show_snack_bar.dart';
+import 'package:national_wild_animal/app/module/login_screen/signup_otp_verification.dart';
 
 import '../../common_widgets/background_widget.dart';
 import '../../common_widgets/common_text_field_view.dart';
 
 class SignUpScreen extends StatefulWidget {
-  
   const SignUpScreen({super.key});
 
   @override
@@ -19,91 +19,106 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  TextEditingController nameController = TextEditingController();
 
-  TextEditingController nameController=TextEditingController();
-  
-  TextEditingController emailController=TextEditingController();
+  TextEditingController emailController = TextEditingController();
 
-  TextEditingController passwordController=TextEditingController();
+  TextEditingController birthController = TextEditingController();
 
-  
-  
-  
-  
-   
-   SharedPref sharedPref = SharedPref();
+  TextEditingController passwordController = TextEditingController();
+
+  SharedPref sharedPref = SharedPref();
   signupUser() {
     try {
-
-          // Prepare the JSON data from the input fields
-    Map<String, dynamic> jsonData = {
-       "fullName": nameController.text,
-      "emailOrMobile": emailController.text,
-       "password": passwordController.text,
-    };
+      // Prepare the JSON data from the input fields
+      Map<String, dynamic> jsonData = {
+        "fullName": nameController.text,
+        "emailOrMobile": emailController.text,
+        "dateOfBirth": birthController.text,
+        "password": passwordController.text,
+      };
 
       HttpMethodsDio().postMethod(
-          api: ApiEndPoint.signUrl,
+          api: ApiEndPoint.signupUser,
           json: jsonData,
           fun: (map, code) async {
             Utils.showProgressIndicator();
             print(code);
             if (code == 200) {
               print("Data store in database successfully..........");
-              debugPrint(">>>>>map${map['data']['token']}");
-              if (map is Map && map['data'] != null && map['data']['token'] != null) {
-                /*await sharedPref.save("isLogIn", "true");
-                await sharedPref.save("token", map['data']['token']);
-                if(map['data']['roles']!=null&&map['data']['roles'].length>0)
-                {
-                    await sharedPref.save('roles', map['data']['roles'][0]["roleName"]);
-                }
-                Utils.disMissProgressIndicator();
-                Navigator.pushNamed(context, "/bottomAppBarProvider");*/
-              } else {
-                Utils.disMissProgressIndicator();
-                ShowSnackBar.showError(context, "Something went wrong");
-              }
+
+              Utils.disMissProgressIndicator();
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return Hero(
+                      tag: 'otp',
+                      child: SignupOtpVerification.builder(
+                          context, emailController.text));
+                },
+              );
             } else {
               print("Unable to store data in database........");
               Utils.disMissProgressIndicator();
               ShowSnackBar.showError(context, "Something went wrong");
             }
           });
-    }catch(e){
+    } catch (e) {
       Utils.disMissProgressIndicator();
       ShowSnackBar.showError(context, "Something went wrong");
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    double usableHeight = size.height - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom;
+    double usableHeight = size.height -
+        MediaQuery.of(context).padding.top -
+        MediaQuery.of(context).padding.bottom;
     return Scaffold(
       backgroundColor: const Color(0xFF231D32),
       body: SafeArea(
         child: SingleChildScrollView(
           child: SizedBox(
               height: usableHeight,
-              child: BackgroundWidget(size: size,
-                btnOnTap: () {
-                  signupUser();
-                  Navigator.pushNamed(context, "/logInScreen");
-                  debugPrint(">>>>>>>>>>>>>btnOnTap Call");
-                }, buttonText: 'Sign UP', footerOnTap: () {
+              child: BackgroundWidget(
+                size: size,
+                btnOnTap: () async {
+                  if (nameController.text == '') {
+                    ShowSnackBar.showError(context, "Please enter userName");
+                  } else if (emailController.text == '') {
+                    ShowSnackBar.showError(
+                        context, "Please enter email / phone number");
+                  } else if (birthController.text == '') {
+                    ShowSnackBar.showError(
+                        context, "Please enter date of birth");
+                  } else if (passwordController.text == '') {
+                    ShowSnackBar.showError(context, "Please enter password");
+                  } else {
+                    signupUser();
+                  }
+
+                  //signupUser();
+                  // Navigator.pushNamed(context, "/logInScreen");
+                  //debugPrint(">>>>>>>>>>>>>btnOnTap Call");
+                },
+                buttonText: 'Sign UP',
+                footerOnTap: () {
                   Navigator.pushNamed(context, "/logInScreen");
                   debugPrint(">>>>>>>>>>>>>footerOnTap Call");
                 },
-                footerTextOne: "Already have an account ? ", footerTextTwo: 'sign-in', widgetLst: [
-                  SizedBox(height: 25,),
+                footerTextOne: "Already have an account ? ",
+                footerTextTwo: 'sign-in',
+                widgetLst: [
+                  SizedBox(
+                    height: 25,
+                  ),
                   CommonTextFieldView(
                     controller: nameController,
                     // errorText: _errorFName,
                     padding: const EdgeInsets.only(left: 2, right: 2),
                     titleText: "Full Name",
-                    hintText:"Full Name",
+                    hintText: "Full Name",
                     keyboardType: TextInputType.name,
                     onChanged: (String txt) {},
                     isAllowTopTitleView: false,
@@ -116,11 +131,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 5,
                   ),
                   CommonTextFieldView(
-                    controller:emailController,
+                    controller: emailController,
                     // errorText: _errorFName,
                     padding: const EdgeInsets.only(left: 2, right: 2),
                     titleText: "email",
-                    hintText:"email",
+                    hintText: "email",
                     keyboardType: TextInputType.name,
                     onChanged: (String txt) {},
                     isAllowTopTitleView: false,
@@ -133,11 +148,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 5,
                   ),
                   CommonTextFieldView(
+                    controller: birthController,
+                    // errorText: _errorFName,
+                    padding: const EdgeInsets.only(left: 2, right: 2),
+                    titleText: "DateOfBirth",
+                    hintText: "DateOfBirth",
+                    keyboardType: TextInputType.name,
+                    onChanged: (String txt) {},
+                    isAllowTopTitleView: false,
+                    suffixIcon: Icons.date_range,
+                    suffixIconColor: null,
+                    radius: 1,
+                    height: 50,
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  CommonTextFieldView(
                     controller: passwordController,
                     // errorText: _errorFName,
                     padding: const EdgeInsets.only(left: 2, right: 2),
                     titleText: "password",
-                    hintText:"password",
+                    hintText: "password",
                     keyboardType: TextInputType.name,
                     onChanged: (String txt) {},
                     isAllowTopTitleView: false,
@@ -146,10 +178,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     radius: 1,
                     height: 50,
                   ),
-
                 ],
-                headerText: 'Sign Up',)
-          ),
+                headerText: 'Sign Up',
+              )),
         ),
       ),
     );

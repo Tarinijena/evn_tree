@@ -10,5 +10,10 @@ class ApiEndPoint {
   static String citiesUrl= "$baseUrl/event/master/cities";
   static String categoryLst = "$baseUrl/event/master/eventCategories";
 
-  static String signUrl="$baseUrl/umt/public/signup-user";
+  static String signupUser="$baseUrl/umt/public/signup-user";
+
+  static String signUpVerify(String otpNumber,String emailId)=> "$baseUrl/umt/public/signup-verify?otp=$otpNumber&userName=$emailId";
+
+  static String loginVerify(String userName,String userPassword)=>"$baseUrl/umt/public/login?userName=$userName&password=$userPassword";
+
 }
