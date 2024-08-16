@@ -45,6 +45,13 @@ class _LoginOtpVerificationState extends State<SignupOtpVerification> {
   TextEditingController num6 = TextEditingController();
   SharedPref sharedPref = SharedPref();
 
+    final FocusNode firstFocusNode = FocusNode();
+  final FocusNode secondFocusNode = FocusNode();
+  final FocusNode thirdFocusNode = FocusNode();
+  final FocusNode fourthFocusNode = FocusNode();
+  final FocusNode fifthFocusNode = FocusNode();
+  final FocusNode sixthFocusNode = FocusNode();
+
   callOtpVerify() {
     String otp = num1.text +
         num2.text +
@@ -60,7 +67,7 @@ class _LoginOtpVerificationState extends State<SignupOtpVerification> {
             debugPrint(">>>>>map$map");
             if (code == 200) {
               print("User Signup verified successfully..........");
-
+              
               Utils.disMissProgressIndicator();
               Navigator.pushNamed(context, "/logInScreen");
               debugPrint(">>>>>>>>>>>>>footerOnTap Call");
@@ -92,6 +99,7 @@ class _LoginOtpVerificationState extends State<SignupOtpVerification> {
                     padding: const EdgeInsets.only(
                         top: 40, left: 20, right: 20, bottom: 40),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -117,39 +125,70 @@ class _LoginOtpVerificationState extends State<SignupOtpVerification> {
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              
                               children: [
-                                OptTextField(
-                                  controller: num1,
+                                Expanded(
+                                  child: OptTextField(
+                                    controller: num1,
+                                    keyboardType: TextInputType.text,
+                                    focusNode: firstFocusNode,
+                                  ),
                                 ),
                                 SizedBox(
-                                  width: 5,
+                                  width: 3,
                                 ),
-                                OptTextField(
-                                  controller: num2,
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                OptTextField(
-                                  controller: num3,
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                OptTextField(
-                                  controller: num4,
+                                Expanded(
+                                  
+                                  child: OptTextField(
+                                    controller: num2,
+                                    keyboardType: TextInputType.text,
+                                    focusNode: secondFocusNode,
+                                    previousFocusNode: firstFocusNode,
+                                  ),
                                 ),
                                 SizedBox(
-                                  width: 5,
+                                  width: 3,
                                 ),
-                                OptTextField(
-                                  controller: num5,
+                                Expanded(
+                                  child: OptTextField(
+                                    controller: num3,
+                                    keyboardType: TextInputType.text,
+                                    focusNode: thirdFocusNode,
+                                    previousFocusNode: secondFocusNode,
+                                  ),
                                 ),
                                 SizedBox(
-                                  width: 5,
+                                  width: 3,
                                 ),
-                                OptTextField(
-                                  controller: num6,
+                                Expanded(
+                                  child: OptTextField(
+                                    controller: num4,
+                                   keyboardType: TextInputType.text,
+                                   focusNode: fourthFocusNode,
+                                   previousFocusNode: thirdFocusNode,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Expanded(
+                                  child: OptTextField(
+                                    controller: num5,
+                                    keyboardType: TextInputType.text,
+                                    focusNode:fifthFocusNode ,
+                                    previousFocusNode: fourthFocusNode,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Expanded(
+                                  child: OptTextField(
+                                    controller: num6,
+                                    keyboardType: TextInputType.text,
+                                    focusNode: sixthFocusNode,
+                                    previousFocusNode: fifthFocusNode,
+                                  ),
                                 ),
                               ],
                             ),

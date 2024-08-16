@@ -84,7 +84,7 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> {
                       ),
                       Consumer<UserRoleProvider>(
                         builder: (context, provider, child) {
-                          if (provider.roles
+                          /*if (provider.roles
                               .toString()
                               .toLowerCase()
                               .contains("super admin")) {
@@ -94,7 +94,11 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> {
                             );
                           } else {
                             return Container();
-                          }
+                          }*/
+                          return _buildIconButton(
+                              icon: Icons.theater_comedy_outlined,
+                              index: 1,
+                            );
                         },
                       ),
                     ],

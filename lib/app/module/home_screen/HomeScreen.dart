@@ -113,13 +113,13 @@ class _HomeScreenState extends State<HomeScreen> {
               GetLocationModel citiesName =
                   GetLocationModel.fromJson(map as Map<String, dynamic>);
               cityDatTemp = citiesName.data ?? [];
-              cityDatTemp.insert(
+              /*cityDatTemp.insert(
                   0, Data(cityCode: "0", cityId: "0", cityName: "Select City"));
-              dropDownValTemp = cityDatTemp[0];
+              dropDownValTemp = cityDatTemp[0];*/
             } else {
-              cityDatTemp = [
+              /*cityDatTemp = [
                 Data(cityCode: "0", cityId: "0", cityName: "Select City")
-              ];
+              ];*/
               dropDownValTemp = cityDatTemp[0];
             }
             context.read<HomeScreenProvider>().setCityList(

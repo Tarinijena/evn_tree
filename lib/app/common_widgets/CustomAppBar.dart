@@ -26,8 +26,15 @@ class CustomAppBar extends StatefulWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> with Helper {
+  late Data dropdownValue;
   final valueListenable = ValueNotifier<String?>(null);
   final TextEditingController textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +64,7 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
                       color: const Color(0xFF1F1734),
                       borderRadius: BorderRadius.circular(8.5)),
                   height: 30,
+                  
                   child: Padding(
                     padding: const EdgeInsets.only(
                         top: 4.0, bottom: 4, right: 2, left: 4),
@@ -99,7 +107,7 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
                               ),
                               iconEnabledColor: ColorsGroup.iconColor,
                             ),
-                            dropdownSearchData: DropdownSearchData(
+                            /*dropdownSearchData: DropdownSearchData(
                               searchController: textEditingController,
                               searchInnerWidgetHeight: 50,
                               searchInnerWidget: Container(
@@ -137,7 +145,7 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
                                     .contains(
                                         searchValue.toString().toLowerCase());
                               },
-                            ),
+                            ),*/
                             //This to clear the search value when you close the menu
                             onMenuStateChange: (isOpen) {
                               if (!isOpen) {
@@ -216,18 +224,20 @@ class _CustomAppBarState extends State<CustomAppBar> with Helper {
   Widget _buildIconButton(
       {required IconData icon, int? index, void Function()? onPressed}) {
     return Container(
-      height: 50,
-      width: 50,
+      height: 35,
+      width: 35,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Color(0xFF231D32),
       ),
-      child: IconButton(
-        onPressed: onPressed ?? () {},
-        icon: Icon(
-          icon,
-          size: 20,
-          color: Colors.white,
+      child: Center(
+        child: IconButton(
+          onPressed: onPressed ?? () {},
+          icon: Icon(
+            icon,
+            size: 15,
+            color: Colors.white,
+          ),
         ),
       ),
     );

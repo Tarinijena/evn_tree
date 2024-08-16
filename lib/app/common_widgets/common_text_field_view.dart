@@ -81,7 +81,7 @@ class CommonTextFieldView extends StatelessWidget {
                     borderSide: const BorderSide(color: Color(0xFF333649),width: 1)
                 ),
                 fillColor: const Color(0xFF171224),
-                contentPadding: const EdgeInsets.only(left: 16,right: 14,top: 2,bottom: 2),
+                contentPadding: const EdgeInsets.only(left: 12,right: 4,top: 2,bottom: 2),
                 filled: true,
                 suffixIcon:  Icon(suffixIcon??Icons.email_outlined,size: 18,color: suffixIconColor??const  Color(0xFFB74BFF) ,)
             ),

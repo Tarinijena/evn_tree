@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:national_wild_animal/app/api_service/api_end_point.dart';
+import 'package:national_wild_animal/app/api_service/country_api_services.dart';
 import 'package:national_wild_animal/app/api_service/http_methods.dart';
 import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 
@@ -24,19 +24,17 @@ import 'package:provider/provider.dart';
 import '../../app_utils/utils.dart';
 
 class EventScreen extends StatefulWidget {
-const  EventScreen({super.key});
+  const EventScreen({super.key});
 
   @override
   State<EventScreen> createState() => _EventScreenState();
-   
-   static Widget builder(BuildContext context) {
+
+  static Widget builder(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => EventScreenProvider(),
       child: EventScreen(),
     );
   }
-
-
 }
 
 class _EventScreenState extends State<EventScreen> {
@@ -47,6 +45,20 @@ class _EventScreenState extends State<EventScreen> {
 
   TextEditingController dateController = TextEditingController();
   TextEditingController dateController2 = TextEditingController();
+
+  //this controller for create event form field..........
+  TextEditingController eventCreate = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController landmarkController = TextEditingController();
+  TextEditingController country1Controller = TextEditingController();
+  TextEditingController country2Controller = TextEditingController();
+  TextEditingController country3Controller = TextEditingController();
+  TextEditingController pincodeController = TextEditingController();
+  TextEditingController startDateController = TextEditingController();
+  TextEditingController endDateController = TextEditingController();
+  TextEditingController country4Controller = TextEditingController();
+  TextEditingController country5Controller = TextEditingController();
+  TextEditingController Controller = TextEditingController();
 
   List item = ["Create Event", "Event Listing"];
 
@@ -111,7 +123,7 @@ class _EventScreenState extends State<EventScreen> {
         });
   }
 
-   Future<bool> getCityLst() async {
+  Future<bool> getCityLst() async {
     Completer<bool> completer = Completer<bool>();
     List<Data> cityDatTemp = [];
     Data? dropDownValTemp;
@@ -139,7 +151,7 @@ class _EventScreenState extends State<EventScreen> {
             }
             context.read<EventScreenProvider>().setCityList(
                 cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
-                completer.complete(true);
+            completer.complete(true);
           },
           token: token);
     } catch (e) {
@@ -152,10 +164,32 @@ class _EventScreenState extends State<EventScreen> {
     return completer.future;
   }
 
+  //this is for country api integration..........................
+  final CountryApiServices apiService = CountryApiServices();
+  String? selectedCountry1;
+  String? selectedCountry2;
+  String? selectedCountry3;
+  String? selectedCountry4;
+  String? selectedCountry5;
+  List<String> countries = [];
+
+  Future<void> fetchCountries() async {
+    try {
+      List<String> fetchedCountries = await apiService.fetchCountries();
+      setState(() {
+        countries = fetchedCountries;
+        
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
   @override
   void initState() {
-   // getCityLst();
+    // getCityLst();
     super.initState();
+    fetchCountries();
   }
 
   @override
@@ -184,11 +218,10 @@ class _EventScreenState extends State<EventScreen> {
                   },
                 ),*/
 
-                CustomAppBar(cityLst: List.empty(), onChange: (val) {
-                  
-                },),
-               
-                
+              CustomAppBar(
+                cityLst: List.empty(),
+                onChange: (val) {},
+              ),
               SizedBox(
                 height: 20,
               ),
@@ -255,6 +288,7 @@ class _EventScreenState extends State<EventScreen> {
                             borderSide: BorderSide(color: Color(0xffB74BFF)),
                           ),
                           inputHint: "Event Name",
+                          controller: eventCreate,
                         ),
                         SizedBox(
                           height: 3,
@@ -264,6 +298,7 @@ class _EventScreenState extends State<EventScreen> {
                             borderSide: BorderSide(color: Color(0xffB74BFF)),
                           ),
                           inputHint: "Address Line 1",
+                          controller: addressController,
                         ),
                         SizedBox(
                           height: 3,
@@ -273,6 +308,7 @@ class _EventScreenState extends State<EventScreen> {
                             borderSide: BorderSide(color: Color(0xffB74BFF)),
                           ),
                           inputHint: "Landmark",
+                          controller: landmarkController,
                         ),
                         SizedBox(
                           height: 3,
@@ -304,23 +340,28 @@ class _EventScreenState extends State<EventScreen> {
                                             style:
                                                 TextStyle(color: Colors.white),
                                           ),
-                                          value: selectedCountry,
-                                          onChanged: (String? newValue) {
-                                            setState(() {
-                                              selectedCountry = newValue;
-                                            });
-                                          },
-                                          items: country
-                                              .map((e) =>
+                                          value: selectedCountry1,
+                                          dropdownColor: Colors.black,
+                                          
+                                         
+                                          items: countries
+                                              .map((String country) =>
                                                   DropdownMenuItem<String>(
-                                                      value: e,
+                                                      value: country,
                                                       child: Text(
-                                                        e,
+                                                        country,
                                                         style: TextStyle(
                                                             color: Colors
-                                                                .grey.shade800),
+                                                                .white),
                                                       )))
-                                              .toList()),
+                                              .toList(),
+                                               onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedCountry1 = newValue;
+                                            });
+                                          },
+                                              ),
+                                              
                                     ),
                                   ],
                                 ),
@@ -353,28 +394,33 @@ class _EventScreenState extends State<EventScreen> {
                                             style:
                                                 TextStyle(color: Colors.white),
                                           ),
-                                          value: selectedCountry,
-                                          onChanged: (String? newValue) {
-                                            setState(() {
-                                              selectedCountry = newValue;
-                                            });
-                                          },
-                                          items: country
-                                              .map((e) =>
+                                          value: selectedCountry2,
+                                          dropdownColor: Colors.black,
+                                          
+                                         
+                                          items: countries
+                                              .map((String country) =>
                                                   DropdownMenuItem<String>(
-                                                      value: e,
+                                                      value: country,
                                                       child: Text(
-                                                        e,
+                                                        country,
                                                         style: TextStyle(
                                                             color: Colors
-                                                                .grey.shade800),
+                                                                .white),
                                                       )))
-                                              .toList()),
+                                              .toList(),
+                                               onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedCountry2 = newValue;
+                                            });
+                                          },
+                                              ),
+                                              
                                     ),
                                   ],
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                         SizedBox(
@@ -401,30 +447,39 @@ class _EventScreenState extends State<EventScreen> {
                                     ),
                                     //Text("Country",style: TextStyle(fontSize: 20,color: Colors.white),),
                                     DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                          hint: Text(
-                                            "Country",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          value: selectedCountry,
-                                          onChanged: (String? newValue) {
-                                            setState(() {
-                                              selectedCountry = newValue;
-                                            });
-                                          },
-                                          items: country
-                                              .map((e) =>
-                                                  DropdownMenuItem<String>(
-                                                      value: e,
-                                                      child: Text(
-                                                        e,
-                                                        style: TextStyle(
-                                                            color: Colors
-                                                                .grey.shade800),
-                                                      )))
-                                              .toList()),
+                                      child: Container(
+                                        width: 200,
+                                        child: DropdownButton<String>(
+                                            hint: Text(
+                                              "Country",
+                                              style:
+                                                  TextStyle(color: Colors.white),
+                                            ),
+                                            value: selectedCountry3,
+                                            dropdownColor: Colors.black,
+                                            
+                                           
+                                            items: countries
+                                                .map((String country) =>
+                                                    DropdownMenuItem<String>(
+                                                        value: country,
+                                                        child: Text(
+                                                          country,
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .white),
+                                                        )))
+                                                .toList(),
+                                                 onChanged: (String? newValue) {
+                                              setState(() {
+                                                selectedCountry3 = newValue;
+                                              });
+                                            },
+                                                ),
+                                      ),
+                                              
                                     ),
+                                    
                                   ],
                                 ),
                               ),
@@ -498,102 +553,110 @@ class _EventScreenState extends State<EventScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Expanded(
-                                child: Container(
-                                  height: 50,
-                                  decoration: ShapeDecoration(
-                                      shape: RoundedRectangleBorder(
-                                          side: BorderSide(
-                                              width: 1,
-                                              color: Color(0xffB74BFF)),
-                                          borderRadius:
-                                              BorderRadius.circular(14))),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      //Text("Country",style: TextStyle(fontSize: 20,color: Colors.white),),
-                                      DropdownButtonHideUnderline(
-                                        child: DropdownButton<String>(
-                                            hint: Text(
-                                              "Country",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            value: selectedCountry,
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                selectedCountry = newValue;
-                                              });
-                                            },
-                                            items: country
-                                                .map((e) =>
-                                                    DropdownMenuItem<String>(
-                                                        value: e,
-                                                        child: Text(
-                                                          e,
-                                                          style: TextStyle(
-                                                              color: Colors.grey
-                                                                  .shade800),
-                                                        )))
-                                                .toList()),
-                                      ),
-                                    ],
-                                  ),
+                              child: Container(
+                                height: 50,
+                                decoration: ShapeDecoration(
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            width: 1, color: Color(0xffB74BFF)),
+                                        borderRadius:
+                                            BorderRadius.circular(14))),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    //Text("Country",style: TextStyle(fontSize: 20,color: Colors.white),),
+                                    DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                          hint: Text(
+                                            "Country",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          value: selectedCountry4,
+                                          dropdownColor: Colors.black,
+                                          
+                                         
+                                          items: countries
+                                              .map((String country) =>
+                                                  DropdownMenuItem<String>(
+                                                      value: country,
+                                                      child: Text(
+                                                        country,
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .white),
+                                                      )))
+                                              .toList(),
+                                               onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedCountry4 = newValue;
+                                            });
+                                          },
+                                              ),
+                                              
+                                    ),
+                                  ],
                                 ),
                               ),
+                            ),
                               SizedBox(
                                 width: 5,
                               ),
                               Expanded(
-                                child: Container(
-                                  height: 50,
-                                  decoration: ShapeDecoration(
-                                      shape: RoundedRectangleBorder(
-                                          side: BorderSide(
-                                              width: 1,
-                                              color: Color(0xffB74BFF)),
-                                          borderRadius:
-                                              BorderRadius.circular(14))),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      //Text("Country",style: TextStyle(fontSize: 20,color: Colors.white),),
-                                      DropdownButtonHideUnderline(
-                                        child: DropdownButton<String>(
-                                            hint: Text(
-                                              "Country",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            value: selectedCountry,
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                selectedCountry = newValue;
-                                              });
-                                            },
-                                            items: country
-                                                .map((e) =>
-                                                    DropdownMenuItem<String>(
-                                                        value: e,
-                                                        child: Text(
-                                                          e,
-                                                          style: TextStyle(
-                                                              color: Colors.grey
-                                                                  .shade800),
-                                                        )))
-                                                .toList()),
-                                      ),
-                                    ],
-                                  ),
+                              child: Container(
+                                height: 50,
+                                decoration: ShapeDecoration(
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            width: 1, color: Color(0xffB74BFF)),
+                                        borderRadius:
+                                            BorderRadius.circular(14))),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    //Text("Country",style: TextStyle(fontSize: 20,color: Colors.white),),
+                                    DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                          hint: Text(
+                                            "Country",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                          value: selectedCountry5,
+                                          dropdownColor: Colors.black,
+                                          
+                                         
+                                          items: countries
+                                              .map((String country) =>
+                                                  DropdownMenuItem<String>(
+                                                      value: country,
+                                                      child: Text(
+                                                        country,
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .white),
+                                                      )))
+                                              .toList(),
+                                               onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedCountry5 = newValue;
+                                            });
+                                          },
+                                              ),
+                                              
+                                    ),
+                                  ],
                                 ),
-                              )
+                              ),
+                            ),
                             ]),
                         SizedBox(
                           height: 10,

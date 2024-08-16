@@ -13,7 +13,7 @@ class AppRoutes {
     "/splashScreen": (context) => const SplashScreen(),
     "/logInScreen": (context) => const LoginScreen(),
     "/signUpScreen": (context) => const SignUpScreen(),
-    "/homeScreen": (context) => const HomeScreen(),
+    "/homeScreen": HomeScreen.builder,
     "/bottomAppBarProvider": BottomAppBarPage.builder,
   };
 }
