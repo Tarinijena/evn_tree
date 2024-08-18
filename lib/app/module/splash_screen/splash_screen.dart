@@ -29,8 +29,8 @@ class _SplashScreenState extends State<SplashScreen> with Helper {
     String? logInTime = await sharedPref.getKey("logInTime");
     if (logInTime != null && logInTime != "") {
       DateTime logInDateTime = DateTime.parse(json.decode(logInTime));
-      int logInDay = logInDateTime.difference(DateTime.now()).inDays;
-
+      int logInDay = logInDateTime.difference(DateTime.now()).inDays.abs();
+      debugPrint(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${logInDay}");
       if (isLogIn.toString().contains("true")) {
         if (logInDay <= 1) {
           Navigator.pushNamedAndRemoveUntil(

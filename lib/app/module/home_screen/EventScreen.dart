@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:national_wild_animal/app/api_service/api_end_point.dart';
 import 'package:national_wild_animal/app/api_service/country_api_services.dart';
 import 'package:national_wild_animal/app/api_service/http_methods.dart';
+import 'package:national_wild_animal/app/app_theme/colors.dart';
 import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 
 import 'package:national_wild_animal/app/common_widgets/common_button.dart';
@@ -51,6 +53,7 @@ class _EventScreenState extends State<EventScreen> {
   TextEditingController addressController = TextEditingController();
   TextEditingController landmarkController = TextEditingController();
   TextEditingController country1Controller = TextEditingController();
+  final valueListenable = ValueNotifier<String?>(null);
   TextEditingController country2Controller = TextEditingController();
   TextEditingController country3Controller = TextEditingController();
   TextEditingController pincodeController = TextEditingController();
@@ -63,6 +66,15 @@ class _EventScreenState extends State<EventScreen> {
   List item = ["Create Event", "Event Listing"];
 
   List country = ["India", "Pakistan", "China", "Japan"];
+
+  //final TextEditingController country1 = TextEditingController();
+//final valueListenable = ValueNotifier<String?>(null);
+
+TextEditingController search1 = TextEditingController();
+  TextEditingController search2 = TextEditingController();
+  TextEditingController search3 = TextEditingController();
+  TextEditingController search4 = TextEditingController();
+  TextEditingController search5 = TextEditingController();
 
   int current = 0;
   String? selectedCountry;
@@ -313,181 +325,178 @@ class _EventScreenState extends State<EventScreen> {
                         SizedBox(
                           height: 3,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 50,
-                                decoration: ShapeDecoration(
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            width: 1, color: Color(0xffB74BFF)),
-                                        borderRadius:
-                                            BorderRadius.circular(14))),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    //Text("Country",style: TextStyle(fontSize: 20,color: Colors.white),),
-                                    DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                          hint: Text(
-                                            "Country",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          value: selectedCountry1,
-                                          dropdownColor: Colors.black,
-                                          
-                                         
-                                          items: countries
-                                              .map((String country) =>
-                                                  DropdownMenuItem<String>(
-                                                      value: country,
-                                                      child: Text(
-                                                        country,
-                                                        style: TextStyle(
-                                                            color: Colors
-                                                                .white),
-                                                      )))
-                                              .toList(),
-                                               onChanged: (String? newValue) {
-                                            setState(() {
-                                              selectedCountry1 = newValue;
-                                            });
-                                          },
-                                              ),
-                                              
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Expanded(
-                              child: Container(
-                                height: 50,
-                                decoration: ShapeDecoration(
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            width: 1, color: Color(0xffB74BFF)),
-                                        borderRadius:
-                                            BorderRadius.circular(14))),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    //Text("Country",style: TextStyle(fontSize: 20,color: Colors.white),),
-                                    DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                          hint: Text(
-                                            "Country",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          value: selectedCountry2,
-                                          dropdownColor: Colors.black,
-                                          
-                                         
-                                          items: countries
-                                              .map((String country) =>
-                                                  DropdownMenuItem<String>(
-                                                      value: country,
-                                                      child: Text(
-                                                        country,
-                                                        style: TextStyle(
-                                                            color: Colors
-                                                                .white),
-                                                      )))
-                                              .toList(),
-                                               onChanged: (String? newValue) {
-                                            setState(() {
-                                              selectedCountry2 = newValue;
-                                            });
-                                          },
-                                              ),
-                                              
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 50,
-                                decoration: ShapeDecoration(
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            width: 1, color: Color(0xffB74BFF)),
-                                        borderRadius:
-                                            BorderRadius.circular(14))),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    //Text("Country",style: TextStyle(fontSize: 20,color: Colors.white),),
-                                    DropdownButtonHideUnderline(
-                                      child: Container(
-                                        width: 200,
-                                        child: DropdownButton<String>(
-                                            hint: Text(
-                                              "Country",
-                                              style:
-                                                  TextStyle(color: Colors.white),
-                                            ),
-                                            value: selectedCountry3,
-                                            dropdownColor: Colors.black,
-                                            
-                                           
-                                            items: countries
-                                                .map((String country) =>
-                                                    DropdownMenuItem<String>(
-                                                        value: country,
-                                                        child: Text(
-                                                          country,
-                                                          style: TextStyle(
-                                                              color: Colors
-                                                                  .white),
-                                                        )))
-                                                .toList(),
-                                                 onChanged: (String? newValue) {
-                                              setState(() {
-                                                selectedCountry3 = newValue;
-                                              });
-                                            },
-                                                ),
+                        Container(
+                          width: double.infinity, // or any specific width you need
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: ShapeDecoration(
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(width: 1, color: Color(0xffB74BFF)),
+                                          borderRadius: BorderRadius.circular(14))),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton2<String>(
+                                      isExpanded: true,
+                                      hint: Text(
+                                        "Country",
+                                        style: TextStyle(color: Colors.white),
                                       ),
-                                              
+                                      value: selectedCountry1,
+                                      dropdownStyleData: DropdownStyleData(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(14),
+                                            color: ColorsGroup.iconColor,
+                                          ),
+                                          maxHeight: 150,
+                                          offset: const Offset(0, 0),
+                                          scrollbarTheme: ScrollbarThemeData(
+                                              radius: const Radius.circular(40),
+                                              thickness: WidgetStateProperty.all<double>(8),
+                                              thumbVisibility: WidgetStateProperty.all<bool>(true)),
+                                          scrollPadding: EdgeInsets.all(3)),
+                                      items: countries
+                                          .map((String country) => DropdownMenuItem<String>(
+                                              value: country,
+                                              child: Text(
+                                                country,
+                                                style: TextStyle(color: Colors.white),
+                                              )))
+                                          .toList(),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedCountry1= newValue;
+                                        });
+                                      },
+                                      onMenuStateChange: (bool sta){
+                                        debugPrint(">>>>>>>>>>>>>>$sta");
+                                        if(sta){
+                                          country1Controller.text="";
+                                        }
+                                      },
+                                      dropdownSearchData: DropdownSearchData(
+                                        searchController: search4,
+                                        searchInnerWidgetHeight: 50,
+                                        searchInnerWidget: Container(
+                                          height: 50,
+                                          padding: const EdgeInsets.only(
+                                            top: 8,
+                                            bottom: 4,
+                                            right: 8,
+                                            left: 8,
+                                          ),
+                                          child: TextFormField(
+                                            expands: true,
+                                            maxLines: null,
+                                            controller: country1Controller,
+                                            decoration: InputDecoration(
+                                              isDense: true,
+                                              contentPadding: const EdgeInsets.symmetric(
+                                                horizontal: 10,
+                                                vertical: 8,
+                                              ),
+                                              hintText: 'Search ...',
+                                              hintStyle: const TextStyle(fontSize: 12, color: Colors.white),
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(Radius.circular(5)),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        searchMatchFn: (item, searchValue) {
+                                          return item.value
+                                              .toString()
+                                              .toLowerCase()
+                                              .contains(searchValue.toString().toLowerCase());
+                                        },
+                                      ),
                                     ),
-                                    
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              width: 9,
-                            ),
-                            Expanded(
+                              SizedBox(
+                                width: 5,
+                              ),
+                             /* Expanded(
+                                child: Container(
+                                  decoration: ShapeDecoration(
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(width: 1, color: Color(0xffB74BFF)),
+                                          borderRadius: BorderRadius.circular(14))),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton2<String>(
+                                      isExpanded: true,
+                                      hint: Text(
+                                        "Country",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      value: selectedCountry2,
+                                      dropdownStyleData: DropdownStyleData(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(14),
+                                            color: ColorsGroup.iconColor,
+                                          ),
+                                          maxHeight: 150,
+                                          offset: const Offset(0, 0),
+                                          scrollbarTheme: ScrollbarThemeData(
+                                              radius: const Radius.circular(40),
+                                              thickness: WidgetStateProperty.all<double>(8),
+                                              thumbVisibility: WidgetStateProperty.all<bool>(true)),
+                                          scrollPadding: EdgeInsets.all(3)),
+                                      items: countries
+                                          .map((String country) => DropdownMenuItem<String>(
+                                              value: country,
+                                              child: Text(
+                                                country,
+                                                style: TextStyle(color: Colors.white),
+                                              )))
+                                          .toList(),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedCountry2 = newValue;
+                                        });
+                                      },
+                                      dropdownSearchData: DropdownSearchData(
+                                        searchController: search2,
+                                        searchInnerWidgetHeight: 50,
+                                        searchInnerWidget: Container(
+                                          height: 50,
+                                          padding: const EdgeInsets.only(
+                                            top: 8,
+                                            bottom: 4,
+                                            right: 8,
+                                            left: 8,
+                                          ),
+                                          child: TextFormField(
+                                            expands: true,
+                                            maxLines: null,
+                                            controller: country2Controller,
+                                            decoration: InputDecoration(
+                                              isDense: true,
+                                              contentPadding: const EdgeInsets.symmetric(
+                                                horizontal: 10,
+                                                vertical: 8,
+                                              ),
+                                              hintText: 'Search ...',
+                                              hintStyle: const TextStyle(fontSize: 12, color: Colors.white),
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(Radius.circular(5)),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        searchMatchFn: (item, searchValue) {
+                                          return item.value
+                                              .toString()
+                                              .toLowerCase()
+                                              .contains(searchValue.toString().toLowerCase());
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),*/
+                               Expanded(
                                 child: CustomTextField(
                               enabledBorder: OutlineInputBorder(
                                 borderSide:
@@ -495,8 +504,11 @@ class _EventScreenState extends State<EventScreen> {
                               ),
                               inputHint: "Pin Code",
                             ))
-                          ],
+                            ],
+                          ),
                         ),
+                       
+                        
                         SizedBox(
                           height: 10,
                         ),
@@ -549,115 +561,174 @@ class _EventScreenState extends State<EventScreen> {
                         SizedBox(
                           height: 10,
                         ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        /*Container(
+                          width: double.infinity, // or any specific width you need
+                          child: Row(
                             children: [
                               Expanded(
-                              child: Container(
-                                height: 50,
-                                decoration: ShapeDecoration(
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            width: 1, color: Color(0xffB74BFF)),
-                                        borderRadius:
-                                            BorderRadius.circular(14))),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    //Text("Country",style: TextStyle(fontSize: 20,color: Colors.white),),
-                                    DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                          hint: Text(
-                                            "Country",
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                child: Container(
+                                  decoration: ShapeDecoration(
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(width: 1, color: Color(0xffB74BFF)),
+                                          borderRadius: BorderRadius.circular(14))),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton2<String>(
+                                      isExpanded: true,
+                                      hint: Text(
+                                        "Country",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      value: selectedCountry4,
+                                      dropdownStyleData: DropdownStyleData(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(14),
+                                            color: ColorsGroup.iconColor,
                                           ),
-                                          value: selectedCountry4,
-                                          dropdownColor: Colors.black,
-                                          
-                                         
-                                          items: countries
-                                              .map((String country) =>
-                                                  DropdownMenuItem<String>(
-                                                      value: country,
-                                                      child: Text(
-                                                        country,
-                                                        style: TextStyle(
-                                                            color: Colors
-                                                                .white),
-                                                      )))
-                                              .toList(),
-                                               onChanged: (String? newValue) {
-                                            setState(() {
-                                              selectedCountry4 = newValue;
-                                            });
-                                          },
+                                          maxHeight: 150,
+                                          offset: const Offset(0, 0),
+                                          scrollbarTheme: ScrollbarThemeData(
+                                              radius: const Radius.circular(40),
+                                              thickness: WidgetStateProperty.all<double>(8),
+                                              thumbVisibility: WidgetStateProperty.all<bool>(true)),
+                                          scrollPadding: EdgeInsets.all(3)),
+                                      items: countries
+                                          .map((String country) => DropdownMenuItem<String>(
+                                              value: country,
+                                              child: Text(
+                                                country,
+                                                style: TextStyle(color: Colors.white),
+                                              )))
+                                          .toList(),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedCountry4 = newValue;
+                                        });
+                                      },
+                                      dropdownSearchData: DropdownSearchData(
+                                        searchController: search4,
+                                        searchInnerWidgetHeight: 50,
+                                        searchInnerWidget: Container(
+                                          height: 50,
+                                          padding: const EdgeInsets.only(
+                                            top: 8,
+                                            bottom: 4,
+                                            right: 8,
+                                            left: 8,
+                                          ),
+                                          child: TextFormField(
+                                            expands: true,
+                                            maxLines: null,
+                                            controller: country4Controller,
+                                            decoration: InputDecoration(
+                                              isDense: true,
+                                              contentPadding: const EdgeInsets.symmetric(
+                                                horizontal: 10,
+                                                vertical: 8,
                                               ),
-                                              
+                                              hintText: 'Search ...',
+                                              hintStyle: const TextStyle(fontSize: 12, color: Colors.white),
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(Radius.circular(5)),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        searchMatchFn: (item, searchValue) {
+                                          return item.value
+                                              .toString()
+                                              .toLowerCase()
+                                              .contains(searchValue.toString().toLowerCase());
+                                        },
+                                      ),
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
                               SizedBox(
                                 width: 5,
                               ),
                               Expanded(
-                              child: Container(
-                                height: 50,
-                                decoration: ShapeDecoration(
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            width: 1, color: Color(0xffB74BFF)),
-                                        borderRadius:
-                                            BorderRadius.circular(14))),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    //Text("Country",style: TextStyle(fontSize: 20,color: Colors.white),),
-                                    DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                          hint: Text(
-                                            "Country",
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                child: Container(
+                                  decoration: ShapeDecoration(
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(width: 1, color: Color(0xffB74BFF)),
+                                          borderRadius: BorderRadius.circular(14))),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton2<String>(
+                                      isExpanded: true,
+                                      hint: Text(
+                                        "Country",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      value: selectedCountry5,
+                                      dropdownStyleData: DropdownStyleData(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(14),
+                                            color: ColorsGroup.iconColor,
                                           ),
-                                          value: selectedCountry5,
-                                          dropdownColor: Colors.black,
-                                          
-                                         
-                                          items: countries
-                                              .map((String country) =>
-                                                  DropdownMenuItem<String>(
-                                                      value: country,
-                                                      child: Text(
-                                                        country,
-                                                        style: TextStyle(
-                                                            color: Colors
-                                                                .white),
-                                                      )))
-                                              .toList(),
-                                               onChanged: (String? newValue) {
-                                            setState(() {
-                                              selectedCountry5 = newValue;
-                                            });
-                                          },
+                                          maxHeight: 150,
+                                          offset: const Offset(0, 0),
+                                          scrollbarTheme: ScrollbarThemeData(
+                                              radius: const Radius.circular(40),
+                                              thickness: WidgetStateProperty.all<double>(8),
+                                              thumbVisibility: WidgetStateProperty.all<bool>(true)),
+                                          scrollPadding: EdgeInsets.all(3)),
+                                      items: countries
+                                          .map((String country) => DropdownMenuItem<String>(
+                                              value: country,
+                                              child: Text(
+                                                country,
+                                                style: TextStyle(color: Colors.white),
+                                              )))
+                                          .toList(),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedCountry5 = newValue;
+                                        });
+                                      },
+                                      dropdownSearchData: DropdownSearchData(
+                                        searchController: search5,
+                                        searchInnerWidgetHeight: 50,
+                                        searchInnerWidget: Container(
+                                          height: 50,
+                                          padding: const EdgeInsets.only(
+                                            top: 8,
+                                            bottom: 4,
+                                            right: 8,
+                                            left: 8,
+                                          ),
+                                          child: TextFormField(
+                                            expands: true,
+                                            maxLines: null,
+                                            controller: country5Controller,
+                                            decoration: InputDecoration(
+                                              isDense: true,
+                                              contentPadding: const EdgeInsets.symmetric(
+                                                horizontal: 10,
+                                                vertical: 8,
                                               ),
-                                              
+                                              hintText: 'Search ...',
+                                              hintStyle: const TextStyle(fontSize: 12, color: Colors.white),
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(Radius.circular(5)),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        searchMatchFn: (item, searchValue) {
+                                          return item.value
+                                              .toString()
+                                              .toLowerCase()
+                                              .contains(searchValue.toString().toLowerCase());
+                                        },
+                                      ),
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            ]),
+                            ],
+                          ),
+                        ),*/
                         SizedBox(
                           height: 10,
                         ),

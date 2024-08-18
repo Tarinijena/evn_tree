@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
               /*cityDatTemp = [
                 Data(cityCode: "0", cityId: "0", cityName: "Select City")
               ];*/
-              dropDownValTemp = cityDatTemp[0];
+              //dropDownValTemp = cityDatTemp[0];
             }
             context.read<HomeScreenProvider>().setCityList(
                 cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
