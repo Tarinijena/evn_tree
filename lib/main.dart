@@ -61,7 +61,6 @@ class MyApp extends StatelessWidget {
         );
       }),
       initialRoute: "/splashScreen",
-      home: EventScreen(),
     );
   }
 }

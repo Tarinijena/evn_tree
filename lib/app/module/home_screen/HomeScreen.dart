@@ -113,9 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
               GetLocationModel citiesName =
                   GetLocationModel.fromJson(map as Map<String, dynamic>);
               cityDatTemp = citiesName.data ?? [];
-              /*cityDatTemp.insert(
-                  0, Data(cityCode: "0", cityId: "0", cityName: "Select City"));
-              dropDownValTemp = cityDatTemp[0];*/
+              dropDownValTemp = cityDatTemp[0];
             } else {
               /*cityDatTemp = [
                 Data(cityCode: "0", cityId: "0", cityName: "Select City")
@@ -209,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .googleRubikFontsForButtonText(
                                     fontWeight: FontWeight.w400, fontSize: 20),
                           ),
-                          Text(" ${fullName ?? "XXXX"}",
+                          Text(" ${fullName ?? "-----"}",
                               style: TextStyles(context)
                                   .googleRubikFontsForText2(
                                       fontWeight: FontWeight.w400,

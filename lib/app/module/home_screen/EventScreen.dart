@@ -15,15 +15,16 @@ import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 
 import 'package:national_wild_animal/app/common_widgets/common_button.dart';
 import 'package:national_wild_animal/app/module/home_screen/LocationModel/location_model.dart';
+import 'package:national_wild_animal/app/module/home_screen/provider/home_screen_provider.dart';
 
 import 'package:national_wild_animal/app/module/login_screen/provider/event_screen_provider.dart';
 import 'package:national_wild_animal/app/screens/EventListed/EventListed.dart';
 
 import 'package:national_wild_animal/app/common_widgets/custom_text_field.dart';
-import 'package:national_wild_animal/app/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../app_utils/utils.dart';
+import '../../common_widgets/CustomAppBar.dart';
 
 class EventScreen extends StatefulWidget {
   const EventScreen({super.key});
@@ -33,7 +34,7 @@ class EventScreen extends StatefulWidget {
 
   static Widget builder(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => EventScreenProvider(),
+      create: (context) => HomeScreenProvider(),
       child: EventScreen(),
     );
   }
@@ -70,7 +71,7 @@ class _EventScreenState extends State<EventScreen> {
   //final TextEditingController country1 = TextEditingController();
 //final valueListenable = ValueNotifier<String?>(null);
 
-TextEditingController search1 = TextEditingController();
+  TextEditingController search1 = TextEditingController();
   TextEditingController search2 = TextEditingController();
   TextEditingController search3 = TextEditingController();
   TextEditingController search4 = TextEditingController();
@@ -137,6 +138,7 @@ TextEditingController search1 = TextEditingController();
 
   Future<bool> getCityLst() async {
     Completer<bool> completer = Completer<bool>();
+
     List<Data> cityDatTemp = [];
     Data? dropDownValTemp;
     try {
@@ -152,24 +154,17 @@ TextEditingController search1 = TextEditingController();
               GetLocationModel citiesName =
                   GetLocationModel.fromJson(map as Map<String, dynamic>);
               cityDatTemp = citiesName.data ?? [];
-              cityDatTemp.insert(
-                  0, Data(cityCode: "0", cityId: "0", cityName: "Select City"));
               dropDownValTemp = cityDatTemp[0];
             } else {
-              cityDatTemp = [
-                Data(cityCode: "0", cityId: "0", cityName: "Select City")
-              ];
-              dropDownValTemp = cityDatTemp[0];
+              // dropDownValTemp = cityDatTemp[0];
             }
-            context.read<EventScreenProvider>().setCityList(
+            context.read<HomeScreenProvider>().setCityList(
                 cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
             completer.complete(true);
           },
           token: token);
     } catch (e) {
-      cityDatTemp = [Data(cityCode: "0", cityId: "0", cityName: "Select City")];
-      dropDownValTemp = cityDatTemp[0];
-      context.read<EventScreenProvider>().setCityList(
+      context.read<HomeScreenProvider>().setCityList(
           cityLstData: cityDatTemp, dropdownValueData: dropDownValTemp);
       completer.complete(false);
     }
@@ -190,7 +185,6 @@ TextEditingController search1 = TextEditingController();
       List<String> fetchedCountries = await apiService.fetchCountries();
       setState(() {
         countries = fetchedCountries;
-        
       });
     } catch (e) {
       print('Error: $e');
@@ -199,7 +193,7 @@ TextEditingController search1 = TextEditingController();
 
   @override
   void initState() {
-    // getCityLst();
+    getCityLst();
     super.initState();
     fetchCountries();
   }
@@ -215,24 +209,19 @@ TextEditingController search1 = TextEditingController();
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /*Consumer<EventScreenProvider>(
-                  builder: (context, provider, child) {
-                    return CustomAppBar(
-                      cityLst: context.read<EventScreenProvider>().cityLst,
-                      dropdownValue:
-                          context.read<EventScreenProvider>().dropdownValue,
-                      onChange: (Data? val) {
-                        context
-                            .read<EventScreenProvider>()
-                            .setDropDownVal(val: val);
-                      },
-                    );
-                  },
-                ),*/
-
-              CustomAppBar(
-                cityLst: List.empty(),
-                onChange: (val) {},
+              Consumer<HomeScreenProvider>(
+                builder: (context, provider, child) {
+                  return CustomAppBar(
+                    cityLst: context.read<HomeScreenProvider>().cityLst,
+                    dropdownValue:
+                        context.read<HomeScreenProvider>().dropdownValue,
+                    onChange: (Data? val) {
+                      context
+                          .read<HomeScreenProvider>()
+                          .setDropDownVal(val: val);
+                    },
+                  );
+                },
               ),
               SizedBox(
                 height: 20,
@@ -326,98 +315,132 @@ TextEditingController search1 = TextEditingController();
                           height: 3,
                         ),
                         Container(
-                          width: double.infinity, // or any specific width you need
+                          width:
+                              double.infinity, // or any specific width you need
                           child: Row(
                             children: [
                               Expanded(
                                 child: Container(
                                   decoration: ShapeDecoration(
                                       shape: RoundedRectangleBorder(
-                                          side: BorderSide(width: 1, color: Color(0xffB74BFF)),
-                                          borderRadius: BorderRadius.circular(14))),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton2<String>(
-                                      isExpanded: true,
-                                      hint: Text(
-                                        "Country",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      value: selectedCountry1,
-                                      dropdownStyleData: DropdownStyleData(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(14),
-                                            color: ColorsGroup.iconColor,
+                                          side: BorderSide(
+                                              width: 1,
+                                              color: Color(0xffB74BFF)),
+                                          borderRadius:
+                                              BorderRadius.circular(14))),
+                                  child: Consumer<HomeScreenProvider>(
+                                    builder: (context, provider, child) {
+                                      return DropdownButtonHideUnderline(
+                                        child: DropdownButton2<Data>(
+                                          isExpanded: true,
+                                          hint: Text(
+                                            "Cities",
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
-                                          maxHeight: 150,
-                                          offset: const Offset(0, 0),
-                                          scrollbarTheme: ScrollbarThemeData(
-                                              radius: const Radius.circular(40),
-                                              thickness: WidgetStateProperty.all<double>(8),
-                                              thumbVisibility: WidgetStateProperty.all<bool>(true)),
-                                          scrollPadding: EdgeInsets.all(3)),
-                                      items: countries
-                                          .map((String country) => DropdownMenuItem<String>(
-                                              value: country,
-                                              child: Text(
-                                                country,
-                                                style: TextStyle(color: Colors.white),
-                                              )))
-                                          .toList(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          selectedCountry1= newValue;
-                                        });
-                                      },
-                                      onMenuStateChange: (bool sta){
-                                        debugPrint(">>>>>>>>>>>>>>$sta");
-                                        if(sta){
-                                          country1Controller.text="";
-                                        }
-                                      },
-                                      dropdownSearchData: DropdownSearchData(
-                                        searchController: search4,
-                                        searchInnerWidgetHeight: 50,
-                                        searchInnerWidget: Container(
-                                          height: 50,
-                                          padding: const EdgeInsets.only(
-                                            top: 8,
-                                            bottom: 4,
-                                            right: 8,
-                                            left: 8,
-                                          ),
-                                          child: TextFormField(
-                                            expands: true,
-                                            maxLines: null,
-                                            controller: country1Controller,
-                                            decoration: InputDecoration(
-                                              isDense: true,
-                                              contentPadding: const EdgeInsets.symmetric(
-                                                horizontal: 10,
-                                                vertical: 8,
+                                          value: context
+                                              .read<HomeScreenProvider>()
+                                              .dropdownValue2,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12),
+                                          dropdownStyleData: DropdownStyleData(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(14),
+                                                color: ColorsGroup.iconColor,
                                               ),
-                                              hintText: 'Search ...',
-                                              hintStyle: const TextStyle(fontSize: 12, color: Colors.white),
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.all(Radius.circular(5)),
+                                              maxHeight: 150,
+                                              offset: const Offset(0, 0),
+                                              scrollbarTheme:
+                                                  ScrollbarThemeData(
+                                                      radius:
+                                                          const Radius.circular(
+                                                              40),
+                                                      thickness:
+                                                          WidgetStateProperty
+                                                              .all<double>(8),
+                                                      thumbVisibility:
+                                                          WidgetStateProperty
+                                                              .all<bool>(true)),
+                                              scrollPadding: EdgeInsets.all(3)),
+                                          items: context
+                                              .read<HomeScreenProvider>()
+                                              .cityLst
+                                              .map<DropdownMenuItem<Data>>(
+                                                  (Data value) {
+                                            return DropdownMenuItem<Data>(
+                                              value: value,
+                                              child: Text(value.cityName ?? ""),
+                                            );
+                                          }).toList(),
+                                          onChanged: (Data? newValue) {
+                                            context
+                                                .read<HomeScreenProvider>()
+                                                .setDropDownVal2(val: newValue);
+                                          },
+                                          onMenuStateChange: (bool sta) {
+                                            debugPrint(">>>>>>>>>>>>>>$sta");
+                                            if (sta) {
+                                              country1Controller.text = "";
+                                            }
+                                          },
+                                          dropdownSearchData:
+                                              DropdownSearchData(
+                                            searchController: search4,
+                                            searchInnerWidgetHeight: 50,
+                                            searchInnerWidget: Container(
+                                              height: 50,
+                                              padding: const EdgeInsets.only(
+                                                top: 8,
+                                                bottom: 4,
+                                                right: 8,
+                                                left: 8,
+                                              ),
+                                              child: TextFormField(
+                                                expands: true,
+                                                maxLines: null,
+                                                controller: country1Controller,
+                                                decoration: InputDecoration(
+                                                  isDense: true,
+                                                  contentPadding:
+                                                      const EdgeInsets
+                                                          .symmetric(
+                                                    horizontal: 10,
+                                                    vertical: 8,
+                                                  ),
+                                                  hintText: 'Search ...',
+                                                  hintStyle: const TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.white),
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(5)),
+                                                  ),
+                                                ),
                                               ),
                                             ),
+                                            searchMatchFn: (item, searchValue) {
+                                              print('City Name: ${item.value?.cityName}, Search Value: $searchValue');
+                                              return item.value!.cityName
+                                                  .toString()
+                                                  .toLowerCase()
+                                                  .contains(searchValue
+                                                      .toString()
+                                                      .toLowerCase());
+                                            },
                                           ),
                                         ),
-                                        searchMatchFn: (item, searchValue) {
-                                          return item.value
-                                              .toString()
-                                              .toLowerCase()
-                                              .contains(searchValue.toString().toLowerCase());
-                                        },
-                                      ),
-                                    ),
+                                      );
+                                    },
                                   ),
                                 ),
                               ),
                               SizedBox(
                                 width: 5,
                               ),
-                             /* Expanded(
+                              /* Expanded(
                                 child: Container(
                                   decoration: ShapeDecoration(
                                       shape: RoundedRectangleBorder(
@@ -496,19 +519,17 @@ TextEditingController search1 = TextEditingController();
                                   ),
                                 ),
                               ),*/
-                               Expanded(
-                                child: CustomTextField(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Color(0xffB74BFF)),
-                              ),
-                              inputHint: "Pin Code",
-                            ))
+                              Expanded(
+                                  child: CustomTextField(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Color(0xffB74BFF)),
+                                ),
+                                inputHint: "Pin Code",
+                              ))
                             ],
                           ),
                         ),
-                       
-                        
                         SizedBox(
                           height: 10,
                         ),

@@ -11,8 +11,9 @@ class HomeScreenProvider extends ChangeNotifier{
   int selectedIndex = 0;
 
   Data? dropdownValue;
+  Data? dropdownValue2;
 
-  List<Data> cityLst = [Data(cityCode: "0", cityId: "0", cityName: "Select City")];
+  List<Data> cityLst = [];
 
   List<DataLstClass> categoryList = [
     DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
@@ -34,7 +35,11 @@ class HomeScreenProvider extends ChangeNotifier{
     notifyListeners();
 
   }
+setDropDownVal2({Data? val}){
+    dropdownValue2 = val;
+    notifyListeners();
 
+  }
   changeIndex({int lstLength = 1}){
     currentIndex = (currentIndex + 1) % lstLength;
     notifyListeners();
