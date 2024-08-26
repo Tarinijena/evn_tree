@@ -16,4 +16,6 @@ class ApiEndPoint {
 
   static String loginVerify(String userName,String userPassword)=>"$baseUrl/umt/public/login?userName=$userName&password=$userPassword";
 
+  static String getUserProfile = "$baseUrl/umt/get-user-details";
+
 }

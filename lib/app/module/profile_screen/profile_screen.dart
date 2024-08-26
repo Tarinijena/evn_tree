@@ -5,9 +5,9 @@ import 'package:flutter/widgets.dart';
 import 'package:national_wild_animal/ProfilePageDate/ProfilePageData.dart';
 import 'package:national_wild_animal/app/module/home_screen/LocationModel/location_model.dart';
 
-import '../app_theme/colors.dart';
-import '../app_theme/text_styles.dart';
-import '../common_widgets/common_text_field_view.dart';
+import '../../app_theme/colors.dart';
+import '../../app_theme/text_styles.dart';
+import '../../common_widgets/common_text_field_view.dart';
 
 class ProfileScreen extends StatefulWidget {
    ProfileScreen({super.key});

@@ -18,6 +18,7 @@ import '../../app_utils/shared_preferance.dart';
 import 'provider/home_screen_provider.dart';
 
 class HomeScreen extends StatefulWidget {
+  
   const HomeScreen({super.key});
 
   @override
@@ -184,8 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, provider, child) {
                     return CustomAppBar(
                       cityLst: context.read<HomeScreenProvider>().cityLst,
-                      dropdownValue:
-                          context.read<HomeScreenProvider>().dropdownValue,
+                      dropdownValue:context.read<HomeScreenProvider>().dropdownValue,
                       onChange: (Data? val) {
                         context
                             .read<HomeScreenProvider>()

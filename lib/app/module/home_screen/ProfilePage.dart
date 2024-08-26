@@ -1,17 +1,99 @@
-import 'dart:io';
+import 'dart:async';
+import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:national_wild_animal/app/api_service/api_end_point.dart';
+import 'package:national_wild_animal/app/api_service/http_methods.dart';
+import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
+
 import 'package:national_wild_animal/app/common_widgets/common_button.dart';
 import 'package:national_wild_animal/app/common_widgets/custom_text_field.dart';
+import 'package:national_wild_animal/app/module/home_screen/HomeScreen.dart';
+import 'package:national_wild_animal/app/module/home_screen/provider/home_screen_provider.dart';
+import 'package:national_wild_animal/app/module/profile_screen/profile_model.dart';
+import 'package:provider/provider.dart';
 
-import '../../app_utils/utils.dart';
-
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+
+  UserData? userData;
+
+  //these are the controller for text form field...................
+   late TextEditingController fullNameController;
+  late TextEditingController emailController;
+  late TextEditingController mobileNoController;
+  late TextEditingController rolesController;
+
+  SharedPref sharedPref = SharedPref();
+Future<bool> getUserProfileData() async {
+  Completer<bool> completer = Completer<bool>();
+
+  try {
+    String data = await sharedPref.getKey("token");
+    String token = json.decode(data);
+
+    HttpMethodsDio().getMethodWithToken(
+      api: ApiEndPoint.getUserProfile,
+      fun: (map, code) {
+        if (code == 200 && map['data'] != null && map['data'].isNotEmpty) {
+          Map<String, dynamic> parsedJson = map;  // No need to decode again
+
+          if (parsedJson['status']) {
+            userData = UserData.fromJson(parsedJson['data']);
+
+            setState(() {
+              fullNameController.text = userData?.fullName ?? '';
+              emailController.text = userData?.email ?? '';
+              mobileNoController.text = userData?.mobileNo ?? '8249124088';
+              rolesController.text = userData!.roles.map((role) => role.roleName).join(', ');
+            });
+
+            completer.complete(true);  // Complete the future successfully
+          } else {
+            completer.complete(false);  // Handle status false
+          }
+        } else {
+          completer.complete(false);  // Handle other scenarios
+        }
+      },
+      token: token,
+    );
+  } catch (e) {
+    completer.completeError(e);  // Complete with an error if something goes wrong
+  }
+
+  return completer.future;
+}
+
+  @override
+  void initState() {
+    
+    super.initState();
+
+      // Initialize the controllers with the data from userData
+    fullNameController = TextEditingController();
+    emailController = TextEditingController();
+    mobileNoController = TextEditingController();
+    rolesController = TextEditingController();
+    
+    getUserProfileData();
+  }
+
+  @override
+  void dispose() {
+    // Dispose the controllers when the widget is disposed
+    fullNameController.dispose();
+    emailController.dispose();
+    mobileNoController.dispose();
+    rolesController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +117,8 @@ class ProfilePage extends StatelessWidget {
                     bottom: -45,
                     child: CircleAvatar(
                       radius: 50,
-                      backgroundImage: AssetImage("assets/indian.jpeg"), // Replace with your image URL
+                      backgroundImage: AssetImage(
+                          "assets/indian.jpeg"), // Replace with your image URL
                     ),
                   ),
                   Positioned(top: 20, child: Image.asset("assets/logo1.png"))
@@ -45,8 +128,11 @@ class ProfilePage extends StatelessWidget {
                 height: 50,
               ),
               Text(
-                "Tarini Kumar Jena",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                '${userData?.fullName}',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
               SizedBox(
                 height: 10,
@@ -58,12 +144,16 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     Text(
                       "Name",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     CustomTextField(
+                      controller: fullNameController,
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Color(0xffB74BFF)),
                       ),
@@ -71,42 +161,55 @@ class ProfilePage extends StatelessWidget {
                     ),
                     Text(
                       "Email",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     CustomTextField(
+                      controller: emailController,
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Color(0xffB74BFF)),
                       ),
                       inputHint: "Enter Email",
                     ),
                     Text(
-                      "Website",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                      "Phone Number",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     CustomTextField(
+                      controller: mobileNoController,
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Color(0xffB74BFF)),
                       ),
-                      inputHint: "Enter Website",
+                      inputHint: "Enter Phone Number",
                     ),
                     Text(
-                      "BioData",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                      "Designation",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     CustomTextField(
+                      readOnly: true,
+                      controller: rolesController,
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Color(0xffB74BFF)),
                       ),
-                      inputHint: "Enter Biodata",
+                      inputHint: "Designation",
                     ),
                     SizedBox(
                       height: 10,
@@ -127,8 +230,6 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
-
-
 }
 
 class RectangularContainerWithImage extends StatelessWidget {

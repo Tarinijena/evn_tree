@@ -36,7 +36,8 @@ class CustomTextField extends StatelessWidget {
     this.focusedBorder,
     this.enabledBorder,
     this.onChanged,
-    this.readOnly, this.enable
+    this.readOnly,
+     this.enable=true
   });
 
   @override
@@ -54,6 +55,7 @@ class CustomTextField extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(14),
                 ),
+                
             maxLines: maxLines ?? 1,
             minLines: minLines ?? 1,
             controller: controller,

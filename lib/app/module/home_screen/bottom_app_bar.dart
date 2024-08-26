@@ -7,7 +7,7 @@ import 'package:national_wild_animal/app/module/home_screen/provider/BottomAppBa
 import 'package:national_wild_animal/app/module/home_screen/EventScreen.dart';
 import 'package:national_wild_animal/app/module/home_screen/ProfilePage.dart';
 import 'package:national_wild_animal/app/module/home_screen/provider/user_role_provider.dart';
-import 'package:national_wild_animal/app/screens/profile_screen.dart';
+import 'package:national_wild_animal/app/module/profile_screen/profile_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'HomeScreen.dart';

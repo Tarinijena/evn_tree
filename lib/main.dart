@@ -11,6 +11,7 @@ import 'app/module/splash_screen/splash_screen.dart';
 //          /evntree/v3/api-docs/
 
 void main() {
+  
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,

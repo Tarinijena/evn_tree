@@ -53,7 +53,7 @@ class MyFormField extends StatelessWidget {
     this.maxLines,
     this.minLines,
     this.maxLength,
-    this.readOnly,
+    this.readOnly=false,
     this.initialValue,
     this.inputCapitalization, this.enable,
   });

@@ -533,6 +533,123 @@ class _EventScreenState extends State<EventScreen> {
                         SizedBox(
                           height: 10,
                         ),
+                        Container(
+                          decoration: ShapeDecoration(
+                              shape: RoundedRectangleBorder(
+                                  side: BorderSide(
+                                      width: 1,
+                                      color: Color(0xffB74BFF)),
+                                  borderRadius:
+                                      BorderRadius.circular(14))),
+                          child: Consumer<HomeScreenProvider>(
+                            builder: (context, provider, child) {
+                              return DropdownButtonHideUnderline(
+                                child: DropdownButton2<Data>(
+                                  isExpanded: true,
+                                  hint: Text(
+                                    "Cities",
+                                    style:
+                                        TextStyle(color: Colors.white),
+                                  ),
+                                  value: context
+                                      .read<HomeScreenProvider>()
+                                      .dropdownValue2,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12),
+                                  dropdownStyleData: DropdownStyleData(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(14),
+                                        color: ColorsGroup.iconColor,
+                                      ),
+                                      maxHeight: 150,
+                                      offset: const Offset(0, 0),
+                                      scrollbarTheme:
+                                          ScrollbarThemeData(
+                                              radius:
+                                                  const Radius.circular(
+                                                      40),
+                                              thickness:
+                                                  WidgetStateProperty
+                                                      .all<double>(8),
+                                              thumbVisibility:
+                                                  WidgetStateProperty
+                                                      .all<bool>(true)),
+                                      scrollPadding: EdgeInsets.all(3)),
+                                  items: context
+                                      .read<HomeScreenProvider>()
+                                      .cityLst
+                                      .map<DropdownMenuItem<Data>>(
+                                          (Data value) {
+                                    return DropdownMenuItem<Data>(
+                                      value: value,
+                                      child: Text(value.cityName ?? ""),
+                                    );
+                                  }).toList(),
+                                  onChanged: (Data? newValue) {
+                                    context
+                                        .read<HomeScreenProvider>()
+                                        .setDropDownVal2(val: newValue);
+                                  },
+                                  onMenuStateChange: (bool sta) {
+                                    debugPrint(">>>>>>>>>>>>>>$sta");
+                                    if (sta) {
+                                      country1Controller.text = "";
+                                    }
+                                  },
+                                  dropdownSearchData:
+                                      DropdownSearchData(
+                                    searchController: search4,
+                                    searchInnerWidgetHeight: 50,
+                                    searchInnerWidget: Container(
+                                      height: 50,
+                                      padding: const EdgeInsets.only(
+                                        top: 8,
+                                        bottom: 4,
+                                        right: 8,
+                                        left: 8,
+                                      ),
+                                      child: TextFormField(
+                                        expands: true,
+                                        maxLines: null,
+                                        controller: country2Controller,
+                                        decoration: InputDecoration(
+                                          isDense: true,
+                                          contentPadding:
+                                              const EdgeInsets
+                                                  .symmetric(
+                                            horizontal: 10,
+                                            vertical: 8,
+                                          ),
+                                          hintText: 'Search ...',
+                                          hintStyle: const TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.white),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.all(
+                                                    Radius.circular(5)),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    searchMatchFn: (item, searchValue) {
+                                      print('City Name: ${item.value?.cityName}, Search Value: $searchValue');
+                                      return item.value!.cityName
+                                          .toString()
+                                          .toLowerCase()
+                                          .contains(searchValue
+                                              .toString()
+                                              .toLowerCase());
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                              SizedBox(height: 10,),
                         Row(
                           children: [
                             Expanded(

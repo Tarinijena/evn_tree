@@ -56,6 +56,9 @@ class _LoginScreenState extends State<LoginScreen> {
               await sharedPref.save("isLogIn", "true");
               await sharedPref.save("token", map['data']['token']);
               await sharedPref.save("fullName", map['data']['fullName']);
+              await sharedPref.save("mobileNo", map['data']['mobileNo']);
+              await sharedPref.save("userName", map['data']['userName']);
+              await sharedPref.save("email", map['data']['email']);
               await sharedPref.save("logInTime", DateTime.now().toString());
               if (map['data']['roles'] != null &&
                   map['data']['roles'].length > 0) {

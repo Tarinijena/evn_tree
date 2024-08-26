@@ -10,10 +10,12 @@ import '../module/splash_screen/splash_screen.dart';
 class AppRoutes {
   // late BuildContext context;
   static Map<String, WidgetBuilder> appRoutes = {
+
     "/splashScreen": (context) => const SplashScreen(),
     "/logInScreen": (context) => const LoginScreen(),
     "/signUpScreen": (context) => const SignUpScreen(),
     "/homeScreen": HomeScreen.builder,
     "/bottomAppBarProvider": BottomAppBarPage.builder,
+    
   };
 }
