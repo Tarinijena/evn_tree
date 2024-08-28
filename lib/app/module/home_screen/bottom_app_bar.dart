@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:national_wild_animal/app/app_utils/helper.dart';
 import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 import 'package:national_wild_animal/app/module/home_screen/provider/BottomAppBarProvider.dart';
@@ -35,7 +36,7 @@ class BottomAppBarPage extends StatefulWidget {
   }
 }
 
-class _BottomAppBarPageState extends State<BottomAppBarPage> {
+class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
   SharedPref pref = SharedPref();
   Future<void>? _userRoleFuture;
 
@@ -63,9 +64,29 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Show a loading indicator while waiting for the user role
-          return Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
+          return PopScope(
+             canPop: false, // Prevents default pop behavior
+      onPopInvoked: (didPop) async {
+        // Show the custom dialog when back button is pressed
+        bool shouldClose = await showCommonPopupNew(
+          "Exit",
+          "Are you sure you want to exit?",
+          context,
+          isYesOrNoPopup: true,
+          barrierDismissible: false, // Disable dismissing by tapping outside
+        );
+
+        if (shouldClose) {
+           // Schedule the pop to happen after the current frame completes
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+             SystemNavigator.pop(); // Use true to ensure the navigation is performed correctly
+          });  // Close the app or the screen
+        }
+      },
+            child: Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
             ),
           );
         } else {

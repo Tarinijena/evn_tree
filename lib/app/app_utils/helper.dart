@@ -1,27 +1,26 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../app_theme/colors.dart';
 import '../common_widgets/custom_dialog.dart';
 
 mixin Helper {
-
-
   Future<bool> showCommonPopupNew(
-      String title, String descriptionText, BuildContext context,
-      {bool isYesOrNoPopup = false, bool barrierDismissible = true}) async {
+    String title,
+    String descriptionText,
+    BuildContext context, {
+    bool isYesOrNoPopup = false,
+    bool barrierDismissible = true,
+  }) async {
     bool isOkClick = false;
+
     return await showDialog(
       context: context,
       barrierDismissible: barrierDismissible,
-      
       builder: (BuildContext context) => CustomDialog(
-        
         title: title,
         topWidget: Image.asset("assets/logo1.png"),
         description: descriptionText,
-        
         onCloseClick: () {
           Navigator.of(context).pop();
         },
@@ -31,7 +30,7 @@ mixin Helper {
                   buttonText: "NO",
                   color: ColorsGroup.primaryColor,
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(false); // Return false
                   },
                 ),
                 CustomDialogActionButton(
@@ -39,7 +38,8 @@ mixin Helper {
                   color: ColorsGroup.primaryColor,
                   onPressed: () {
                     isOkClick = true;
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(true); // Return true
+                  
                   },
                 )
               ]
@@ -49,14 +49,11 @@ mixin Helper {
                   color: ColorsGroup.primaryColor,
                   onPressed: () {
                     isOkClick = true;
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(isOkClick); // Return isOkClick
                   },
                 )
               ],
       ),
-    ).then((_) {
-      return isOkClick;
-    });
+    );
   }
-
 }

@@ -13,6 +13,8 @@ class HomeScreenProvider extends ChangeNotifier{
   Data? dropdownValue;
   Data? dropdownValue2;
 
+  DataLstClass? dropdownValue3;
+
   List<Data> cityLst = [];
 
   List<DataLstClass> categoryList = [
@@ -40,6 +42,14 @@ setDropDownVal2({Data? val}){
     notifyListeners();
 
   }
+  setDropDownVal3({DataLstClass? val}) { // Updated to accept DataLstClass
+    dropdownValue3 = val;
+    notifyListeners();
+    
+  }
+
+  
+
   changeIndex({int lstLength = 1}){
     currentIndex = (currentIndex + 1) % lstLength;
     notifyListeners();

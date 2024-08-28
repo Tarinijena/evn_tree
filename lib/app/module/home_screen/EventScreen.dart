@@ -14,6 +14,7 @@ import 'package:national_wild_animal/app/app_theme/colors.dart';
 import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 
 import 'package:national_wild_animal/app/common_widgets/common_button.dart';
+import 'package:national_wild_animal/app/module/home_screen/HomeScreen.dart';
 import 'package:national_wild_animal/app/module/home_screen/LocationModel/location_model.dart';
 import 'package:national_wild_animal/app/module/home_screen/provider/home_screen_provider.dart';
 
@@ -189,6 +190,53 @@ class _EventScreenState extends State<EventScreen> {
     } catch (e) {
       print('Error: $e');
     }
+  }
+
+  Future<bool> getCategoryList() async {
+    Completer<bool> completer = Completer<bool>();
+    List<DataLstClass> categoryListTemp = [];
+    try {
+      String data = await sharedPref.getKey("token");
+      String token = json.decode(data);
+
+      HttpMethodsDio().getMethodWithToken(
+          api: ApiEndPoint.categoryLst,
+          fun: (map, code) {
+            if (code == 200 && map['data'] != null && map['data'].length > 0) {
+              context.read<HomeScreenProvider>().categoryList.clear();
+
+              map['data'].forEach((e) {
+                categoryListTemp.add(DataLstClass(
+                    nameStr: e['categoryName'], icon: Icons.category_outlined));
+              });
+              categoryListTemp.insert(
+                0,
+                DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
+              );
+              context
+                  .read<HomeScreenProvider>()
+                  .setCategoryList(categoryListData: categoryListTemp);
+            } else {
+              categoryListTemp = [
+                DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
+              ];
+              context
+                  .read<HomeScreenProvider>()
+                  .setCategoryList(categoryListData: categoryListTemp);
+            }
+            completer.complete(true);
+          },
+          token: token);
+    } catch (e) {
+      categoryListTemp = [
+        DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
+      ];
+      context
+          .read<HomeScreenProvider>()
+          .setCategoryList(categoryListData: categoryListTemp);
+      completer.complete(false);
+    }
+    return completer.future;
   }
 
   @override
@@ -422,7 +470,8 @@ class _EventScreenState extends State<EventScreen> {
                                               ),
                                             ),
                                             searchMatchFn: (item, searchValue) {
-                                              print('City Name: ${item.value?.cityName}, Search Value: $searchValue');
+                                              print(
+                                                  'City Name: ${item.value?.cityName}, Search Value: $searchValue');
                                               return item.value!.cityName
                                                   .toString()
                                                   .toLowerCase()
@@ -535,81 +584,65 @@ class _EventScreenState extends State<EventScreen> {
                         ),
                         Container(
                           decoration: ShapeDecoration(
-                              shape: RoundedRectangleBorder(
-                                  side: BorderSide(
-                                      width: 1,
-                                      color: Color(0xffB74BFF)),
-                                  borderRadius:
-                                      BorderRadius.circular(14))),
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                  width: 1, color: Color(0xffB74BFF)),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
                           child: Consumer<HomeScreenProvider>(
                             builder: (context, provider, child) {
                               return DropdownButtonHideUnderline(
-                                child: DropdownButton2<Data>(
+                                child: DropdownButton2<DataLstClass>(
                                   isExpanded: true,
                                   hint: Text(
-                                    "Cities",
-                                    style:
-                                        TextStyle(color: Colors.white),
+                                    "Categories",
+                                    style: TextStyle(color: Colors.white),
                                   ),
-                                  value: context
-                                      .read<HomeScreenProvider>()
-                                      .dropdownValue2,
+                                  value: provider
+                                      .dropdownValue3, // Assuming dropdownValue2 is used for category selection
                                   style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12),
+                                      color: Colors.white, fontSize: 12),
                                   dropdownStyleData: DropdownStyleData(
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(14),
-                                        color: ColorsGroup.iconColor,
-                                      ),
-                                      maxHeight: 150,
-                                      offset: const Offset(0, 0),
-                                      scrollbarTheme:
-                                          ScrollbarThemeData(
-                                              radius:
-                                                  const Radius.circular(
-                                                      40),
-                                              thickness:
-                                                  WidgetStateProperty
-                                                      .all<double>(8),
-                                              thumbVisibility:
-                                                  WidgetStateProperty
-                                                      .all<bool>(true)),
-                                      scrollPadding: EdgeInsets.all(3)),
-                                  items: context
-                                      .read<HomeScreenProvider>()
-                                      .cityLst
-                                      .map<DropdownMenuItem<Data>>(
-                                          (Data value) {
-                                    return DropdownMenuItem<Data>(
-                                      value: value,
-                                      child: Text(value.cityName ?? ""),
-                                    );
-                                  }).toList(),
-                                  onChanged: (Data? newValue) {
-                                    context
-                                        .read<HomeScreenProvider>()
-                                        .setDropDownVal2(val: newValue);
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(14),
+                                      color: ColorsGroup.iconColor,
+                                    ),
+                                    maxHeight: 150,
+                                    offset: const Offset(0, 0),
+                                    scrollbarTheme: ScrollbarThemeData(
+                                      radius: const Radius.circular(40),
+                                      thickness:
+                                          WidgetStateProperty.all<double>(8),
+                                      thumbVisibility:
+                                          WidgetStateProperty.all<bool>(true),
+                                    ),
+                                    scrollPadding: EdgeInsets.all(3),
+                                  ),
+                                  items: provider.categoryList
+                                      .map<DropdownMenuItem<DataLstClass>>(
+                                    (DataLstClass value) {
+                                      return DropdownMenuItem<DataLstClass>(
+                                        value: value,
+                                        child: Text(value.nameStr ?? ""),
+                                      );
+                                    },
+                                  ).toList(),
+                                  onChanged: (DataLstClass? newValue) {
+                                    provider.setDropDownVal3(
+                                        val:
+                                            newValue); // Set the selected category
                                   },
                                   onMenuStateChange: (bool sta) {
-                                    debugPrint(">>>>>>>>>>>>>>$sta");
-                                    if (sta) {
-                                      country1Controller.text = "";
-                                    }
+                                    debugPrint("Menu state changed: $sta");
                                   },
-                                  dropdownSearchData:
-                                      DropdownSearchData(
+                                  dropdownSearchData: DropdownSearchData(
                                     searchController: search4,
                                     searchInnerWidgetHeight: 50,
                                     searchInnerWidget: Container(
                                       height: 50,
                                       padding: const EdgeInsets.only(
-                                        top: 8,
-                                        bottom: 4,
-                                        right: 8,
-                                        left: 8,
-                                      ),
+                                          top: 8, bottom: 4, right: 8, left: 8),
                                       child: TextFormField(
                                         expands: true,
                                         maxLines: null,
@@ -617,26 +650,21 @@ class _EventScreenState extends State<EventScreen> {
                                         decoration: InputDecoration(
                                           isDense: true,
                                           contentPadding:
-                                              const EdgeInsets
-                                                  .symmetric(
-                                            horizontal: 10,
-                                            vertical: 8,
-                                          ),
+                                              const EdgeInsets.symmetric(
+                                                  horizontal: 10, vertical: 8),
                                           hintText: 'Search ...',
                                           hintStyle: const TextStyle(
                                               fontSize: 12,
                                               color: Colors.white),
                                           border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.all(
-                                                    Radius.circular(5)),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5)),
                                           ),
                                         ),
                                       ),
                                     ),
                                     searchMatchFn: (item, searchValue) {
-                                      print('City Name: ${item.value?.cityName}, Search Value: $searchValue');
-                                      return item.value!.cityName
+                                      return item.value!.nameStr
                                           .toString()
                                           .toLowerCase()
                                           .contains(searchValue
@@ -649,7 +677,9 @@ class _EventScreenState extends State<EventScreen> {
                             },
                           ),
                         ),
-                              SizedBox(height: 10,),
+                        SizedBox(
+                          height: 10,
+                        ),
                         Row(
                           children: [
                             Expanded(
@@ -954,6 +984,31 @@ class _EventScreenState extends State<EventScreen> {
                         SizedBox(
                           height: 7,
                         ),
+                     
+                     Container(
+                      height: 120,
+                       child: TextField(
+                        
+                        maxLines: 5,
+                        style: TextStyle(color: Colors.white),
+                         decoration: InputDecoration(
+                          hintText: "Enter Event Description............",
+                          hintStyle: TextStyle(color: Colors.white),
+                           border: OutlineInputBorder(
+                            
+                             borderSide: BorderSide(
+                                width: 3,
+                                color: Colors.white
+                             )
+                           )
+                         ),
+                       ),
+                     ),
+
+                        SizedBox(
+                          height: 15,
+                        ),
+                        
                         CommonButton(
                           buttonText: "Submit",
                           width: double.infinity,

@@ -107,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   buttonText: 'Log In',
                   footerOnTap: () {
-                    Navigator.pushNamed(context, "/signUpScreen");
+                    Navigator.pushNamedAndRemoveUntil(context, "/signUpScreen",(Route<dynamic> route) => false,);
                   },
                   footerTextOne: "You don't have an account ? ",
                   footerTextTwo: 'sign-up',

@@ -71,6 +71,7 @@ class CustomTextField extends StatelessWidget {
               left: 19,
               right: 22,
               bottom: 10,
+              
             ),
             border: border ??
                 OutlineInputBorder(

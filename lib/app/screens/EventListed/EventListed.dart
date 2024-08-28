@@ -1,7 +1,16 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:national_wild_animal/app/api_service/api_end_point.dart';
+import 'package:national_wild_animal/app/api_service/http_methods.dart';
+import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
+import 'package:national_wild_animal/app/module/home_screen/HomeScreen.dart';
+import 'package:national_wild_animal/app/module/home_screen/provider/home_screen_provider.dart';
 import 'package:national_wild_animal/app/screens/EventListed/EventCard.dart';
 import 'package:national_wild_animal/app/screens/EventListed/EventDetails.dart';
 import 'package:national_wild_animal/app/screens/EventListed/EventListedData.dart';
+import 'package:provider/provider.dart';
 
 class EventListedPage extends StatefulWidget {
   const EventListedPage({super.key});
@@ -14,6 +23,55 @@ class _EventListedPageState extends State<EventListedPage> {
   int isSelected = 0;
 
   List<String> event = ["All", "Music", "Food", "Tech", "Education"];
+
+   SharedPref sharedPref = SharedPref();
+
+   Future<bool> getCategoryList() async {
+    Completer<bool> completer = Completer<bool>();
+    List<DataLstClass> categoryListTemp = [];
+    try {
+      String data = await sharedPref.getKey("token");
+      String token = json.decode(data);
+
+      HttpMethodsDio().getMethodWithToken(
+          api: ApiEndPoint.categoryLst,
+          fun: (map, code) {
+            if (code == 200 && map['data'] != null && map['data'].length > 0) {
+              context.read<HomeScreenProvider>().categoryList.clear();
+
+              map['data'].forEach((e) {
+                categoryListTemp.add(DataLstClass(
+                    nameStr: e['categoryName'], icon: Icons.category_outlined));
+              });
+              categoryListTemp.insert(
+                0,
+                DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
+              );
+              context
+                  .read<HomeScreenProvider>()
+                  .setCategoryList(categoryListData: categoryListTemp);
+            } else {
+              categoryListTemp = [
+                DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
+              ];
+              context
+                  .read<HomeScreenProvider>()
+                  .setCategoryList(categoryListData: categoryListTemp);
+            }
+            completer.complete(true);
+          },
+          token: token);
+    } catch (e) {
+      categoryListTemp = [
+        DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
+      ];
+      context
+          .read<HomeScreenProvider>()
+          .setCategoryList(categoryListData: categoryListTemp);
+      completer.complete(false);
+    }
+    return completer.future;
+  }
 
   @override
   Widget build(BuildContext context) {
