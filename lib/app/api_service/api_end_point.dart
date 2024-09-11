@@ -18,4 +18,6 @@ class ApiEndPoint {
 
   static String getUserProfile = "$baseUrl/umt/get-user-details";
 
+  static String getRefreshToken="$baseUrl/umt/get-refresh-token";
+
 }
