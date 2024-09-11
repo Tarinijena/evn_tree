@@ -285,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                           ),
                         ),
                         const SizedBox(
-                          height: 17,
+                          height: 7,
                         ),
                         CommonTextFieldView(
                           controller: textEditingController,
@@ -441,7 +441,7 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                         Column(
                           children: [
                             SizedBox(
-                              height: 10,
+                              height: 5,
                             ),
                             Container(
                               height: 33,

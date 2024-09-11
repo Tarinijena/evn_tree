@@ -277,7 +277,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               child: OptTextField(
                                 
                                 controller: password1,
-                                keyboardType: TextInputType.text,
+                                keyboardType: TextInputType.number,
                                 focusNode: firstFocusNode,
                               ),
                             ),
@@ -287,7 +287,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Expanded(
                               child: OptTextField(
                                 controller: password2,
-                                keyboardType: TextInputType.text,
+                                keyboardType: TextInputType.number,
                                 focusNode: secondFocusNode,
                                 previousFocusNode: firstFocusNode,
                               ),
@@ -298,7 +298,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Expanded(
                               child: OptTextField(
                                 controller: password3,
-                                keyboardType: TextInputType.text,
+                                keyboardType: TextInputType.number,
                                 focusNode: thirdFocusNode,
                                 previousFocusNode: secondFocusNode,
                               ),
@@ -309,7 +309,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Expanded(
                               child: OptTextField(
                                 controller: password4,
-                                keyboardType: TextInputType.text,
+                                keyboardType: TextInputType.number,
                                 focusNode: fourthFocusNode,
                                 previousFocusNode: thirdFocusNode,
                               ),

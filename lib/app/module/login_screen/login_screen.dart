@@ -118,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.only(left: 2, right: 2),
                       titleText: "email / phone No",
                       hintText: "email / phone No",
-                      keyboardType: TextInputType.name,
+                      keyboardType: TextInputType.text,
                       onChanged: (String txt) {
                         userName.value=userName.value.copyWith(text: txt.toLowerCase(),);
                       },
@@ -172,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: OptTextField(
                                  
                                   controller: password1,
-                                  keyboardType: TextInputType.text,
+                                  keyboardType: TextInputType.number,
                                    focusNode: firstFocusNode,
                                 ),
                               ),
@@ -182,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Expanded(
                                 child: OptTextField(
                                   controller: password2,
-                                  keyboardType: TextInputType.text,
+                                  keyboardType: TextInputType.number,
                                   focusNode: secondFocusNode,
                                   previousFocusNode: firstFocusNode,
                                   
@@ -194,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Expanded(
                                 child: OptTextField(
                                   controller: password3,
-                                  keyboardType: TextInputType.text,
+                                  keyboardType: TextInputType.number,
                                   focusNode: thirdFocusNode,
                                   previousFocusNode: secondFocusNode,
                                 ),
@@ -205,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Expanded(
                                 child: OptTextField(
                                   controller: password4,
-                                  keyboardType: TextInputType.text,
+                                  keyboardType: TextInputType.number,
                                   focusNode: fourthFocusNode,
                                   previousFocusNode: thirdFocusNode,
                                 ),

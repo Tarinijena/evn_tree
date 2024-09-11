@@ -25,6 +25,15 @@ class _EventListedPageState extends State<EventListedPage> {
   List<String> event = ["All", "Music", "Food", "Tech", "Education"];
 
    SharedPref sharedPref = SharedPref();
+   
+    late Future<bool> categoryFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the category list on initialization
+    categoryFuture = getCategoryList();
+  }
 
    Future<bool> getCategoryList() async {
     Completer<bool> completer = Completer<bool>();
@@ -75,37 +84,57 @@ class _EventListedPageState extends State<EventListedPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Column(
-        children: [
-          Container(
-            height: 50,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: event.length,
-              itemBuilder: (context, index) {
-                return _buildProductCategory(index: index, name: event[index]);
-              },
-            ),
+    
+     return FutureBuilder<bool>(
+      future: categoryFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text("Error loading categories"));
+        }
+
+        final categoryList = context.watch<HomeScreenProvider>().categoryList;
+
+        return SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            children: [
+              Container(
+                height: 50,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: categoryList.length,
+                  itemBuilder: (context, index) {
+                    return _buildProductCategory(
+                      index: index,
+                      name: categoryList[index].nameStr ?? "Unknown",
+                    );
+                  },
+                ),
+              ),
+              Container(
+                child: isSelected == 0
+                    ? _showAllEvent()
+                    : isSelected == 1
+                        ? _showAllMusic()
+                        : isSelected == 2
+                            ? _showAllFood()
+                            : isSelected == 3
+                                ? _showAllTech()
+                                : null,
+              )
+            ],
           ),
-          Container(
-            child: isSelected == 0
-                ? _showAllEvent()
-                : isSelected == 1
-                    ? _showAllMusic()
-                    : isSelected == 2
-                        ? _showAllFood()
-                        : isSelected == 3
-                            ? _showAllTech()
-                            : null,
-          )
-        ],
-      ),
+        );
+      },
     );
   }
 
-  _buildProductCategory({required int index, required String name}) => GestureDetector(
+  _buildProductCategory({required int index, required String name}) =>
+      GestureDetector(
         onTap: () {
           setState(() {
             isSelected = index;
@@ -117,10 +146,18 @@ class _EventListedPageState extends State<EventListedPage> {
           margin: EdgeInsets.only(top: 10, right: 10),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-              color: isSelected == index ? Color(0xFFB74BFF) : Colors.grey.shade400, borderRadius: BorderRadius.circular(8)),
+            color: isSelected == index
+                ? Color(0xFFB74BFF)
+                : Colors.grey.shade400,
+            borderRadius: BorderRadius.circular(8),
+          ),
           child: Text(
             name,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isSelected == index ? Colors.white : Colors.black),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isSelected == index ? Colors.white : Colors.black,
+            ),
           ),
         ),
       );

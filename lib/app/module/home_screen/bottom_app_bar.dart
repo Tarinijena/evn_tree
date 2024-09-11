@@ -63,26 +63,23 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
       future: _userRoleFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // Show a loading indicator while waiting for the user role
           return PopScope(
-             canPop: false, // Prevents default pop behavior
-      onPopInvoked: (didPop) async {
-        // Show the custom dialog when back button is pressed
-        bool shouldClose = await showCommonPopupNew(
-          "Exit",
-          "Are you sure you want to exit?",
-          context,
-          isYesOrNoPopup: true,
-          barrierDismissible: false, // Disable dismissing by tapping outside
-        );
+             canPop: false,
+             onPopInvoked: (didPop) async {
+               bool shouldClose = await showCommonPopupNew(
+                 "Exit",
+                 "Are you sure you want to exit?",
+                 context,
+                 isYesOrNoPopup: true,
+                 barrierDismissible: false,
+               );
 
-        if (shouldClose) {
-           // Schedule the pop to happen after the current frame completes
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-             SystemNavigator.pop(); // Use true to ensure the navigation is performed correctly
-          });  // Close the app or the screen
-        }
-      },
+               if (shouldClose) {
+                 WidgetsBinding.instance.addPostFrameCallback((_) {
+                   SystemNavigator.pop(); 
+                 });
+               }
+             },
             child: Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
@@ -90,51 +87,50 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
             ),
           );
         } else {
-          return Scaffold(
-            bottomNavigationBar: BottomAppBar(
-              height: 60,
-              color: Color(0xFF2A233D),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      _buildIconButton(
-                        icon: Icons.home,
-                        index: 0,
-                      ),
-                      Consumer<UserRoleProvider>(
-                        builder: (context, provider, child) {
-                          /*if (provider.roles
-                              .toString()
-                              .toLowerCase()
-                              .contains("super admin")) {
+          return WillPopScope(
+            onWillPop: () async {
+              final provider = context.read<BottomAppBarProvider>();
+              if (provider.currentPageIndex != 0) {
+                provider.changePageOnClick(index: 0);
+                return false; // Prevent the app from closing
+              }
+              return true; // Allow the app to close
+            },
+            child: Scaffold(
+              bottomNavigationBar: BottomAppBar(
+                height: 60,
+                color: Color(0xFF2A233D),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        _buildIconButton(
+                          icon: Icons.home,
+                          index: 0,
+                        ),
+                        Consumer<UserRoleProvider>(
+                          builder: (context, provider, child) {
                             return _buildIconButton(
                               icon: Icons.theater_comedy_outlined,
                               index: 1,
                             );
-                          } else {
-                            return Container();
-                          }*/
-                          return _buildIconButton(
-                              icon: Icons.theater_comedy_outlined,
-                              index: 1,
-                            );
-                        },
-                      ),
-                    ],
-                  ),
-                  _buildIconButton(
-                    icon: Icons.person,
-                    index: 2,
-                  ),
-                ],
+                          },
+                        ),
+                      ],
+                    ),
+                    _buildIconButton(
+                      icon: Icons.person,
+                      index: 2,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            body: Consumer<BottomAppBarProvider>(
-              builder: (context, provider, child) {
-                return widget.screens[provider.currentPageIndex];
-              },
+              body: Consumer<BottomAppBarProvider>(
+                builder: (context, provider, child) {
+                  return widget.screens[provider.currentPageIndex];
+                },
+              ),
             ),
           );
         }

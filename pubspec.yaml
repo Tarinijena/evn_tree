@@ -47,6 +47,7 @@ dependencies:
   animated_text_kit:
   dropdown_button2:
   image_picker:
+  shimmer:
 
 dev_dependencies:
   flutter_test:

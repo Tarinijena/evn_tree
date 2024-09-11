@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:national_wild_animal/app/api_service/api_end_point.dart';
 import 'package:national_wild_animal/app/api_service/http_methods.dart';
 import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
@@ -23,6 +26,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
 
   UserData? userData;
+    Uint8List? _image;
+  File? selectedIMage;
 
   //these are the controller for text form field...................
    late TextEditingController fullNameController;
@@ -115,13 +120,23 @@ Future<bool> getUserProfileData() async {
                   ),
                   Positioned(
                     bottom: -45,
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: AssetImage(
-                          "assets/indian.jpeg"), // Replace with your image URL
-                    ),
+                    child: _image != null
+                ? CircleAvatar(
+                    radius: 60, backgroundImage: MemoryImage(_image!))
+                : const CircleAvatar(
+                    radius: 60,
+                    backgroundImage: NetworkImage(
+                        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"),
                   ),
-                  Positioned(top: 20, child: Image.asset("assets/logo1.png"))
+                  ),
+                  Positioned(top: 20, child: Image.asset("assets/logo1.png")),
+                  Positioned(
+                    //top: -55,
+                    bottom: 45,
+                    left: 120,
+                    child: IconButton(onPressed: () {
+                       showImagePickerOption(context);
+                  }, icon:Icon(Icons.add_a_photo,size: 35,color: Color(0xffB74BFF),)))
                 ],
               ),
               SizedBox(
@@ -230,6 +245,87 @@ Future<bool> getUserProfileData() async {
       ),
     );
   }
+
+   void showImagePickerOption(BuildContext context) {
+    showModalBottomSheet(
+        backgroundColor: Color(0xffB74BFF),
+        context: context,
+        builder: (builder) {
+          return Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height / 4.5,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        _pickImageFromGallery();
+                      },
+                      child: const SizedBox(
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.image,
+                              size: 70,
+                            ),
+                            Text("Gallery")
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        _pickImageFromCamera();
+                      },
+                      child: const SizedBox(
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.camera_alt,
+                              size: 70,
+                            ),
+                            Text("Camera")
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+//Gallery
+  Future _pickImageFromGallery() async {
+    final returnImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (returnImage == null) return;
+    setState(() {
+      selectedIMage = File(returnImage.path);
+      _image = File(returnImage.path).readAsBytesSync();
+    });
+    Navigator.of(context).pop(); //close the model sheet
+  }
+
+//Camera
+  Future _pickImageFromCamera() async {
+    final returnImage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (returnImage == null) return;
+    setState(() {
+      selectedIMage = File(returnImage.path);
+      _image = File(returnImage.path).readAsBytesSync();
+    });
+    Navigator.of(context).pop();
+  }
+
+
 }
 
 class RectangularContainerWithImage extends StatelessWidget {
