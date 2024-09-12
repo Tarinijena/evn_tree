@@ -50,11 +50,12 @@ class _LoginScreenState extends State<LoginScreen> {
             Utils.disMissProgressIndicator();
             print(code);
             if (code == 200) {
-              print("User Login Successfully...........");
+              print("User Login Successfully...........$map");
 
               Utils.disMissProgressIndicator();
               await sharedPref.save("isLogIn", "true");
               await sharedPref.save("token", map['data']['token']);
+              await sharedPref.save("refreshToken", map['data']['refreshToken']);
               await sharedPref.save("fullName", map['data']['fullName']);
               await sharedPref.save("mobileNo", map['data']['mobileNo']);
               await sharedPref.save("userName", map['data']['userName']);

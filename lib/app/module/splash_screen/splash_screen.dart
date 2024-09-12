@@ -8,6 +8,7 @@ import 'package:national_wild_animal/app/app_utils/helper.dart';
 import 'package:national_wild_animal/app/module/splash_screen/refresh_token_model.dart';
 
 import '../../app_utils/shared_preferance.dart';
+import '../../app_utils/utils.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,55 +18,48 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> with Helper {
-
   SharedPref sharedPref = SharedPref();
   Future<bool> getRefreshToken() async {
-  Completer<bool> completer = Completer<bool>();
+    Completer<bool> completer = Completer<bool>();
 
-  try {
-    // Retrieve the stored JSON string from shared preferences
-    String jsonData = await sharedPref.getKey("userResponse"); 
-    
-    print(jsonData);
+    try {
+      // Retrieve the stored JSON string from shared preferences
+      String? jsonData = await sharedPref.getKey("token");
 
-    // Decode the JSON string into a Map and then parse it to UserResponse
-    Map<String, dynamic> jsonMap = json.decode(jsonData);
-    UserResponse userResponse = UserResponse.fromJson(jsonMap);
-
-    // Extract the token from the UserResponse object
-    String? token = userResponse.data?.token;
-
-    if (token != null) {
-      // Call the API method using the token
-      HttpMethodsDio().getMethodWithToken(
-        api: ApiEndPoint.getRefreshToken,
-        fun: (map, code) {
-          if (code == 200 && map['data'] != null && map['data'].isNotEmpty) {
-            // Handle successful token refresh
-            completer.complete(true);
-          } else {
-            completer.complete(false);  // Handle other scenarios
-          }
-        },
-        token: token, // Pass the extracted token
-      );
-    } else {
-      completer.complete(false);  // Handle case where token is null
+      if (jsonData != null) {
+        Utils.showProgressIndicator();
+        String? refreshToken = json.decode(jsonData);
+        // Call the API method using the token
+        HttpMethodsDio().getMethodWithToken(
+          api: ApiEndPoint.getRefreshToken,
+          fun: (map, code) async {
+            Utils.disMissProgressIndicator();
+            debugPrint(">>>>>>>>map$map");
+            if (code == 200 && map['data'] != null && map['data'].isNotEmpty) {
+              // Handle successful token refresh
+              await sharedPref.save("token", map['data']['token']);
+              completer.complete(true);
+            } else {
+              completer.complete(false); // Handle other scenarios
+            }
+          },
+          token: refreshToken, // Pass the extracted token
+        );
+      } else {
+        Utils.disMissProgressIndicator();
+        completer.complete(false); // Handle case where token is null
+      }
+    } catch (e) {
+      Utils.disMissProgressIndicator();
+      completer.complete(false); // Complete with an error if something goes wrong
     }
-  } catch (e) {
-    completer.completeError(e);  // Complete with an error if something goes wrong
+
+    return completer.future;
   }
 
-  return completer.future;
-}
-
-
- 
   @override
   void initState() {
     super.initState();
-    getRefreshToken();
-
     Future.delayed(Duration(seconds: 3), () {
       setRoute();
     });
@@ -76,10 +70,24 @@ class _SplashScreenState extends State<SplashScreen> with Helper {
     String? logInTime = await sharedPref.getKey("logInTime");
     if (logInTime != null && logInTime != "") {
       DateTime logInDateTime = DateTime.parse(json.decode(logInTime));
-      int logInDay = logInDateTime.difference(DateTime.now()).inDays.abs();
-      debugPrint(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${logInDay}");
+      int logInHours = DateTime.now().difference(logInDateTime).inHours;
+      int logInMinutes = DateTime.now().difference(logInDateTime).inMinutes;
+      debugPrint(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${logInHours}");
+      debugPrint(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${logInMinutes}");
       if (isLogIn.toString().contains("true")) {
-        if (logInDay <= 1) {
+        if (logInMinutes > 475) {
+          getRefreshToken().then((sta){
+            if(sta){
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                "/bottomAppBarProvider",
+                    (Route<dynamic> route) => false,
+              );
+            }else{
+              gotoSplashScreen();
+            }
+          });
+        } else if (logInHours <= 8) {
           Navigator.pushNamedAndRemoveUntil(
             context,
             "/bottomAppBarProvider",
@@ -96,12 +104,12 @@ class _SplashScreenState extends State<SplashScreen> with Helper {
           (Route<dynamic> route) => false,
         );
       }
-    }else{
+    } else {
       Navigator.pushNamedAndRemoveUntil(
-          context,
-          "/logInScreen",
-          (Route<dynamic> route) => false,
-        );
+        context,
+        "/logInScreen",
+        (Route<dynamic> route) => false,
+      );
     }
   }
 
