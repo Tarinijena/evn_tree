@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:national_wild_animal/app/api_service/api_end_point.dart';
 import 'package:national_wild_animal/app/api_service/http_methods.dart';
 import 'package:national_wild_animal/app/app_utils/helper.dart';
+import 'package:national_wild_animal/app/module/login_screen/login_screen.dart';
+import 'package:national_wild_animal/app/module/no_internet/no_internet_screen.dart';
 import 'package:national_wild_animal/app/module/splash_screen/refresh_token_model.dart';
 
 import '../../app_utils/shared_preferance.dart';
@@ -18,6 +21,41 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> with Helper {
+
+
+
+  Future<void> checkConnectivity() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      // No internet connection
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('No Internet Connection'),
+          content: Text('Please check your internet settings.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => NoInternetPage()),
+                );
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Internet is available, navigate to Login Page
+      Future.delayed(Duration(seconds: 3), () {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => LoginScreen()),
+        );
+      });
+    }
+  }
+
   SharedPref sharedPref = SharedPref();
   Future<bool> getRefreshToken() async {
     Completer<bool> completer = Completer<bool>();
@@ -38,6 +76,7 @@ class _SplashScreenState extends State<SplashScreen> with Helper {
             if (code == 200 && map['data'] != null && map['data'].isNotEmpty) {
               // Handle successful token refresh
               await sharedPref.save("token", map['data']['token']);
+               await sharedPref.save("logInTime", DateTime.now().toString());
               completer.complete(true);
             } else {
               completer.complete(false); // Handle other scenarios
@@ -60,6 +99,7 @@ class _SplashScreenState extends State<SplashScreen> with Helper {
   @override
   void initState() {
     super.initState();
+     //checkConnectivity();
     Future.delayed(Duration(seconds: 3), () {
       setRoute();
     });
@@ -95,7 +135,7 @@ class _SplashScreenState extends State<SplashScreen> with Helper {
           );
         } else {
           debugPrint(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>in else");
-          gotoSplashScreen();
+          gotoSplashScreen(); 
         }
       } else {
         Navigator.pushNamedAndRemoveUntil(

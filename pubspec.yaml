@@ -48,6 +48,7 @@ dependencies:
   dropdown_button2:
   image_picker:
   shimmer:
+  connectivity_plus:
 
 dev_dependencies:
   flutter_test:

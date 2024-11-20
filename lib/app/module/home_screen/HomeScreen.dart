@@ -15,13 +15,12 @@ import 'package:national_wild_animal/app/common_widgets/CustomAppBar.dart';
 import 'package:national_wild_animal/app/module/home_screen/LocationModel/location_model.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
-
+import 'package:shimmer/shimmer.dart';
 
 import '../../app_utils/shared_preferance.dart';
 import 'provider/home_screen_provider.dart';
 
-class HomeScreen extends StatefulWidget  {
-  
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
@@ -188,10 +187,11 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
         );
 
         if (shouldClose) {
-           // Schedule the pop to happen after the current frame completes
+          // Schedule the pop to happen after the current frame completes
           WidgetsBinding.instance.addPostFrameCallback((_) {
-             SystemNavigator.pop(); // Use true to ensure the navigation is performed correctly
-          });  // Close the app or the screen
+            SystemNavigator
+                .pop(); // Use true to ensure the navigation is performed correctly
+          }); // Close the app or the screen
         }
       },
       child: Scaffold(
@@ -205,14 +205,40 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                 children: [
                   Consumer<HomeScreenProvider>(
                     builder: (context, provider, child) {
-                      return CustomAppBar(
-                        cityLst: context.read<HomeScreenProvider>().cityLst,
-                        dropdownValue:context.read<HomeScreenProvider>().dropdownValue,
-                        onChange: (Data? val) {
-                          context
-                              .read<HomeScreenProvider>()
-                              .setDropDownVal(val: val);
-                        },
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.blueAccent,
+                              Colors.cyan,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: Offset(0, 3), // Shadow position
+                            ),
+                          ],
+                        ),
+                        child: SizedBox(
+                          // Ensure that the CustomAppBar has a size
+                          height: 60, // Adjust the height as needed
+                          child: CustomAppBar(
+                            cityLst: context.read<HomeScreenProvider>().cityLst,
+                            dropdownValue: context
+                                .read<HomeScreenProvider>()
+                                .dropdownValue,
+                            onChange: (Data? val) {
+                              context
+                                  .read<HomeScreenProvider>()
+                                  .setDropDownVal(val: val);
+                            },
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -223,22 +249,39 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              "Hello",
-                              style: TextStyles(context)
-                                  .googleRubikFontsForButtonText(
-                                      fontWeight: FontWeight.w400, fontSize: 20),
-                            ),
-                            Text(" ${fullName ?? "-----"}",
-                                style: TextStyles(context)
-                                    .googleRubikFontsForText2(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 20)),
-                            Text(",",
+                            Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Text(
+                                "Hello",
                                 style: TextStyles(context)
                                     .googleRubikFontsForButtonText(
                                         fontWeight: FontWeight.w400,
-                                        fontSize: 20)),
+                                        fontSize: 20),
+                              ),
+                            ),
+                            Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Text(
+                                " ${fullName ?? "-----"}",
+                                style: TextStyles(context)
+                                    .googleRubikFontsForText2(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 20),
+                              ),
+                            ),
+                            Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                              highlightColor: Colors.grey.shade100,
+                              child: Text(
+                                ",",
+                                style: TextStyles(context)
+                                    .googleRubikFontsForButtonText(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 20),
+                              ),
+                            ),
                           ],
                         ),
                         SizedBox(
@@ -248,38 +291,52 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: [
-                                Text(
-                                  "Let’s explore your fav ",
-                                  style: TextStyles(context)
-                                      .googleRubikFontsForButtonText(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 20),
+                                Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade300,
+                                  highlightColor: Colors.grey.shade100,
+                                  child: Text(
+                                    "Let’s explore your fav ",
+                                    style: TextStyles(context)
+                                        .googleRubikFontsForButtonText(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 20),
+                                  ),
                                 ),
                                 SizedBox(
                                   width: 500,
                                   child: SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
-                                    child: DefaultTextStyle(
-                                      style: TextStyles(context)
-                                          .googleRubikFontsForText2(
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 20),
-                                      child: AnimatedTextKit(
-                                        animatedTexts: data,
-                                        isRepeatingAnimation: true,
-                                        repeatForever: true,
-                                        onTap: () {
-                                          print("Tap Event");
-                                        },
+                                    child: Shimmer.fromColors(
+                                      baseColor: Colors.grey.shade300,
+                                      highlightColor: Colors.grey.shade100,
+                                      child: DefaultTextStyle(
+                                        style: TextStyles(context)
+                                            .googleRubikFontsForText2(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 20),
+                                        child: AnimatedTextKit(
+                                          animatedTexts: data,
+                                          isRepeatingAnimation: true,
+                                          repeatForever: true,
+                                          onTap: () {
+                                            print("Tap Event");
+                                          },
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                                Text(" !",
+                                Shimmer.fromColors(
+                                  baseColor: Colors.grey.shade300,
+                                  highlightColor: Colors.grey.shade100,
+                                  child: Text(
+                                    " !",
                                     style: TextStyles(context)
                                         .googleRubikFontsForButtonText(
                                             fontWeight: FontWeight.w400,
-                                            fontSize: 20)),
+                                            fontSize: 20),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -334,13 +391,14 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                                             child: Column(
                                               children: [
                                                 Consumer<HomeScreenProvider>(
-                                                  builder:
-                                                      (context, provider, child) {
+                                                  builder: (context, provider,
+                                                      child) {
                                                     return Container(
                                                         decoration: BoxDecoration(
                                                             borderRadius:
                                                                 BorderRadius
-                                                                    .circular(2),
+                                                                    .circular(
+                                                                        2),
                                                             border: Border.all(
                                                                 width: 1,
                                                                 color: const Color(
@@ -399,14 +457,15 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                                         onTap: () {
                                           double currentOffset =
                                               scrollController.offset;
-                                          double newOffset = currentOffset + 30.0;
-      
+                                          double newOffset =
+                                              currentOffset + 30.0;
+
                                           if (maxScrollExtent == 0) {
                                             scrollController.jumpTo(
                                               30,
                                             );
                                           }
-      
+
                                           if (newOffset <= maxScrollExtent) {
                                             scrollController.animateTo(
                                               newOffset,
@@ -473,7 +532,8 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                                           alignment: Alignment.center,
                                           child: Text(
                                             "Ungoing",
-                                            style: TextStyle(color: Colors.white),
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
                                         ),
                                       ),
@@ -491,8 +551,8 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                                         child: Align(
                                           alignment: Alignment.center,
                                           child: Text("Upcomeing",
-                                              style:
-                                                  TextStyle(color: Colors.white)),
+                                              style: TextStyle(
+                                                  color: Colors.white)),
                                         ),
                                       ),
                                     ),
@@ -529,7 +589,8 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                                                     decoration: BoxDecoration(
                                                         image: DecorationImage(
                                                             image: AssetImage(
-                                                              festivalData[index]
+                                                              festivalData[
+                                                                      index]
                                                                   .imagePath,
                                                             ),
                                                             fit: BoxFit.cover)),
@@ -571,13 +632,14 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                                                                 .festivalLocation,
                                                             style: TextStyle(
                                                                 fontSize: 10,
-                                                                color:
-                                                                    Colors.white,
+                                                                color: Colors
+                                                                    .white,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold),
-                                                            overflow: TextOverflow
-                                                                .ellipsis,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                           ),
                                                         )
                                                       ],
@@ -599,13 +661,14 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                                                                 .festivalLocation,
                                                             style: TextStyle(
                                                                 fontSize: 10,
-                                                                color:
-                                                                    Colors.white,
+                                                                color: Colors
+                                                                    .white,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold),
-                                                            overflow: TextOverflow
-                                                                .ellipsis,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                           ),
                                                         )
                                                       ],
@@ -627,8 +690,8 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                                                           height: 20,
                                                           width: 60,
                                                           decoration: BoxDecoration(
-                                                              color: Colors
-                                                                  .grey.shade800,
+                                                              color: Colors.grey
+                                                                  .shade800,
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
@@ -725,25 +788,16 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
     return await Geolocator.getCurrentPosition();
   }
 
-   Future<bool> _onBackPressed() async {
-      
-       return showCommonPopupNew(
-      
+  Future<bool> _onBackPressed() async {
+    return showCommonPopupNew(
       "Are you sure?",
       "Exit App?",
       context,
       barrierDismissible: true,
       isYesOrNoPopup: true,
-    
     );
-
-   }
-
-
+  }
 }
-
-
-  
 
 class DataLstClass {
   IconData? icon;

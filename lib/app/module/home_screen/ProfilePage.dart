@@ -119,8 +119,10 @@ Future<bool> getUserProfileData() async {
                     color: Color(0xFF2A233D),
                   ),
                   Positioned(
+
                     bottom: -45,
                     child: _image != null
+                    
                 ? CircleAvatar(
                     radius: 60, backgroundImage: MemoryImage(_image!))
                 : const CircleAvatar(
