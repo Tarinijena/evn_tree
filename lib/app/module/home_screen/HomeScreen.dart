@@ -14,7 +14,7 @@ import 'package:national_wild_animal/app/common_widgets/common_text_field_view.d
 import 'package:national_wild_animal/app/common_widgets/CustomAppBar.dart';
 import 'package:national_wild_animal/app/module/home_screen/LocationModel/location_model.dart';
 import 'package:provider/provider.dart';
-import 'package:geolocator/geolocator.dart';
+
 import 'package:shimmer/shimmer.dart';
 
 import '../../app_utils/shared_preferance.dart';
@@ -78,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
                   .setCategoryList(categoryListData: categoryListTemp);
             } else {
               categoryListTemp = [
+                
                 DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
               ];
               context
@@ -751,7 +752,7 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
   ///
   /// When the location services are not enabled or permissions
   /// are denied the `Future` will return an error.
-  Future<Position> _determinePosition() async {
+  /*Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -786,7 +787,7 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
-  }
+  }*/
 
   Future<bool> _onBackPressed() async {
     return showCommonPopupNew(
@@ -802,5 +803,6 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
 class DataLstClass {
   IconData? icon;
   String? nameStr;
-  DataLstClass({this.icon, this.nameStr});
+  String? categoriId;
+  DataLstClass({this.icon, this.nameStr,this.categoriId});
 }

@@ -25,6 +25,15 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
 
+
+  
+
+   String? latitudeData;
+   String? longitudeData;
+   String? locationData;
+
+   
+
   UserData? userData;
     Uint8List? _image;
   File? selectedIMage;
@@ -80,7 +89,8 @@ Future<bool> getUserProfileData() async {
   void initState() {
     
     super.initState();
-
+     _initializeProfileData();
+    
       // Initialize the controllers with the data from userData
     fullNameController = TextEditingController();
     emailController = TextEditingController();
@@ -89,6 +99,16 @@ Future<bool> getUserProfileData() async {
     
     getUserProfileData();
   }
+
+  Future<void> _initializeProfileData() async {
+  latitudeData = await sharedPref.getKey('latitude');
+  longitudeData = await sharedPref.getKey('longitude');
+  locationData = await sharedPref.getKey('currentLocation');
+  print("$latitudeData"+"==================");
+  print("$longitudeData");
+  print("$locationData");
+  
+}
 
   @override
   void dispose() {

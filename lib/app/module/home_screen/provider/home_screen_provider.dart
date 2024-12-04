@@ -18,6 +18,7 @@ class HomeScreenProvider extends ChangeNotifier{
   List<Data> cityLst = [];
 
   List<DataLstClass> categoryList = [
+    
     DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
   ];
 

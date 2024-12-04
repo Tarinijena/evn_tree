@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:national_wild_animal/app/api_service/api_end_point.dart';
 import 'package:national_wild_animal/app/api_service/country_api_services.dart';
@@ -14,6 +18,7 @@ import 'package:national_wild_animal/app/app_theme/colors.dart';
 import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 
 import 'package:national_wild_animal/app/common_widgets/common_button.dart';
+import 'package:national_wild_animal/app/common_widgets/show_snack_bar.dart';
 import 'package:national_wild_animal/app/module/home_screen/HomeScreen.dart';
 import 'package:national_wild_animal/app/module/home_screen/LocationModel/location_model.dart';
 import 'package:national_wild_animal/app/module/home_screen/provider/home_screen_provider.dart';
@@ -42,28 +47,175 @@ class EventScreen extends StatefulWidget {
 }
 
 class _EventScreenState extends State<EventScreen> {
-  bool check1 = false;
-  bool check2 = false;
 
-  DateTime selectedDate = DateTime.now();
+
+   DateTime selectedDate = DateTime.now();
 
   TextEditingController dateController = TextEditingController();
   TextEditingController dateController2 = TextEditingController();
 
   //this controller for create event form field..........
-  TextEditingController eventCreate = TextEditingController();
+  TextEditingController eventController = TextEditingController();
   TextEditingController addressController = TextEditingController();
-  TextEditingController landmarkController = TextEditingController();
-  TextEditingController country1Controller = TextEditingController();
+  TextEditingController addressLine2Controller = TextEditingController();
+  TextEditingController citiesController = TextEditingController();
   final valueListenable = ValueNotifier<String?>(null);
-  TextEditingController country2Controller = TextEditingController();
-  TextEditingController country3Controller = TextEditingController();
+ 
   TextEditingController pincodeController = TextEditingController();
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
-  TextEditingController country4Controller = TextEditingController();
-  TextEditingController country5Controller = TextEditingController();
-  TextEditingController Controller = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController categoriesController = TextEditingController();
+
+  
+
+  bool check1 = false;
+  bool check2 = false;
+
+   String? latitudeData;
+   String? longitudeData;
+   String? locationData;
+   String? tokenData;
+
+
+  Future<void> _getLongLatAddress() async {
+  latitudeData = await sharedPref.getKey('latitude');
+  longitudeData = await sharedPref.getKey('longitude');
+  locationData = await sharedPref.getKey('currentLocation');
+  //print(base64String);
+  print("$latitudeData"+"==================");
+  print("$longitudeData");
+  print("$locationData");
+  
+}
+
+
+
+
+    //this variable for getting longitude,latitude,location............
+ 
+   
+ /* //this api for store event create data in database.........
+   Future<FormData> createFormDataWithEmptyTextFile(String fileName) async {
+  // Create a temporary empty file
+  final file = File(fileName);
+  await file.writeAsString(''); // Ensure the file is empty
+
+  // Create the FormData instance
+  final formData = FormData.fromMap({
+    'file': await MultipartFile.fromFile(file.path, filename: fileName),
+  });
+
+  return formData;
+}*/
+
+  //convert cities into base64 string..........
+  
+
+  late FormData formData;
+
+  String? categoriesId;
+
+   createEvent() async {
+                  //convert cities into base64 string..........
+                  
+            
+                 //formData=await createFormDataWithEmptyTextFile("file1.txt");
+                 print("hello");
+              String? cities=context.read<HomeScreenProvider>().dropdownValue2!.cityId;
+              //String cities64 = base64Encode(utf8.encode(cities!));
+                    //print(cities64);
+              DataLstClass? categories=context.read<HomeScreenProvider>().dropdownValue3;
+              String? categoriesId=categories?.categoriId;
+
+              // **Create new FormData for each request**
+  
+              
+
+ 
+     
+    
+    try {
+      // Prepare the JSON data from the input fields
+      Map<String, dynamic> createEventJson = 
+      
+            {
+  
+  "eventName": eventController.text,
+  "description": descriptionController.text,
+  "eventCategory": categoriesId,
+  "addressLine1": addressController.text,
+  "addressLine2":addressLine2Controller.text,
+  "pinCode": pincodeController.text,
+  "city":cities ,
+  "isPresentInEventLocation": false,
+  "latitude": latitudeData?.toString(),
+  "longitude":  longitudeData?.toString(),
+  "eventStartDate": startDateController.text,
+  "eventEndDate":endDateController.text,
+  "isBookable": check1,
+  "isFreeEntry": check2
+};
+
+        print("$latitudeData"+"==================");
+  print("$longitudeData");
+  print("$locationData");
+
+
+        String? jsonString;
+        String? base64String;
+
+        //Convert the Map to a JSON string
+   jsonString = jsonEncode(createEventJson);
+
+   //jsonString=createEventJson.toString as String?;
+
+  // Convert the JSON string to Base64
+  base64String = base64Encode(utf8.encode(jsonString));
+  //base64String="ewogICAgICAgICAgICAiZXZlbnRJZCI6ICIiLAogICAgICAgICAgICAiZXZlbnROYW1lIjoiaGVsbG8iLAogICAgICAgICAgICAiZGVzY3JpcHRpb24iOiJoaWkiLAogICAgICAgICAgICAiZXZlbnRDYXRlZ29yeSI6ImE0YzhmNWE3LWRjZTItNDJlZi04ZjRhLTllM2Q0NTNiMzZiOSIsCiAgICAgICAgICAgICJhZGRyZXNzTGluZTEiOiJQYXRpYSIsCiAgICAgICAgICAgICJhZGRyZXNzTGluZTIiOiJOZWFyIEtJSVQiLAogICAgICAgICAgICAicGluQ29kZSI6IjEyMzQiLAogICAgICAgICAgICAiY2l0eSI6IjgzYTZkM2U1LTVmOTEtNGM2Yi1iNWM4LTc4YjdiN2ZiYzRmMSIsCiAgICAgICAgICAgICJpc1ByZXNlbnRJbkV2ZW50TG9jYXRpb24iOmZhbHNlLAogICAgICAgICAgICAibGF0aXR1ZGUiOiIyMC4zOTA2MjAiLAogICAgICAgICAgICAibG9uZ2l0dWRlIjoiODUuODI3NTIyIiwKICAgICAgICAgICAgImV2ZW50U3RhcnREYXRlIjoiMjAyNC0xMS0xMyIsCiAgICAgICAgICAgICJldmVudEVuZERhdGUiOiIyMDI0LTExLTI5IiwKICAgICAgICAgICAgImlzQm9va2FibGUiOnRydWUsCiAgICAgICAgICAgICJpc0ZyZWVFbnRyeSI6ZmFsc2UKICAgICAgICAgICAgCiAgICAgIH0KCgo=";
+
+   //final jsonBytes = jsonEncode(createEventJson).codeUnits;
+   //base64String = base64Encode(jsonBytes);
+  
+
+
+    HttpMethodsDio().postMethodWithToken1(
+          token: tokenData,
+          api: ApiEndPoint.createEvent(base64String),
+          json:formData,
+          
+          fun: (map, code) async {
+            print(map);
+            print(code);
+                 Utils.showProgressIndicator();
+            await Future.delayed(Duration(seconds: 2));
+            Utils.disMissProgressIndicator();
+             
+            print(code);
+            if (code == 200) {
+              print("Data store in database successfully..........");
+
+              Utils.disMissProgressIndicator();
+              ShowSnackBar.showSuccess(context, "Event Created Successfully");
+             
+            } else {
+              print(base64String);
+              
+              print("Unable to store data in database........");
+              Utils.disMissProgressIndicator();
+              ShowSnackBar.showError(context, "Something went wrong");
+            }
+          });
+    } catch (e) {
+      Utils.disMissProgressIndicator();
+      ShowSnackBar.showError(context, "Something went wrong");
+    }
+
+   
+    
+  }
+
+ 
 
   List item = ["Create Event", "Event Listing"];
 
@@ -80,11 +232,35 @@ class _EventScreenState extends State<EventScreen> {
 
   int current = 0;
   String? selectedCountry;
-
+  //here we have created object of shared preference.........
   SharedPref sharedPref = SharedPref();
 
+  
+
+  //this variable for store upload image in string format
+  String? base64CameraImage;
+  String? base64FileImage;
+
+  //this variable for getting token.................
+
+ 
+   //this method for getting token
+   Future<String?> getToken()async {
+    
+       String token=await sharedPref.getKey("token");
+       tokenData=json.decode(token);
+        print("token"+tokenData.toString());
+   }
+
+   
+
+    String fileName = "Upload Image";
+
+   late final String? base64Image;  
+     String? name;
   Future pickImage(ImageSource source) async {
     try {
+      
       final image =
           await ImagePicker().pickImage(source: source, imageQuality: 20);
 
@@ -92,8 +268,27 @@ class _EventScreenState extends State<EventScreen> {
         Utils.disMissProgressIndicator();
         return;
       }
+       // Read the file
+    final File imageFile = File(image.path);
+      name= imageFile.uri.pathSegments.last;
+
+      // Create FormData
+    String? fileName = imageFile.path.split('/').last;
+     formData = FormData.fromMap({
+      "file": await MultipartFile.fromFile(imageFile.path, filename: fileName),
+    });
+
+      // Update the UI with the file name
+    setState(() {
+      fileName = name; // Update the state variable
+    });
+
+    // Convert the image to Base64
+    final bytes = await imageFile.readAsBytes();
+    base64Image = base64Encode(bytes);
       // final imageTemporary = File(image.path);
       Utils.disMissProgressIndicator();
+      return base64Image;
     } on PlatformException catch (e) {
       Utils.disMissProgressIndicator();
       if (kDebugMode) {
@@ -109,20 +304,29 @@ class _EventScreenState extends State<EventScreen> {
           return CupertinoActionSheet(
             actions: [
               CupertinoActionSheetAction(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.pop(context);
                   Utils.showProgressIndicator();
-                  pickImage(ImageSource.camera);
-                  Navigator.of(context).pop;
+                  base64CameraImage = await pickImage(ImageSource.camera);
+                  
+                  
+                   if (base64CameraImage != null) {
+                print("Base64 Image: $base64CameraImage");
+                // You can now use the base64Image string
+              }
                 },
                 child: const Text('Use Camera'),
               ),
               CupertinoActionSheetAction(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.pop(context);
                   Utils.showProgressIndicator();
-                  pickImage(ImageSource.gallery);
-                  Navigator.of(context).pop;
+                  base64FileImage = await pickImage(ImageSource.gallery);
+                  
+                  if (base64FileImage != null) {
+                print("Base64 Image: $base64FileImage");
+                // You can now use the base64Image string
+              }
                 },
                 child: const Text('Upload from files'),
               ),
@@ -136,6 +340,130 @@ class _EventScreenState extends State<EventScreen> {
           );
         });
   }
+
+  /*Future<List<String>?> pickImages(bool fromGallery) async {
+  try {
+    if (fromGallery) {
+      // Use FilePicker for picking multiple images from gallery
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: true,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        // Convert picked images to Base64 strings
+        List<String> base64Images = [];
+        List<String> fileNames = [];
+
+        for (var file in result.files) {
+          final fileBytes = File(file.path!).readAsBytesSync();
+          base64Images.add(base64Encode(fileBytes));
+          fileNames.add(file.name);
+        }
+
+        setState(() {
+          fileName = fileNames.join(", "); // Update UI with file names
+        });
+
+        return base64Images;
+      }
+    } else {
+      // Use camera to capture multiple images
+      List<String> base64Images = [];
+      bool keepCapturing = true;
+
+      while (keepCapturing) {
+        final image = await ImagePicker().pickImage(
+          source: ImageSource.camera,
+          imageQuality: 20,
+        );
+
+        if (image != null) {
+          final fileBytes = File(image.path).readAsBytesSync();
+          base64Images.add(base64Encode(fileBytes));
+        }
+
+        // Prompt to capture another image
+        keepCapturing = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("Capture Another?"),
+                content: const Text("Do you want to capture another image?"),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text("No"),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text("Yes"),
+                  ),
+                ],
+              ),
+            ) ??
+            false;
+      }
+
+      return base64Images.isNotEmpty ? base64Images : null;
+    }
+  } catch (e) {
+    Utils.disMissProgressIndicator();
+    if (kDebugMode) {
+      print("Error picking images: $e");
+    }
+    return null;
+  }
+  return null;
+}*/
+
+/*void showModalPop({bool profile = false, required BuildContext context}) {
+  showCupertinoModalPopup(
+    context: context,
+    builder: (BuildContext context) {
+      return CupertinoActionSheet(
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () async {
+              Navigator.pop(context);
+              Utils.showProgressIndicator();
+              final images = await pickImages(false); // Use camera
+
+              if (images != null && images.isNotEmpty) {
+                for (var image in images) {
+                  print("Base64 Image (Camera): $image");
+                }
+              }
+              Utils.disMissProgressIndicator();
+            },
+            child: const Text('Use Camera'),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () async {
+              Navigator.pop(context);
+              Utils.showProgressIndicator();
+              final images = await pickImages(true); // Use gallery
+
+              if (images != null && images.isNotEmpty) {
+                for (var image in images) {
+                  print("Base64 Image (Gallery): $image");
+                }
+              }
+              Utils.disMissProgressIndicator();
+            },
+            child: const Text('Upload from Gallery'),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel', style: TextStyle(color: Colors.red)),
+        ),
+      );
+    },
+  );
+}*/
+
 
   Future<bool> getCityLst() async {
     Completer<bool> completer = Completer<bool>();
@@ -207,7 +535,9 @@ class _EventScreenState extends State<EventScreen> {
 
               map['data'].forEach((e) {
                 categoryListTemp.add(DataLstClass(
+                    categoriId: e['id'],
                     nameStr: e['categoryName'], icon: Icons.category_outlined));
+                    print("==================${categoryListTemp.map((e) => "${e.nameStr}: ${e.categoriId}").toList()}");
               });
               categoryListTemp.insert(
                 0,
@@ -241,13 +571,21 @@ class _EventScreenState extends State<EventScreen> {
 
   @override
   void initState() {
+    getCategoryList();
     getCityLst();
     super.initState();
     fetchCountries();
+    _getLongLatAddress();
+    getToken();
+  
   }
 
+ 
+
+   
   @override
   Widget build(BuildContext context) {
+    context.read<HomeScreenProvider>().dropdownValue2;
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: const Color(0xFF231D32),
@@ -337,7 +675,7 @@ class _EventScreenState extends State<EventScreen> {
                             borderSide: BorderSide(color: Color(0xffB74BFF)),
                           ),
                           inputHint: "Event Name",
-                          controller: eventCreate,
+                          controller: eventController,
                         ),
                         SizedBox(
                           height: 3,
@@ -356,8 +694,8 @@ class _EventScreenState extends State<EventScreen> {
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Color(0xffB74BFF)),
                           ),
-                          inputHint: "Landmark",
-                          controller: landmarkController,
+                          inputHint: "Address Line 2",
+                          controller: addressLine2Controller,
                         ),
                         SizedBox(
                           height: 3,
@@ -423,17 +761,18 @@ class _EventScreenState extends State<EventScreen> {
                                             );
                                           }).toList(),
                                           onChanged: (Data? newValue) {
+                                            print(newValue);
                                             context
                                                 .read<HomeScreenProvider>()
                                                 .setDropDownVal2(val: newValue);
                                           },
-                                          onMenuStateChange: (bool sta) {
+                                          /*onMenuStateChange: (bool sta) {
                                             debugPrint(">>>>>>>>>>>>>>$sta");
                                             if (sta) {
-                                              country1Controller.text = "";
+                                              citiesController.text="";
                                             }
-                                          },
-                                          dropdownSearchData:
+                                          },*/
+                                          /*dropdownSearchData:
                                               DropdownSearchData(
                                             searchController: search4,
                                             searchInnerWidgetHeight: 50,
@@ -448,7 +787,7 @@ class _EventScreenState extends State<EventScreen> {
                                               child: TextFormField(
                                                 expands: true,
                                                 maxLines: null,
-                                                controller: country1Controller,
+                                                controller: citiesController,
                                                 decoration: InputDecoration(
                                                   isDense: true,
                                                   contentPadding:
@@ -480,7 +819,8 @@ class _EventScreenState extends State<EventScreen> {
                                                       .toLowerCase());
                                             },
                                           ),
-                                        ),
+                                        )*/
+                                        )
                                       );
                                     },
                                   ),
@@ -570,6 +910,7 @@ class _EventScreenState extends State<EventScreen> {
                               ),*/
                               Expanded(
                                   child: CustomTextField(
+                                    controller: pincodeController,
                                 enabledBorder: OutlineInputBorder(
                                   borderSide:
                                       BorderSide(color: Color(0xffB74BFF)),
@@ -629,14 +970,16 @@ class _EventScreenState extends State<EventScreen> {
                                     },
                                   ).toList(),
                                   onChanged: (DataLstClass? newValue) {
+                                     print("Selected Category ID: ${newValue?.categoriId}");
+                                     categoriesId=newValue?.categoriId;
                                     provider.setDropDownVal3(
                                         val:
                                             newValue); // Set the selected category
                                   },
-                                  onMenuStateChange: (bool sta) {
+                                  /*onMenuStateChange: (bool sta) {
                                     debugPrint("Menu state changed: $sta");
-                                  },
-                                  dropdownSearchData: DropdownSearchData(
+                                  },*/
+                                  /*dropdownSearchData: DropdownSearchData(
                                     searchController: search4,
                                     searchInnerWidgetHeight: 50,
                                     searchInnerWidget: Container(
@@ -646,7 +989,7 @@ class _EventScreenState extends State<EventScreen> {
                                       child: TextFormField(
                                         expands: true,
                                         maxLines: null,
-                                        controller: country2Controller,
+                                        //controller: country2Controller,
                                         decoration: InputDecoration(
                                           isDense: true,
                                           contentPadding:
@@ -671,7 +1014,7 @@ class _EventScreenState extends State<EventScreen> {
                                               .toString()
                                               .toLowerCase());
                                     },
-                                  ),
+                                  ),*/
                                 ),
                               );
                             },
@@ -684,7 +1027,7 @@ class _EventScreenState extends State<EventScreen> {
                           children: [
                             Expanded(
                               child: CustomTextField(
-                                controller: dateController,
+                                controller: startDateController,
                                 readOnly: true,
                                 enabledBorder: OutlineInputBorder(
                                   borderSide:
@@ -707,7 +1050,7 @@ class _EventScreenState extends State<EventScreen> {
                             Expanded(
                               child: CustomTextField(
                                 focusedBorder: OutlineInputBorder(),
-                                controller: dateController2,
+                                controller:endDateController,
                                 readOnly: true,
                                 enabledBorder: OutlineInputBorder(
                                   borderSide:
@@ -716,7 +1059,7 @@ class _EventScreenState extends State<EventScreen> {
                                 inputHint: "End Date",
                                 suffixIcon: InkWell(
                                     onTap: () {
-                                      _selectDate();
+                                      _selectDate1();
                                     },
                                     child: Icon(
                                       Icons.date_range,
@@ -913,7 +1256,7 @@ class _EventScreenState extends State<EventScreen> {
                                     borderSide:
                                         BorderSide(color: Color(0xffB74BFF)),
                                   ),
-                                  inputHint: "Upload Image",
+                                  inputHint: fileName,
                                   suffixIcon: InkWell(
                                       onTap: () {},
                                       child: Icon(
@@ -988,7 +1331,7 @@ class _EventScreenState extends State<EventScreen> {
                      Container(
                       height: 120,
                        child: TextField(
-                        
+                        controller: descriptionController,
                         maxLines: 5,
                         style: TextStyle(color: Colors.white),
                          decoration: InputDecoration(
@@ -1010,9 +1353,19 @@ class _EventScreenState extends State<EventScreen> {
                         ),
                         
                         CommonButton(
+                          onTap: () {
+                            createEvent();
+                            print("hello");
+                          },
                           buttonText: "Submit",
                           width: double.infinity,
-                        )
+                        ),
+                        /*ElevatedButton(onPressed: () async {
+                                    createEvent();
+                                    setState(() {
+                                       formData=FormData();
+                                    });
+                        }, child: Text("Submit"))*/
                       ],
                     ),
                   ),
@@ -1036,7 +1389,21 @@ class _EventScreenState extends State<EventScreen> {
     );
     if (currentDate != null && currentDate != selectedDate) {
       setState(() {
-        dateController.text = currentDate.toString().split(" ")[0];
+        startDateController.text = currentDate.toString().split(" ")[0];
+      });
+    }
+  }
+
+  Future<void> _selectDate1() async {
+    DateTime? currentDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (currentDate != null && currentDate != selectedDate) {
+      setState(() {
+        endDateController.text = currentDate.toString().split(" ")[0];
       });
     }
   }

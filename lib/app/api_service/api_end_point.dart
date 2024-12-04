@@ -12,6 +12,8 @@ class ApiEndPoint {
 
   static String signupUser="$baseUrl/umt/public/signup-user";
 
+  static String createEvent(String base64String)=>"http://128.199.18.223:8080/evntree/api/v1/event/addEvent?eventEncodedStr=$base64String";
+
   static String signUpVerify(String otpNumber,String emailId)=> "$baseUrl/umt/public/signup-verify?otp=$otpNumber&userName=$emailId";
 
   static String loginVerify(String userName,String userPassword)=>"$baseUrl/umt/public/login?userName=$userName&password=$userPassword";

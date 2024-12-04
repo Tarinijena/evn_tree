@@ -278,6 +278,57 @@ class HttpMethodsDio {
     }
   }
 
+  postMethodWithToken1({required String api,required dynamic json, required Function fun, required String? token}) async {
+    try {
+      if (kDebugMode) {
+        print("API NAME:>$api");
+      }
+      service.Response response = await _dio.post(
+        api,
+        //data: (json != null) ? json : null,
+        data: json,
+        options: Options(headers: {
+          "Authorization": "Bearer ${(token != null) ? token : ""}",
+          "Content-Type": "multipart/form-data"
+        }),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        try {
+          fun(response.data, response.statusCode);
+        } catch (e) {
+          if (kDebugMode) {
+            print("Message is: $e");
+          }
+        }
+      }
+      /*else if (response.statusCode == 417) {
+        fun(response.data);
+      }*/
+      else {
+        if (kDebugMode) {
+          print("Message is: >>1");
+        }
+        fun(failedMap, response.statusCode);
+      }
+    } on DioException catch (e) {
+      switch (e.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.cancel:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+        case DioExceptionType.unknown:
+          fun(failedMap, 1000);
+          break;
+        case DioExceptionType.badResponse:
+          fun(e.response?.data ?? {}, e.response?.statusCode);
+        case DioExceptionType.badCertificate:
+          fun(failedMap, e.response?.statusCode);
+        case DioExceptionType.connectionError:
+          fun(failedMap, e.response?.statusCode);
+      }
+    }
+  }
+
   putMethod({required String api, required post, required Function fun}) async {
     if (kDebugMode) {
       print("<<>>>>>API CALL>>>>>>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n$api");

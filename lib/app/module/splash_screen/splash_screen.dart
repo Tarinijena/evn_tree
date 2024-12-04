@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:national_wild_animal/app/api_service/api_end_point.dart';
 import 'package:national_wild_animal/app/api_service/http_methods.dart';
 import 'package:national_wild_animal/app/app_utils/helper.dart';
-import 'package:national_wild_animal/app/module/login_screen/login_screen.dart';
-import 'package:national_wild_animal/app/module/no_internet/no_internet_screen.dart';
 import 'package:national_wild_animal/app/module/splash_screen/refresh_token_model.dart';
 
 import '../../app_utils/shared_preferance.dart';
@@ -21,76 +20,93 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> with Helper {
+  SharedPref sharedPref = SharedPref();
 
+  // Method to get current location and store it in shared preferences
+  Future<void> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      print("Location services are disabled.");
+      return;
+    }
 
-  Future<void> checkConnectivity() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {
-      // No internet connection
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('No Internet Connection'),
-          content: Text('Please check your internet settings.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => NoInternetPage()),
-                );
-              },
-              child: Text('OK'),
-            ),
-          ],
-        ),
-      );
-    } else {
-      // Internet is available, navigate to Login Page
-      Future.delayed(Duration(seconds: 3), () {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => LoginScreen()),
-        );
-      });
+    // Check location permissions
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        print("Location permissions are denied.");
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      print("Location permissions are permanently denied.");
+      return;
+    }
+
+    try {
+      // Get the current position
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      print("Latitude: ${position.latitude}, Longitude: ${position.longitude}");
+
+      // Save latitude and longitude in shared preferences
+      await sharedPref.save("latitude", position.latitude.toString());
+      await sharedPref.save("longitude", position.longitude.toString());
+
+      // Get address details from latitude and longitude
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude, position.longitude);
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        String currentLocation =
+            "${place.locality}, ${place.administrativeArea}, ${place.country}";
+        print("Location: $currentLocation");
+
+        // Save the current location in shared preferences
+        await sharedPref.save("currentLocation", currentLocation);
+      }
+    } catch (e) {
+      print("Error getting location: $e");
     }
   }
 
-  SharedPref sharedPref = SharedPref();
   Future<bool> getRefreshToken() async {
     Completer<bool> completer = Completer<bool>();
 
     try {
-      // Retrieve the stored JSON string from shared preferences
       String? jsonData = await sharedPref.getKey("token");
 
       if (jsonData != null) {
         Utils.showProgressIndicator();
         String? refreshToken = json.decode(jsonData);
-        // Call the API method using the token
         HttpMethodsDio().getMethodWithToken(
           api: ApiEndPoint.getRefreshToken,
           fun: (map, code) async {
             Utils.disMissProgressIndicator();
-            debugPrint(">>>>>>>>map$map");
             if (code == 200 && map['data'] != null && map['data'].isNotEmpty) {
-              // Handle successful token refresh
               await sharedPref.save("token", map['data']['token']);
-               await sharedPref.save("logInTime", DateTime.now().toString());
               completer.complete(true);
             } else {
-              completer.complete(false); // Handle other scenarios
+              completer.complete(false);
             }
           },
-          token: refreshToken, // Pass the extracted token
+          token: refreshToken,
         );
       } else {
         Utils.disMissProgressIndicator();
-        completer.complete(false); // Handle case where token is null
+        completer.complete(false);
       }
     } catch (e) {
       Utils.disMissProgressIndicator();
-      completer.complete(false); // Complete with an error if something goes wrong
+      completer.complete(false);
     }
 
     return completer.future;
@@ -99,8 +115,8 @@ class _SplashScreenState extends State<SplashScreen> with Helper {
   @override
   void initState() {
     super.initState();
-     //checkConnectivity();
-    Future.delayed(Duration(seconds: 3), () {
+    getCurrentLocation();
+    Future.delayed(const Duration(seconds: 3), () {
       setRoute();
     });
   }
@@ -112,18 +128,16 @@ class _SplashScreenState extends State<SplashScreen> with Helper {
       DateTime logInDateTime = DateTime.parse(json.decode(logInTime));
       int logInHours = DateTime.now().difference(logInDateTime).inHours;
       int logInMinutes = DateTime.now().difference(logInDateTime).inMinutes;
-      debugPrint(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${logInHours}");
-      debugPrint(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${logInMinutes}");
       if (isLogIn.toString().contains("true")) {
         if (logInMinutes > 475) {
-          getRefreshToken().then((sta){
-            if(sta){
+          getRefreshToken().then((sta) {
+            if (sta) {
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 "/bottomAppBarProvider",
-                    (Route<dynamic> route) => false,
+                (Route<dynamic> route) => false,
               );
-            }else{
+            } else {
               gotoSplashScreen();
             }
           });
@@ -134,8 +148,7 @@ class _SplashScreenState extends State<SplashScreen> with Helper {
             (Route<dynamic> route) => false,
           );
         } else {
-          debugPrint(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>in else");
-          gotoSplashScreen(); 
+          gotoSplashScreen();
         }
       } else {
         Navigator.pushNamedAndRemoveUntil(
@@ -155,16 +168,14 @@ class _SplashScreenState extends State<SplashScreen> with Helper {
 
   void gotoSplashScreen() async {
     bool isOk = await showCommonPopupNew(
-      "Opps!!",
+      "Oops!!",
       "Session out.\nPlease RelogIn",
       context,
       barrierDismissible: false,
       isYesOrNoPopup: false,
     );
     if (isOk) {
-      SharedPref sharedPref = SharedPref();
       await sharedPref.save("isLogIn", "false");
-
       Navigator.pushNamedAndRemoveUntil(
         context,
         "/logInScreen",

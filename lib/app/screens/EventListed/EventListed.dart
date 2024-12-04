@@ -8,7 +8,7 @@ import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 import 'package:national_wild_animal/app/module/home_screen/HomeScreen.dart';
 import 'package:national_wild_animal/app/module/home_screen/provider/home_screen_provider.dart';
 import 'package:national_wild_animal/app/screens/EventListed/EventCard.dart';
-import 'package:national_wild_animal/app/screens/EventListed/EventDetails.dart';
+import 'package:national_wild_animal/app/screens/EventListed/EventDescription.dart';
 import 'package:national_wild_animal/app/screens/EventListed/EventListedData.dart';
 import 'package:provider/provider.dart';
 
