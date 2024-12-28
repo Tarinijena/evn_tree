@@ -7,6 +7,8 @@ class ApiEndPoint {
 
   static String signUpUrl(String userId) => "$baseUrl/umt/public/login-demo?userName=$userId";
 
+
+
   static String citiesUrl= "$baseUrl/event/master/cities";
   static String categoryLst = "$baseUrl/event/master/eventCategories";
 
@@ -14,8 +16,10 @@ class ApiEndPoint {
 
   static String createEvent(String base64String)=>"http://128.199.18.223:8080/evntree/api/v1/event/addEvent?eventEncodedStr=$base64String";
 
-  static String signUpVerify(String otpNumber,String emailId)=> "$baseUrl/umt/public/signup-verify?otp=$otpNumber&userName=$emailId";
+   static String getEventList(String base64String)=>"http://128.199.18.223:8080/evntree/api/v1/event/getEventList?eventEncodedStr=$base64String";
 
+  static String signUpVerify(String otpNumber,String emailId)=> "$baseUrl/umt/public/signup-verify?otp=$otpNumber&userName=$emailId";
+  
   static String loginVerify(String userName,String userPassword)=>"$baseUrl/umt/public/login?userName=$userName&password=$userPassword";
 
   static String getUserProfile = "$baseUrl/umt/get-user-details";

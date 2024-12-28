@@ -46,6 +46,8 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
     super.initState();
   }
 
+  
+
   Future<void> getUserRole() async {
     String? Key = await pref.getKey("roles");
     if (Key != null) {
@@ -59,6 +61,7 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
 
   @override
   Widget build(BuildContext context) {
+     String? role=context.read<UserRoleProvider>().roles;
     return FutureBuilder<void>(
       future: _userRoleFuture,
       builder: (context, snapshot) {
@@ -109,7 +112,7 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
                           icon: Icons.home,
                           index: 0,
                         ),
-                        Consumer<UserRoleProvider>(
+                        if(role=="admin") Consumer<UserRoleProvider>(
                           builder: (context, provider, child) {
                             return _buildIconButton(
                               icon: Icons.theater_comedy_outlined,

@@ -100,6 +100,55 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
     return completer.future;
   }
 
+  //this method for getting sll event list..................................
+
+  String? base64Data="ewogICJ0eXBlIjogIk9OX0dPSU5HIiwKICAiY2F0ZWdvcnkiOiAiQWxsIiwKICAiY2l0eSI6ICI4M2E2ZDNlNS01ZjkxLTRjNmItYjVjOC03OGI3YjdmYmM0ZjEiCn0KCgoKCgoK";
+
+  Future<bool> getEventList() async {
+    Completer<bool> completer = Completer<bool>();
+    //List<DataLstClass> categoryListTemp = [];
+    try {
+      String data = await sharedPref.getKey("token");
+      String token = json.decode(data);
+
+      HttpMethodsDio().getMethodWithToken(
+          api: ApiEndPoint.getEventList(base64Data!),
+          fun: (map, code) {
+            if (code == 200 && map['data'] != null && map['data'].length > 0) {
+              print("API called successfully.........................");
+              //context.read<HomeScreenProvider>().categoryList.clear();
+
+             /* map['data'].forEach((e) {
+                categoryListTemp.add(DataLstClass(
+                    nameStr: e['categoryName'], icon: Icons.category_outlined));
+              });*/
+              /*categoryListTemp.insert(
+                0,
+                DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
+              );*/
+              /*context
+                  .read<HomeScreenProvider>()
+                  .setCategoryList(categoryListData: categoryListTemp);*/
+            } else {
+             
+               print("unable to retrive data........");
+              
+            }
+            completer.complete(true);
+          },
+          token: token);
+    } catch (e) {
+      /*categoryListTemp = [
+        DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
+      ];*/
+      
+      completer.complete(false);
+    }
+    return completer.future;
+  }
+
+
+
   Future<bool> getCityLst() async {
     Completer<bool> completer = Completer<bool>();
     List<Data> cityDatTemp = [];
@@ -141,6 +190,7 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
 
   @override
   void initState() {
+    getEventList();
     scrollController.addListener(() {
       maxScrollExtent = scrollController.position.maxScrollExtent;
     });

@@ -112,11 +112,16 @@ class _EventScreenState extends State<EventScreen> {
   //convert cities into base64 string..........
   
 
-  late FormData formData;
+  
 
   String? categoriesId;
 
    createEvent() async {
+
+      late FormData formData;
+      formData = FormData.fromMap({
+      "file": await MultipartFile.fromFile(imageFile.path, filename: fileName),
+    });
                   //convert cities into base64 string..........
                   
             
@@ -254,10 +259,15 @@ class _EventScreenState extends State<EventScreen> {
 
    
 
-    String fileName = "Upload Image";
+    String fileName1 = "Upload Image";
 
-   late final String? base64Image;  
+   late  String? base64Image;  
      String? name;
+
+     late File imageFile;
+
+     String? fileName;
+
   Future pickImage(ImageSource source) async {
     try {
       
@@ -269,18 +279,16 @@ class _EventScreenState extends State<EventScreen> {
         return;
       }
        // Read the file
-    final File imageFile = File(image.path);
+     imageFile = File(image.path);
       name= imageFile.uri.pathSegments.last;
 
       // Create FormData
-    String? fileName = imageFile.path.split('/').last;
-     formData = FormData.fromMap({
-      "file": await MultipartFile.fromFile(imageFile.path, filename: fileName),
-    });
+    fileName = imageFile.path.split('/').last;
+     
 
       // Update the UI with the file name
     setState(() {
-      fileName = name; // Update the state variable
+      fileName1 =name!; // Update the state variable
     });
 
     // Convert the image to Base64
@@ -1256,7 +1264,7 @@ class _EventScreenState extends State<EventScreen> {
                                     borderSide:
                                         BorderSide(color: Color(0xffB74BFF)),
                                   ),
-                                  inputHint: fileName,
+                                  inputHint: fileName1,
                                   suffixIcon: InkWell(
                                       onTap: () {},
                                       child: Icon(
