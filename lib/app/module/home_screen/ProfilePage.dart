@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:national_wild_animal/app/api_service/api_end_point.dart';
@@ -15,6 +16,8 @@ import 'package:national_wild_animal/app/module/home_screen/HomeScreen.dart';
 import 'package:national_wild_animal/app/module/home_screen/provider/home_screen_provider.dart';
 import 'package:national_wild_animal/app/module/profile_screen/profile_model.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -24,91 +27,96 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-
-
-  
-
-   String? latitudeData;
-   String? longitudeData;
-   String? locationData;
-
-   
+  String? latitudeData;
+  String? longitudeData;
+  String? locationData;
 
   UserData? userData;
-    Uint8List? _image;
+  Uint8List? _image;
   File? selectedIMage;
 
   //these are the controller for text form field...................
-   late TextEditingController fullNameController;
+  late TextEditingController fullNameController;
   late TextEditingController emailController;
   late TextEditingController mobileNoController;
   late TextEditingController rolesController;
 
   SharedPref sharedPref = SharedPref();
-Future<bool> getUserProfileData() async {
-  Completer<bool> completer = Completer<bool>();
+  Future<bool> getUserProfileData() async {
+    Completer<bool> completer = Completer<bool>();
 
-  try {
-    String data = await sharedPref.getKey("token");
-    String token = json.decode(data);
+    try {
+      String data = await sharedPref.getKey("token");
+      String token = json.decode(data);
 
-    HttpMethodsDio().getMethodWithToken(
-      api: ApiEndPoint.getUserProfile,
-      fun: (map, code) {
-        if (code == 200 && map['data'] != null && map['data'].isNotEmpty) {
-          Map<String, dynamic> parsedJson = map;  // No need to decode again
+      HttpMethodsDio().getMethodWithToken(
+        api: ApiEndPoint.getUserProfile,
+        fun: (map, code) {
+          if (code == 200 && map['data'] != null && map['data'].isNotEmpty) {
+            Map<String, dynamic> parsedJson = map; // No need to decode again
 
-          if (parsedJson['status']) {
-            userData = UserData.fromJson(parsedJson['data']);
+            if (parsedJson['status']) {
+              userData = UserData.fromJson(parsedJson['data']);
 
-            setState(() {
-              fullNameController.text = userData?.fullName ?? '';
-              emailController.text = userData?.email ?? '';
-              mobileNoController.text = userData?.mobileNo ?? '8249124088';
-              rolesController.text = userData!.roles.map((role) => role.roleName).join(', ');
-            });
+              setState(() {
+                fullNameController.text = userData?.fullName ?? '';
+                emailController.text = userData?.email ?? '';
+                mobileNoController.text = userData?.mobileNo ?? '8249124088';
+                rolesController.text =
+                    userData!.roles.map((role) => role.roleName).join(', ');
+              });
 
-            completer.complete(true);  // Complete the future successfully
+              completer.complete(true); // Complete the future successfully
+            } else {
+              completer.complete(false); // Handle status false
+            }
           } else {
-            completer.complete(false);  // Handle status false
+            completer.complete(false); // Handle other scenarios
           }
-        } else {
-          completer.complete(false);  // Handle other scenarios
-        }
-      },
-      token: token,
-    );
-  } catch (e) {
-    completer.completeError(e);  // Complete with an error if something goes wrong
+        },
+        token: token,
+      );
+    } catch (e) {
+      completer
+          .completeError(e); // Complete with an error if something goes wrong
+    }
+
+    return completer.future;
   }
 
-  return completer.future;
-}
+  bool isLoading = true;
+
+  getSeamerLoading()async{
+     isLoading = true;
+
+  await  Future.delayed(Duration(seconds:5));
+    getUserProfileData();
+    isLoading = false;
+  }
 
   @override
-  void initState() {
-    
+  initState() {
     super.initState();
-     _initializeProfileData();
-    
-      // Initialize the controllers with the data from userData
+    _initializeProfileData();
+
+    // Initialize the controllers with the data from userData
     fullNameController = TextEditingController();
     emailController = TextEditingController();
     mobileNoController = TextEditingController();
     rolesController = TextEditingController();
+    getSeamerLoading();
     
-    getUserProfileData();
   }
+  
 
   Future<void> _initializeProfileData() async {
-  latitudeData = await sharedPref.getKey('latitude');
-  longitudeData = await sharedPref.getKey('longitude');
-  locationData = await sharedPref.getKey('currentLocation');
-  print("$latitudeData"+"==================");
-  print("$longitudeData");
-  print("$locationData");
-  
-}
+    latitudeData = await sharedPref.getKey('latitude');
+    longitudeData = await sharedPref.getKey('longitude');
+    locationData = await sharedPref.getKey('currentLocation');
+    print("$latitudeData" + "==================");
+    print("$longitudeData");
+    print("$locationData");
+  }
 
   @override
   void dispose() {
@@ -125,150 +133,215 @@ Future<bool> getUserProfileData() async {
     return Scaffold(
       backgroundColor: const Color(0xFF231D32),
       body: SafeArea(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            children: [
-              Stack(
-                alignment: Alignment.bottomCenter,
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: 160,
-                    color: Color(0xFF2A233D),
-                  ),
-                  Positioned(
-
-                    bottom: -45,
-                    child: _image != null
-                    
-                ? CircleAvatar(
-                    radius: 60, backgroundImage: MemoryImage(_image!))
-                : const CircleAvatar(
-                    radius: 60,
-                    backgroundImage: NetworkImage(
-                        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"),
-                  ),
-                  ),
-                  Positioned(top: 20, child: Image.asset("assets/logo1.png")),
-                  Positioned(
-                    //top: -55,
-                    bottom: 45,
-                    left: 120,
-                    child: IconButton(onPressed: () {
-                       showImagePickerOption(context);
-                  }, icon:Icon(Icons.add_a_photo,size: 35,color: Color(0xffB74BFF),)))
-                ],
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              Text(
-                '${userData?.fullName}',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 15, right: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        child: StreamBuilder<List<ConnectivityResult>>(
+          stream: Connectivity().onConnectivityChanged,
+          builder: (context, snapshot) {
+            /*if (snapshot.connectionState == ConnectionState.waiting) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "Name",
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    CustomTextField(
-                      controller: fullNameController,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xffB74BFF)),
-                      ),
-                      inputHint: "Enter Name",
-                    ),
-                    Text(
-                      "Email",
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    CustomTextField(
-                      controller: emailController,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xffB74BFF)),
-                      ),
-                      inputHint: "Enter Email",
-                    ),
-                    Text(
-                      "Phone Number",
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    CustomTextField(
-                      controller: mobileNoController,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xffB74BFF)),
-                      ),
-                      inputHint: "Enter Phone Number",
-                    ),
-                    Text(
-                      "Designation",
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    CustomTextField(
-                      readOnly: true,
-                      controller: rolesController,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xffB74BFF)),
-                      ),
-                      inputHint: "Designation",
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    CommonButton(
-                      buttonText: "SAVE PROFILE",
-                      width: double.infinity,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
+                    const Center(child: CircularProgressIndicator(color: Colors.white,)),
                   ],
+                );
+              }*/
+            if (snapshot.hasError) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(child: Text('Error: ${snapshot.error}')),
+                ],
+              );
+            }
+            final connectivityResults = snapshot.data ?? [];
+            if (connectivityResults.contains(ConnectivityResult.none)) {
+              // No internet connection
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                      child: Text(
+                    'No Internet Connection',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  )),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Icon(
+                    Icons.connect_without_contact,
+                    size: 250,
+                    color: Colors.red,
+                  )
+                ],
+              );
+            } else {
+              return Skeletonizer(
+                enabled: isLoading,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    children: [
+                      Stack(
+                        alignment: Alignment.bottomCenter,
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            height: 160,
+                            color: Color(0xFF2A233D),
+                          ),
+                          Positioned(
+                            bottom: -45,
+                            child: _image != null
+                                ? CircleAvatar(
+                                    radius: 60,
+                                    backgroundImage: MemoryImage(_image!))
+                                : const CircleAvatar(
+                                    radius: 60,
+                                    backgroundImage: NetworkImage(
+                                        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"),
+                                  ),
+                          ),
+                          Positioned(
+                              top: 20, child: Image.asset("assets/logo1.png")),
+                          Positioned(
+                              //top: -55,
+                              bottom: 45,
+                              left: 120,
+                              child: IconButton(
+                                  onPressed: () {
+                                    showImagePickerOption(context);
+                                  },
+                                  icon: Icon(
+                                    Icons.add_a_photo,
+                                    size: 35,
+                                    color: Color(0xffB74BFF),
+                                  )))
+                        ],
+                      ),
+                      SizedBox(
+                        height: 50,
+                      ),
+                      Shimmer.fromColors(
+                         baseColor: Colors.grey.shade300,
+                         highlightColor: Colors.grey.shade100,
+                        child: Text(
+                          '${userData?.fullName}',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15, right: 15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Shimmer.fromColors(
+                              baseColor: Colors.grey.shade300,
+                         highlightColor: Colors.grey.shade100,
+                              child: Text(
+                                "Name",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CustomTextField(
+                              controller: fullNameController,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Color(0xffB74BFF)),
+                              ),
+                              inputHint: "Enter Name",
+                            ),
+                            Text(
+                              "Email",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CustomTextField(
+                              controller: emailController,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Color(0xffB74BFF)),
+                              ),
+                              inputHint: "Enter Email",
+                            ),
+                            Text(
+                              "Phone Number",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CustomTextField(
+                              controller: mobileNoController,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Color(0xffB74BFF)),
+                              ),
+                              inputHint: "Enter Phone Number",
+                            ),
+                            Text(
+                              "Designation",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CustomTextField(
+                              readOnly: true,
+                              controller: rolesController,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Color(0xffB74BFF)),
+                              ),
+                              inputHint: "Designation",
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            CommonButton(
+                              buttonText: "SAVE PROFILE",
+                              width: double.infinity,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              )
-            ],
-          ),
+              );
+            }
+          },
         ),
       ),
     );
   }
 
-   void showImagePickerOption(BuildContext context) {
+  void showImagePickerOption(BuildContext context) {
     showModalBottomSheet(
         backgroundColor: Color(0xffB74BFF),
         context: context,
@@ -346,8 +419,6 @@ Future<bool> getUserProfileData() async {
     });
     Navigator.of(context).pop();
   }
-
-
 }
 
 class RectangularContainerWithImage extends StatelessWidget {

@@ -16,7 +16,10 @@ class ApiEndPoint {
 
   static String createEvent(String base64String)=>"http://128.199.18.223:8080/evntree/api/v1/event/addEvent?eventEncodedStr=$base64String";
 
-   static String getEventList(String base64String)=>"http://128.199.18.223:8080/evntree/api/v1/event/getEventList?eventEncodedStr=$base64String";
+  static String getEventListForApproval(String base64String)=>"http://128.199.18.223:8080/evntree/api/v1/event/getEventListForApproval?eventEncodedStr=$base64String";
+
+
+   static String getEventList(String base64String)=>"http://128.199.18.223:8080/evntree/api/v1/event/getEventListForApproval?eventEncodedStr=$base64String";
 
   static String signUpVerify(String otpNumber,String emailId)=> "$baseUrl/umt/public/signup-verify?otp=$otpNumber&userName=$emailId";
   

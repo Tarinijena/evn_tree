@@ -39,9 +39,18 @@ class BottomAppBarPage extends StatefulWidget {
 class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
   SharedPref pref = SharedPref();
   Future<void>? _userRoleFuture;
+ String? fullName;
+  getRole() async {
+     
+     fullName = await pref.getKey("fullName");
+    if (fullName != null && fullName != "") {
+      fullName = jsonDecode(fullName!);
+    }
+  }
 
   @override
   void initState() {
+    getRole();
     _userRoleFuture = getUserRole();
     super.initState();
   }
@@ -61,7 +70,7 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
 
   @override
   Widget build(BuildContext context) {
-     String? role=context.read<UserRoleProvider>().roles;
+     
     return FutureBuilder<void>(
       future: _userRoleFuture,
       builder: (context, snapshot) {
@@ -110,9 +119,9 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> with Helper {
                       children: [
                         _buildIconButton(
                           icon: Icons.home,
-                          index: 0,
+                          index: 0, 
                         ),
-                        if(role=="admin") Consumer<UserRoleProvider>(
+                        if(fullName=="Super Admin") Consumer<UserRoleProvider>(
                           builder: (context, provider, child) {
                             return _buildIconButton(
                               icon: Icons.theater_comedy_outlined,

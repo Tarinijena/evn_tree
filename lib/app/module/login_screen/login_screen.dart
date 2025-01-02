@@ -174,6 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                  
                                   controller: password1,
                                   keyboardType: TextInputType.number,
+                                  
                                    focusNode: firstFocusNode,
                                 ),
                               ),

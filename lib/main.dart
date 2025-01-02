@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:national_wild_animal/GetCurrentLocation.dart';
+import 'package:national_wild_animal/app/module/home_screen/provider/GetEventListProvider.dart';
+import 'package:national_wild_animal/app/module/home_screen/provider/home_screen_provider.dart';
+import 'package:provider/provider.dart';
 import 'app/app_routes/app_routes.dart';
 import 'app/app_theme/app_themes.dart';
 import 'app/module/splash_screen/splash_screen.dart';
@@ -9,6 +12,10 @@ import 'app/module/splash_screen/splash_screen.dart';
 //SWAGGER UI BACKEND URL FOR THIS APPLICATION
 //http://128.199.18.223:8080/evntree/swagger-ui/index.html#/
 //          /evntree/v3/api-docs/
+
+
+//evn tree event create,event approve/reject , get event base64 document link......
+//https://docs.google.com/document/d/1IM63dOHx5Y9yRklL7Cw_mTPHRNAnsmwgi48mLKAjGzs/edit?tab=t.0
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -20,7 +27,15 @@ void main() {
     systemNavigationBarDividerColor: Colors.transparent,
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
+        ChangeNotifierProvider(create: (_) => EventListProvider()),
+      ],
+      child: MyApp(),
+    ),
+    );
   configLoading();
 }
 

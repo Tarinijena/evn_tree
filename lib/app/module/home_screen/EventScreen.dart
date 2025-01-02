@@ -116,6 +116,9 @@ class _EventScreenState extends State<EventScreen> {
 
   String? categoriesId;
 
+
+  
+
    createEvent() async {
 
       late FormData formData;
@@ -131,6 +134,7 @@ class _EventScreenState extends State<EventScreen> {
               //String cities64 = base64Encode(utf8.encode(cities!));
                     //print(cities64);
               DataLstClass? categories=context.read<HomeScreenProvider>().dropdownValue3;
+              
               String? categoriesId=categories?.categoriId;
 
               // **Create new FormData for each request**

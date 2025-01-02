@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:national_wild_animal/app/screens/EventListed/Model.dart';
 
 class EventCard extends StatefulWidget {
-  final EventModel model;
+  final  allEvent;
 
-  EventCard({super.key, required this.model});
+  EventCard({super.key, required this.allEvent});
 
   @override
   State<EventCard> createState() => _EventCardState();
@@ -31,12 +31,16 @@ class _EventCardState extends State<EventCard> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                widget.model.date,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
+                widget.allEvent['eventStartDate'],
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               Text(
-                widget.model.month,
-                style: TextStyle(fontSize: 20, color: Colors.white),
+                "to",
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              Text(
+                widget.allEvent['eventEndDate'],
+                style: TextStyle(fontSize: 17, color: Colors.white),
               )
             ],
           ),
@@ -48,11 +52,11 @@ class _EventCardState extends State<EventCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.model.event,
+                widget.allEvent['eventName'],
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               Text(
-                widget.model.fees,
+                "Rs-100.0",
                 style: TextStyle(fontSize: 15, color: Colors.white),
               )
             ],

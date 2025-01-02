@@ -1,17 +1,32 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 import 'package:national_wild_animal/app/common_widgets/common_button.dart';
 import 'package:national_wild_animal/app/common_widgets/event_des_time_btn.dart';
 import 'package:national_wild_animal/app/common_widgets/event_description_add_activity.dart';
+import 'package:national_wild_animal/app/screens/EventListed/EventDetailsImage.dart';
 import 'package:national_wild_animal/app/screens/EventListed/Model.dart';
 
-class EventDetails extends StatefulWidget {
-  final  eventData;
-  const EventDetails({super.key, required this.eventData});
+class HomeEventDetails extends StatefulWidget {
+
+  String? role;
+  String? eventName;
+  String? eventTime;
+  String? image;
+  
+   HomeEventDetails({
+    Key? key,
+    required this.role,
+    required this.eventName,
+    required this.eventTime,
+    required this.image
+  }) : super(key: key);
   @override
-  State<EventDetails> createState() => _EventDetailsState();
+  State<HomeEventDetails> createState() => _EventDetailsState();
 }
 
-class _EventDetailsState extends State<EventDetails> {
+class _EventDetailsState extends State<HomeEventDetails> {
   int isSelected = 0;
 
   List<Item> _data = generateItems();
@@ -29,6 +44,15 @@ class _EventDetailsState extends State<EventDetails> {
   final TextEditingController endTimeController = TextEditingController();
   final TextEditingController artistController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+
+  
+
+  @override
+  void initState() {
+    //getRole();
+    super.initState();
+    
+  }
 
   void _showDialog(BuildContext context) {
     // Example dialog to add activity
@@ -65,7 +89,7 @@ class _EventDetailsState extends State<EventDetails> {
                 height: MediaQuery.of(context).size.height / 4,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage("assets/adivasi1.jpeg"),
+                      image: AssetImage(widget.image!),
                       fit: BoxFit.cover),
                   borderRadius:
                       BorderRadius.only(bottomRight: Radius.circular(50)),
@@ -89,14 +113,14 @@ class _EventDetailsState extends State<EventDetails> {
                       Column(
                         children: [
                           Text(
-                            widget.eventData['eventName'],
+                            widget.eventName!,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                                 fontSize: 25),
                           ),
                           Text(
-                            widget.eventData['eventStartDate']+" to "+widget.eventData['eventEndDate'],
+                            widget.eventTime!,
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -158,7 +182,7 @@ class _EventDetailsState extends State<EventDetails> {
                               fontWeight: FontWeight.bold,
                               color: Colors.white),
                         ),
-                        ElevatedButton(
+                      if(widget.role=="Super Admin")  ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.purple.shade800),
                           onPressed: () {
@@ -174,7 +198,8 @@ class _EventDetailsState extends State<EventDetails> {
                       ],
                     ),
                     SizedBox(height: 7),
-                     Row(
+
+                    if(widget.role=="Super Admin") Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                            ElevatedButton(

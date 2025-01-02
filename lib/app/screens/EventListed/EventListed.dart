@@ -6,6 +6,7 @@ import 'package:national_wild_animal/app/api_service/api_end_point.dart';
 import 'package:national_wild_animal/app/api_service/http_methods.dart';
 import 'package:national_wild_animal/app/app_utils/shared_preferance.dart';
 import 'package:national_wild_animal/app/module/home_screen/HomeScreen.dart';
+import 'package:national_wild_animal/app/module/home_screen/provider/GetEventListProvider.dart';
 import 'package:national_wild_animal/app/module/home_screen/provider/home_screen_provider.dart';
 import 'package:national_wild_animal/app/screens/EventListed/EventCard.dart';
 import 'package:national_wild_animal/app/screens/EventListed/EventDescription.dart';
@@ -13,13 +14,30 @@ import 'package:national_wild_animal/app/screens/EventListed/EventListedData.dar
 import 'package:provider/provider.dart';
 
 class EventListedPage extends StatefulWidget {
+
   const EventListedPage({super.key});
 
   @override
   State<EventListedPage> createState() => _EventListedPageState();
+  static Widget builder(BuildContext context) {
+    return /*ChangeNotifierProvider(
+      create: (context) => HomeScreenProvider(),
+      child: HomeScreen(),
+    );*/
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) =>  HomeScreenProvider()),
+        ChangeNotifierProvider(create: (_) =>EventListProvider()),
+      ],
+      child:  HomeScreen(),
+    );
+  }
 }
 
 class _EventListedPageState extends State<EventListedPage> {
+
+   late final eventList;
+
   int isSelected = 0;
 
   List<String> event = ["All", "Music", "Food", "Tech", "Education"];
@@ -31,6 +49,7 @@ class _EventListedPageState extends State<EventListedPage> {
   @override
   void initState() {
     super.initState();
+    _fetchEventList();
     // Fetch the category list on initialization
     categoryFuture = getCategoryList();
   }
@@ -82,9 +101,37 @@ class _EventListedPageState extends State<EventListedPage> {
     return completer.future;
   }
 
+   DataLstClass? categories;
+  String? categoriesName;
+  String? cities;
+
+  Future<void> _fetchEventList() async {
+     categories=context.read<HomeScreenProvider>().dropdownValue3;
+    categoriesName=categories?.nameStr;
+     cities=context.read<HomeScreenProvider>().dropdownValue2!.cityId;
+     Map<String,dynamic> locationAndCategory={
+"city":cities,
+"category":categoriesName,
+  "type": "ON_GOING",
+  
+  };
+          String? jsonString;
+        String? base64String;
+
+        //Convert the Map to a JSON string
+   jsonString = jsonEncode(locationAndCategory);
+
+   //jsonString=createEventJson.toString as String?;
+
+  // Convert the JSON string to Base64
+  base64String = base64Encode(utf8.encode(jsonString));
+    final token = await sharedPref.getKey("token"); // Retrieve token
+    final provider = Provider.of<EventListProvider>(context, listen: false);
+     await provider.getEventListForApproval(json.decode(token),base64String);}
+
   @override
   Widget build(BuildContext context) {
-    
+
      return FutureBuilder<bool>(
       future: categoryFuture,
       builder: (context, snapshot) {
@@ -117,13 +164,13 @@ class _EventListedPageState extends State<EventListedPage> {
               ),
               Container(
                 child: isSelected == 0
-                    ? _showAllEvent()
+                    ? _showAllEvent(context)
                     : isSelected == 1
-                        ? _showAllMusic()
+                        ? _showAllMusic(context)
                         : isSelected == 2
-                            ? _showAllFood()
+                            ? _showAllFood(context)
                             : isSelected == 3
-                                ? _showAllTech()
+                                ? _showAllTech(context)
                                 : null,
               )
             ],
@@ -164,117 +211,181 @@ class _EventListedPageState extends State<EventListedPage> {
 
   //show all event list...................
 
-  _showAllEvent() => SizedBox(
+   _showAllEvent(BuildContext context) {
+  return Consumer<EventListProvider>(
+    builder: (context, eventListProvider, child) {
+      final eventList = eventListProvider.eventList;
+
+      if (eventList.isEmpty) {
+        return Center(
+          child: Text("No events available"),
+        );
+      }
+
+      return SizedBox(
         height: MediaQuery.of(context).size.height,
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: ListView.builder(
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
-            itemCount: EventData.allEvent.length,
+            itemCount: eventList.length,
             itemBuilder: (context, index) {
-              final allEvents = EventData.allEvent[index];
+              final allEvents = eventList[index];
               return Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EventDetails(eventData: allEvents),
-                          ));
-                    },
-                    child: EventCard(model: allEvents)),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EventDetails(eventData: allEvents),
+                      ),
+                    );
+                  },
+                  child: EventCard(allEvent:allEvents),
+                ),
               );
             },
           ),
         ),
       );
+    },
+  );
+}
+
 
   //show all music list...................
 
-  _showAllMusic() => SizedBox(
+  _showAllMusic(BuildContext context) {
+  return Consumer<EventListProvider>(
+    builder: (context, eventListProvider, child) {
+      final eventList = eventListProvider.eventList;
+
+      if (eventList.isEmpty) {
+        return Center(
+          child: Text("No events available"),
+        );
+      }
+
+      return SizedBox(
         height: MediaQuery.of(context).size.height,
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: ListView.builder(
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
-            itemCount: EventData.allEvent.length,
+            itemCount: eventList.length,
             itemBuilder: (context, index) {
-              final allMusic = EventData.music[index];
+              final allEvents = eventList[index];
               return Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EventDetails(eventData: allMusic),
-                          ));
-                    },
-                    child: EventCard(model: allMusic)),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EventDetails(eventData: allEvents),
+                      ),
+                    );
+                  },
+                  child: EventCard(allEvent:allEvents),
+                ),
               );
             },
           ),
         ),
       );
+    },
+  );
+}
 
   //show all food list...................
 
-  _showAllFood() => SizedBox(
+ _showAllFood(BuildContext context) {
+  return Consumer<EventListProvider>(
+    builder: (context, eventListProvider, child) {
+      final eventList = eventListProvider.eventList;
+
+      if (eventList.isEmpty) {
+        return Center(
+          child: Text("No events available"),
+        );
+      }
+
+      return SizedBox(
         height: MediaQuery.of(context).size.height,
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: ListView.builder(
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
-            itemCount: EventData.food.length,
+            itemCount: eventList.length,
             itemBuilder: (context, index) {
-              final allFood = EventData.food[index];
+              final allEvents = eventList[index];
               return Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EventDetails(eventData: allFood),
-                          ));
-                    },
-                    child: EventCard(model: allFood)),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EventDetails(eventData: allEvents),
+                      ),
+                    );
+                  },
+                  child: EventCard(allEvent:allEvents),
+                ),
               );
             },
           ),
         ),
       );
+    },
+  );
+}
 
   //show all tech list...................
 
-  _showAllTech() => SizedBox(
+ _showAllTech(BuildContext context) {
+  return Consumer<EventListProvider>(
+    builder: (context, eventListProvider, child) {
+      final eventList = eventListProvider.eventList;
+
+      if (eventList.isEmpty) {
+        return Center(
+          child: Text("No events available"),
+        );
+      }
+
+      return SizedBox(
         height: MediaQuery.of(context).size.height,
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: ListView.builder(
             shrinkWrap: true,
             scrollDirection: Axis.vertical,
-            itemCount: EventData.tech.length,
+            itemCount: eventList.length,
             itemBuilder: (context, index) {
-              final allTech = EventData.tech[index];
+              final allEvents = eventList[index];
               return Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EventDetails(eventData: allTech),
-                          ));
-                    },
-                    child: EventCard(model: allTech)),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EventDetails(eventData: allEvents),
+                      ),
+                    );
+                  },
+                  child: EventCard(allEvent:allEvents),
+                ),
               );
             },
           ),
         ),
       );
-}
+    },
+  );
+}}

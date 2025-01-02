@@ -17,10 +17,18 @@ class HomeScreenProvider extends ChangeNotifier{
 
   List<Data> cityLst = [];
 
+  String selectedCategoryName = ""; // To store the selected category name
+
   List<DataLstClass> categoryList = [
     
     DataLstClass(icon: Icons.border_all_rounded, nameStr: "All"),
   ];
+
+   void changeSelectedIndex({required int index}) {
+    selectedIndex = index;
+    selectedCategoryName = categoryList[index].nameStr ?? "";
+    notifyListeners();
+  }
 
   setCityList({List<Data>? cityLstData ,Data? dropdownValueData}){
     cityLst = cityLstData??[];
@@ -56,9 +64,9 @@ setDropDownVal2({Data? val}){
     notifyListeners();
   }
 
-  changeSelectedIndex({int index = 0}){
+/*changeSelectedIndex({int index = 0}){
     selectedIndex = index;
     notifyListeners();
-  }
+  }*/
 
 }

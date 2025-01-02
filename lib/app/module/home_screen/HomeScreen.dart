@@ -2,43 +2,65 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:national_wild_animal/Model/Festival.dart';
 import 'package:national_wild_animal/ProfilePageDate/ProfilePageData.dart';
 import 'package:national_wild_animal/app/api_service/api_end_point.dart';
 import 'package:national_wild_animal/app/api_service/http_methods.dart';
 import 'package:national_wild_animal/app/app_theme/colors.dart';
 import 'package:national_wild_animal/app/app_theme/text_styles.dart';
 import 'package:national_wild_animal/app/app_utils/helper.dart';
-import 'package:national_wild_animal/app/common_widgets/common_text_field_view.dart';
 import 'package:national_wild_animal/app/common_widgets/CustomAppBar.dart';
+import 'package:national_wild_animal/app/common_widgets/common_text_field_view.dart';
+import 'package:national_wild_animal/app/module/home_screen/HomeEventDescription.dart';
 import 'package:national_wild_animal/app/module/home_screen/LocationModel/location_model.dart';
+import 'package:national_wild_animal/app/module/home_screen/provider/GetEventListProvider.dart';
 import 'package:provider/provider.dart';
-
 import 'package:shimmer/shimmer.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../app_utils/shared_preferance.dart';
 import 'provider/home_screen_provider.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+
+
+    //? selectedCityName; // Variable to store the selected city 
+    
+    //String? selectedCategoryName; // Variable to store the selected category name
+
+   HomeScreen({
+    Key? key,
+  
+  }) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => HomeScreenProvider(),
-      child: HomeScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) =>  HomeScreenProvider()),
+        ChangeNotifierProvider(create: (context) =>EventListProvider()),
+      ],
+      child:  HomeScreen(),
     );
+   
   }
+
+  
 }
 
 class _HomeScreenState extends State<HomeScreen> with Helper {
   //bool isSelected=false;
 
+
+
   double maxScrollExtent = 0.0;
   ScrollController scrollController = ScrollController();
+  ScrollController scrollController1 = ScrollController();
   TextEditingController textEditingController = TextEditingController();
 
   List<RotateAnimatedText> data = [
@@ -51,6 +73,107 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
   Timer? timer;
 
   SharedPref sharedPref = SharedPref();
+
+  String? role;
+
+  Future<void> getRole() async {
+     
+     role= await sharedPref.getKey("fullName");
+    if (role != null && role != "") {
+      role = jsonDecode(role!);
+    }
+  }
+
+  DataLstClass? categories;
+  String? categoriesName;
+  String? cities;
+
+  
+
+  
+
+  //this method for get event list for approval............................
+
+  
+
+
+
+ 
+  Future<bool> getEventListForApproval() async {
+
+    
+
+    Completer<bool> completer = Completer<bool>();
+
+    try {
+
+
+      String data = await sharedPref.getKey("token");
+      String token = json.decode(data);
+
+      HttpMethodsDio().getMethodWithToken(
+        api: ApiEndPoint.getEventListForApproval("ewogICJ0eXBlIjogIk9OX0dPSU5HIiwKICAiY2F0ZWdvcnkiOiAiQUxMIiwKICAiY2l0eSI6ICI4M2E2ZDNlNS01ZjkxLTRjNmItYjVjOC03OGI3YjdmYmM0ZjEiCn0="),
+        fun: (map, code) {
+          if (code == 200 && map['data'] != null && map['data'].isNotEmpty) {
+            Map<String, dynamic> parsedJson = map; // No need to decode again
+            print(map);
+            if (parsedJson['status']) {
+              
+
+              setState(() {
+                
+              });
+
+              completer.complete(true); // Complete the future successfully
+            } else {
+              completer.complete(false); // Handle status false
+            }
+          } else {
+            completer.complete(false); // Handle other scenarios
+          }
+        },
+        token: token,
+      );
+    } catch (e) {
+      completer
+          .completeError(e); // Complete with an error if something goes wrong
+    }
+
+    return completer.future;
+  }
+
+   Future<void> _fetchEventList() async {
+    categoriesName=context.read<HomeScreenProvider>().selectedCategoryName;
+    //categoriesName=categories?.nameStr;
+     cities=context.read<HomeScreenProvider>().dropdownValue?.cityId;
+    Map<String,dynamic> locationAndCategory={
+"city":cities,
+"category":categoriesName,
+  "type": "ON_GOING",
+  
+  };
+
+  print(cities);
+  print(categoriesName?.toUpperCase());
+  print("ON_GOING");
+
+          String? jsonString;
+        String? base64String;
+
+        //Convert the Map to a JSON string
+   jsonString = jsonEncode(locationAndCategory);
+
+   //jsonString=createEventJson.toString as String?;
+
+  // Convert the JSON string to Base64
+  base64String = base64Encode(utf8.encode(jsonString));
+  print("=====================================>");
+  print(base64String);
+    final token = await sharedPref.getKey("token"); // Retrieve token
+    final provider = Provider.of<EventListProvider>(context, listen: false);
+     await provider.getEventListForApproval(json.decode(token),base64String);}
+
+
 
   Future<bool> getCategoryList() async {
     Completer<bool> completer = Completer<bool>();
@@ -190,7 +313,16 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
 
   @override
   void initState() {
+    scrollController1.addListener(
+      () {
+        maxScrollExtent = scrollController.position.maxScrollExtent;
+      },
+    );
+    //getEventListForApproval();
+    _fetchEventList();
+    getRole();
     getEventList();
+    // connectivitySubscription = connectivity.onConnectivityChanged;
     scrollController.addListener(() {
       maxScrollExtent = scrollController.position.maxScrollExtent;
     });
@@ -201,11 +333,19 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
   }
 
   String? fullName;
+  bool isLoading = true;
   callApi() async {
+    isLoading = true;
     await Future.wait([
       getCategoryList(),
       getCityLst(),
     ]);
+   await Future.delayed(
+        Duration(
+          seconds: 5
+        )
+    );
+    isLoading = false;
     fullName = await sharedPref.getKey("fullName");
     if (fullName != null && fullName != "") {
       fullName = jsonDecode(fullName!);
@@ -224,7 +364,10 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
 
   @override
   Widget build(BuildContext context) {
+    //selectedCategoryName=context.watch<HomeScreenProvider>().selectedCategoryName;
+    
     Size size = MediaQuery.of(context).size;
+     final eventList = Provider.of<EventListProvider>(context).eventList;
     return PopScope(
       canPop: false, // Prevents default pop behavior
       onPopInvoked: (didPop) async {
@@ -248,550 +391,618 @@ class _HomeScreenState extends State<HomeScreen> with Helper {
       child: Scaffold(
         backgroundColor: const Color(0xFF231D32),
         body: SafeArea(
-          child: DefaultTabController(
-            length: 2,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                children: [
-                  Consumer<HomeScreenProvider>(
-                    builder: (context, provider, child) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.blueAccent,
-                              Colors.cyan,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: Offset(0, 3), // Shadow position
-                            ),
-                          ],
-                        ),
-                        child: SizedBox(
-                          // Ensure that the CustomAppBar has a size
-                          height: 60, // Adjust the height as needed
-                          child: CustomAppBar(
-                            cityLst: context.read<HomeScreenProvider>().cityLst,
-                            dropdownValue: context
-                                .read<HomeScreenProvider>()
-                                .dropdownValue,
-                            onChange: (Data? val) {
-                              context
-                                  .read<HomeScreenProvider>()
-                                  .setDropDownVal(val: val);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 24.0, top: 12, right: 18),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.grey.shade100,
-                              child: Text(
-                                "Hello",
-                                style: TextStyles(context)
-                                    .googleRubikFontsForButtonText(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 20),
-                              ),
-                            ),
-                            Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.grey.shade100,
-                              child: Text(
-                                " ${fullName ?? "-----"}",
-                                style: TextStyles(context)
-                                    .googleRubikFontsForText2(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 20),
-                              ),
-                            ),
-                            Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.grey.shade100,
-                              child: Text(
-                                ",",
-                                style: TextStyles(context)
-                                    .googleRubikFontsForButtonText(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 20),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: size.width * 0.9,
-                          height: 35,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                Shimmer.fromColors(
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Text(
-                                    "Let’s explore your fav ",
-                                    style: TextStyles(context)
-                                        .googleRubikFontsForButtonText(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 20),
+          child: StreamBuilder<List<ConnectivityResult>>(
+            builder: (context,snapshot) {
+              /*if (snapshot.connectionState == ConnectionState.waiting) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Center(child: CircularProgressIndicator(color: Colors.white,)),
+                  ],
+                );
+              }*/
+
+              if (snapshot.hasError) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(child: Text('Error: ${snapshot.error}')),
+                  ],
+                );
+              }
+
+              final connectivityResults = snapshot.data ?? [];
+
+              if (connectivityResults.contains(ConnectivityResult.none)) {
+                // No internet connection
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(child: Text('No Internet Connection',
+                    style: TextStyle(
+                      color: Colors.white,fontSize: 18),)),
+                      SizedBox(height: 10,),
+                      Icon(Icons.connect_without_contact,size: 250,color: Colors.red,)
+                  ],
+                );
+              }else {
+                return Skeletonizer(
+                  
+                  enabled: isLoading,
+                  child: DefaultTabController(
+                    length: 2,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                        children: [
+                          Consumer<HomeScreenProvider>(
+                            builder: (context, provider, child) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.blueAccent,
+                                      Colors.cyan,
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 500,
-                                  child: SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Shimmer.fromColors(
-                                      baseColor: Colors.grey.shade300,
-                                      highlightColor: Colors.grey.shade100,
-                                      child: DefaultTextStyle(
-                                        style: TextStyles(context)
-                                            .googleRubikFontsForText2(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 20),
-                                        child: AnimatedTextKit(
-                                          animatedTexts: data,
-                                          isRepeatingAnimation: true,
-                                          repeatForever: true,
-                                          onTap: () {
-                                            print("Tap Event");
-                                          },
-                                        ),
-                                      ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3), // Shadow position
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                Shimmer.fromColors(
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100,
-                                  child: Text(
-                                    " !",
-                                    style: TextStyles(context)
-                                        .googleRubikFontsForButtonText(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 20),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 7,
-                        ),
-                        CommonTextFieldView(
-                          controller: textEditingController,
-                          // errorText: _errorFName,
-                          padding: const EdgeInsets.only(left: 0, right: 0),
-                          keyboardType: TextInputType.name,
-                          onChanged: (String txt) {},
-                          isAllowTopTitleView: false,
-                          suffixIcon: Icons.search,
-                          suffixIconColor: Colors.white,
-                          suffixIconSize: 25,
-                          radius: 15.5,
-                          height: 35,
-                          borderColor: const Color(0xFFC1C1C1),
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Consumer<HomeScreenProvider>(
-                          builder: (context, provider, child) {
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  height: 60,
-                                  width: size.width * 0.8,
-                                  child: ListView.builder(
-                                      itemCount: context
+                                child: SizedBox(
+                                  // Ensure that the CustomAppBar has a size
+                                  height: 60, // Adjust the height as needed
+                                  child: CustomAppBar(
+                                    cityLst: context
+                                        .read<HomeScreenProvider>()
+                                        .cityLst,
+                                    dropdownValue: context
+                                        .read<HomeScreenProvider>()
+                                        .dropdownValue,
+                                    onChange: (Data? val) {
+
+                                      /*setState(() {
+                                          selectedCityName=val?.cityCode;
+                                      });*/
+                                      
+                                      context
                                           .read<HomeScreenProvider>()
-                                          .categoryList
-                                          .length,
-                                      controller: scrollController,
-                                      scrollDirection: Axis.horizontal,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return GestureDetector(
-                                          onTap: () {
-                                            context
-                                                .read<HomeScreenProvider>()
-                                                .changeSelectedIndex(
-                                                    index: index);
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 19.0),
-                                            child: Column(
-                                              children: [
-                                                Consumer<HomeScreenProvider>(
-                                                  builder: (context, provider,
-                                                      child) {
-                                                    return Container(
-                                                        decoration: BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        2),
-                                                            border: Border.all(
-                                                                width: 1,
-                                                                color: const Color(
-                                                                    0xFF362B51)),
-                                                            color: (context
-                                                                        .read<
-                                                                            HomeScreenProvider>()
-                                                                        .selectedIndex ==
-                                                                    index)
-                                                                ? const Color(
-                                                                    0xFFB74BFF)
-                                                                : const Color(
-                                                                    0xFF221D31)),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(4.0),
-                                                          child: Icon(
-                                                            context
-                                                                .read<
-                                                                    HomeScreenProvider>()
-                                                                .categoryList[
-                                                                    index]
-                                                                .icon,
-                                                            size: 30,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ));
-                                                  },
-                                                ),
-                                                Text(
-                                                  context
-                                                          .read<
-                                                              HomeScreenProvider>()
-                                                          .categoryList[index]
-                                                          .nameStr ??
-                                                      "",
-                                                  style: TextStyles(context)
-                                                      .googleRubikFontsForButtonText(
-                                                          fontSize: 9,
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      }),
-                                ),
-                                (context
-                                            .read<HomeScreenProvider>()
-                                            .categoryList
-                                            .length >
-                                        4)
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          double currentOffset =
-                                              scrollController.offset;
-                                          double newOffset =
-                                              currentOffset + 30.0;
-
-                                          if (maxScrollExtent == 0) {
-                                            scrollController.jumpTo(
-                                              30,
-                                            );
-                                          }
-
-                                          if (newOffset <= maxScrollExtent) {
-                                            scrollController.animateTo(
-                                              newOffset,
-                                              duration: const Duration(
-                                                  milliseconds: 500),
-                                              curve: Curves.easeInOut,
-                                            );
-                                          } else {
-                                            // If reached the end, stop scrolling further
-                                            scrollController
-                                                .jumpTo(maxScrollExtent);
-                                          }
-                                        },
-                                        child: Container(
-                                          color: const Color(0xFF362B51),
-                                          height: 40,
-                                          child: const Padding(
-                                            padding: EdgeInsets.all(4.0),
-                                            child: Icon(
-                                              Icons.arrow_forward_sharp,
-                                              size: 18,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : Container()
-                              ],
-                            );
-                          },
-                        ),
-                        Column(
-                          children: [
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Container(
-                              height: 33,
-                              decoration:
-                                  BoxDecoration(color: Colors.transparent),
-                              child: TabBar(
-                                  physics: ClampingScrollPhysics(),
-                                  unselectedLabelColor: Color(0xffB74BFF),
-                                  indicatorSize: TabBarIndicatorSize.label,
-                                  dividerColor: Colors.transparent,
-                                  indicator: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(30),
-                                      color: Color(0xffB74BFF),
-                                      border: Border(
-                                          bottom: BorderSide(
-                                              color: Colors.transparent))),
-                                  tabs: [
-                                    Tab(
-                                      child: Container(
-                                        height: 33,
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                            border: Border.all(
-                                                color: Color(0xffB74BFF),
-                                                width: 1)),
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "Ungoing",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Tab(
-                                      child: Container(
-                                        height: 33,
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                            border: Border.all(
-                                                color: Color(0xffB74BFF),
-                                                width: 1)),
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text("Upcomeing",
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                        ),
-                                      ),
-                                    ),
-                                  ]),
-                            ),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.5,
-                              child: TabBarView(children: [
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.height,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.vertical,
-                                    itemCount: festivalData.length,
-                                    itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(top: 25),
-                                        child: Container(
-                                          height: 90,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(7),
-                                              color: Color(0xFF2A233D)),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Column(
-                                                children: [
-                                                  Container(
-                                                    height: 90,
-                                                    width: 90,
-                                                    decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                            image: AssetImage(
-                                                              festivalData[
-                                                                      index]
-                                                                  .imagePath,
-                                                            ),
-                                                            fit: BoxFit.cover)),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Expanded(
-                                                child: Column(
-                                                  children: [
-                                                    Text(
-                                                      "Adibasi Mela",
-                                                      style: TextStyle(
-                                                          color: ColorsGroup
-                                                              .whiteColor,
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Icon(
-                                                          Icons.location_on,
-                                                          color:
-                                                              Color(0xFFB74BFF),
-                                                          size: 20,
-                                                        ),
-                                                        SizedBox(
-                                                          width: 3,
-                                                        ),
-                                                        Expanded(
-                                                          child: Text(
-                                                            festivalData[index]
-                                                                .festivalLocation,
-                                                            style: TextStyle(
-                                                                fontSize: 10,
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Icon(
-                                                          Icons.date_range,
-                                                          color:
-                                                              Color(0xFFB74BFF),
-                                                          size: 20,
-                                                        ),
-                                                        SizedBox(
-                                                          width: 3,
-                                                        ),
-                                                        Expanded(
-                                                          child: Text(
-                                                            festivalData[index]
-                                                                .festivalLocation,
-                                                            style: TextStyle(
-                                                                fontSize: 10,
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        )
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 8,
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Container(
-                                                          height: 20,
-                                                          width: 60,
-                                                          decoration: BoxDecoration(
-                                                              color: Colors.grey
-                                                                  .shade800,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          2)),
-                                                          child: Center(
-                                                              child: Text(
-                                                            festivalData[index]
-                                                                .festival,
-                                                            style: TextStyle(
-                                                                color: ColorsGroup
-                                                                    .whiteColor,
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          ))),
-                                                      SizedBox(
-                                                        width: 8,
-                                                      )
-                                                    ],
-                                                  ),
-                                                  IconButton(
-                                                      onPressed: () {
-                                                        //isSelected=true;
-                                                      },
-                                                      icon: Icon(
-                                                        Icons.favorite,
-                                                        color: Colors.red,
-                                                      ))
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      );
+                                          .setDropDownVal(val: val);
                                     },
                                   ),
                                 ),
-                                Text("Hii")
-                              ]),
+                              );
+                            },
+                          ),
+                          Padding(
+                            padding:
+                            const EdgeInsets.only(left: 24.0, top: 12, right: 18),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Shimmer.fromColors(
+                                      baseColor: Colors.grey.shade300,
+                                      highlightColor: Colors.grey.shade100,
+                                      period: Duration(seconds: 30),
+                                      child: Text(
+                                        "Hello",
+                                        style: TextStyles(context)
+                                            .googleRubikFontsForButtonText(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 20),
+                                      ),
+                                    ),
+                                    Shimmer.fromColors(
+                                      baseColor: Colors.grey.shade300,
+                                      highlightColor: Colors.grey.shade100,
+                                      period: Duration(seconds: 30),
+                                      child: Text(
+                                        " ${fullName ?? "-----"}",
+                                        style: TextStyles(context)
+                                            .googleRubikFontsForText2(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 20),
+                                      ),
+                                    ),
+                                    Shimmer.fromColors(
+                                      baseColor: Colors.grey.shade300,
+                                      highlightColor: Colors.grey.shade100,
+                                      period: Duration(seconds: 30),
+                                      child: Text(
+                                        ",",
+                                        style: TextStyles(context)
+                                            .googleRubikFontsForButtonText(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 20),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: size.width * 0.9,
+                                  height: 35,
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        Shimmer.fromColors(
+                                          baseColor: Colors.grey.shade300,
+                                          highlightColor: Colors.grey.shade100,
+                                          period: Duration(seconds: 30),
+                                          child: Text(
+                                            "Let’s explore your fav ",
+                                            style: TextStyles(context)
+                                                .googleRubikFontsForButtonText(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 20),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 500,
+                                          child: SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Shimmer.fromColors(
+                                              baseColor: Colors.grey.shade300,
+                                              highlightColor: Colors.grey.shade100,
+                                              period: Duration(seconds: 30),
+                                              child: DefaultTextStyle(
+                                                style: TextStyles(context)
+                                                    .googleRubikFontsForText2(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 20),
+                                                child: AnimatedTextKit(
+                                                  animatedTexts: data,
+                                                  isRepeatingAnimation: true,
+                                                  repeatForever: true,
+                                                  onTap: () {
+                                                    print("Tap Event");
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Shimmer.fromColors(
+                                          baseColor: Colors.grey.shade300,
+                                          highlightColor: Colors.grey.shade100,
+                                          period: Duration(seconds: 30),
+                                          child: Text(
+                                            " !",
+                                            style: TextStyles(context)
+                                                .googleRubikFontsForButtonText(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 20),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 7,
+                                ),
+                                CommonTextFieldView(
+                                  controller: textEditingController,
+                                  // errorText: _errorFName,
+                                  padding: const EdgeInsets.only(left: 0, right: 0),
+                                  keyboardType: TextInputType.name,
+                                  onChanged: (String txt) {},
+                                  isAllowTopTitleView: false,
+                                  suffixIcon: Icons.search,
+                                  suffixIconColor: Colors.white,
+                                  suffixIconSize: 25,
+                                  radius: 15.5,
+                                  height: 35,
+                                  borderColor: const Color(0xFFC1C1C1),
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Consumer<HomeScreenProvider>(
+                                  builder: (context, provider, child) {
+                                    return Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                          height: 60,
+                                          width: size.width * 0.8,
+                                          child: ListView.builder(
+                                              itemCount: context
+                                                  .read<HomeScreenProvider>()
+                                                  .categoryList
+                                                  .length,
+                                              controller: scrollController,
+                                              scrollDirection: Axis.horizontal,
+                                              itemBuilder:
+                                                  (BuildContext context, int index) {
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    
+                                                        context.read<HomeScreenProvider>().changeSelectedIndex(index: index); // Now selectedCategoryName is updated in HomeScreenProvider
+                                                    /*context
+                                                        .read<HomeScreenProvider>()
+                                                        .changeSelectedIndex(
+                                                        index: index);*/
+                                                        _fetchEventList();
+                                                  },
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(
+                                                        right: 19.0),
+                                                    child: Column(
+                                                      children: [
+                                                        Consumer<HomeScreenProvider>(
+                                                          builder: (context, provider,
+                                                              child) {
+                                                            return Container(
+                                                                decoration: BoxDecoration(
+                                                                    borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                        2),
+                                                                    border: Border.all(
+                                                                        width: 1,
+                                                                        color: const Color(
+                                                                            0xFF362B51)),
+                                                                    color: (context
+                                                                        .read<
+                                                                        HomeScreenProvider>()
+                                                                        .selectedIndex ==
+                                                                        index)
+                                                                        ? const Color(
+                                                                        0xFFB74BFF)
+                                                                        : const Color(
+                                                                        0xFF221D31)),
+                                                                child: Padding(
+                                                                  padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                                  child: Icon(
+                                                                    context
+                                                                        .read<
+                                                                        HomeScreenProvider>()
+                                                                        .categoryList[
+                                                                    index]
+                                                                        .icon,
+                                                                    size: 30,
+                                                                    color: Colors.white,
+                                                                  ),
+                                                                ));
+                                                          },
+                                                        ),
+                                                        Text(
+                                                          context
+                                                              .read<
+                                                              HomeScreenProvider>()
+                                                              .categoryList[index]
+                                                              .nameStr ??
+                                                              "",
+                                                          style: TextStyles(context)
+                                                              .googleRubikFontsForButtonText(
+                                                              fontSize: 9,
+                                                              fontWeight:
+                                                              FontWeight.w600),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              }),
+                                        ),
+                                        (context
+                                            .read<HomeScreenProvider>()
+                                            .categoryList
+                                            .length >
+                                            4)
+                                            ? GestureDetector(
+                                          onTap: () {
+                                            double currentOffset =
+                                                scrollController.offset;
+                                            double newOffset =
+                                                currentOffset + 30.0;
+                  
+                                            if (maxScrollExtent == 0) {
+                                              scrollController.jumpTo(
+                                                30,
+                                              );
+                                            }
+                  
+                                            if (newOffset <= maxScrollExtent) {
+                                              scrollController.animateTo(
+                                                newOffset,
+                                                duration: const Duration(
+                                                    milliseconds: 500),
+                                                curve: Curves.easeInOut,
+                                              );
+                                            } else {
+                                              // If reached the end, stop scrolling further
+                                              scrollController
+                                                  .jumpTo(maxScrollExtent);
+                                            }
+                                          },
+                                          child: Container(
+                                            color: const Color(0xFF362B51),
+                                            height: 40,
+                                            child: const Padding(
+                                              padding: EdgeInsets.all(4.0),
+                                              child: Icon(
+                                                Icons.arrow_forward_sharp,
+                                                size: 18,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                            : Container()
+                                      ],
+                                    );
+                                  },
+                                ),
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      height: 33,
+                                      decoration:
+                                      BoxDecoration(color: Colors.transparent),
+                                      child: TabBar(
+                                          physics: ClampingScrollPhysics(),
+                                          unselectedLabelColor: Color(0xffB74BFF),
+                                          indicatorSize: TabBarIndicatorSize.label,
+                                          dividerColor: Colors.transparent,
+                                          indicator: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(30),
+                                              color: Color(0xffB74BFF),
+                                              border: Border(
+                                                  bottom: BorderSide(
+                                                      color: Colors.transparent))),
+                                          tabs: [
+                                            Tab(
+                                              child: Container(
+                                                height: 33,
+                                                width: 100,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                    BorderRadius.circular(30),
+                                                    border: Border.all(
+                                                        color: Color(0xffB74BFF),
+                                                        width: 1)),
+                                                child: Align(
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    "Ongoing",
+                                                    style:
+                                                    TextStyle(color: Colors.white),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Tab(
+                                              child: Container(
+                                                height: 33,
+                                                width: 100,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                    BorderRadius.circular(30),
+                                                    border: Border.all(
+                                                        color: Color(0xffB74BFF),
+                                                        width: 1)),
+                                                child: Align(
+                                                  alignment: Alignment.center,
+                                                  child: Text("Upcomeing",
+                                                      style: TextStyle(
+                                                          color: Colors.white)),
+                                                ),
+                                              ),
+                                            ),
+                                          ]),
+                                    ),
+                                    SizedBox(
+                                      height: MediaQuery
+                                          .of(context)
+                                          .size
+                                          .height * 0.5,
+                                      child: TabBarView(children: [
+                                        SizedBox(
+                                          height: MediaQuery
+                                              .of(context)
+                                              .size
+                                              .height,
+                                          child: ListView.builder(
+                                            scrollDirection: Axis.vertical,
+                                            itemCount: eventList.length,
+                                            
+                                            itemBuilder: (context, index) {
+                                              final event = eventList[index];
+                                              return Padding(
+                                                padding: const EdgeInsets.only(top: 25),
+                                                child: InkWell(
+                                                   onTap: () {
+                                                       Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeEventDetails(role:role!,
+                                                       eventName: event['eventName'],
+                                                       eventTime:  event['eventStartDate']+" to "+event['eventStartDate'],
+                                                       image:"assets/adivasi1.jpeg" ,
+                                                       ),));
+                                                   },
+                                                  child: Container(
+                                                    height: 90,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                        BorderRadius.circular(7),
+                                                        color: Color(0xFF2A233D)),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                      MainAxisAlignment.spaceBetween,
+                                                      crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                      children: [
+                                                        Column(
+                                                          children: [
+                                                            Container(
+                                                              height: 90,
+                                                              width: 90,
+                                                              decoration: BoxDecoration(
+                                                                    image: DecorationImage(image: AssetImage("assets/adivasi1.jpeg"),fit: BoxFit.cover)
+                                                                  ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        Expanded(
+                                                          child: Column(
+                                                            children: [
+                                                              Text(
+                                                                event['eventName'] ?? "Unknown Event",
+                                                                style: TextStyle(
+                                                                    color: ColorsGroup
+                                                                        .whiteColor,
+                                                                    fontSize: 15,
+                                                                    fontWeight:
+                                                                    FontWeight.bold),
+                                                              ),
+                                                              SizedBox(
+                                                                height: 5,
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Icon(
+                                                                    Icons.location_on,
+                                                                    color:
+                                                                    Color(0xFFB74BFF),
+                                                                    size: 20,
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: 3,
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      event['addressLine1']+","+event['addressLine2'],
+                                                                      style: TextStyle(
+                                                                          fontSize: 10,
+                                                                          color: Colors
+                                                                              .white,
+                                                                          fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                      overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Icon(
+                                                                    Icons.date_range,
+                                                                    color:
+                                                                    Color(0xFFB74BFF),
+                                                                    size: 20,
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: 3,
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      event['eventStartDate']+" to "+event['eventStartDate'] ?? "Unknown Date",
+                                                                      style: TextStyle(
+                                                                          fontSize: 10,
+                                                                          color: Colors
+                                                                              .white,
+                                                                          fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                      overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Column(
+                                                          mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                          children: [
+                                                            SizedBox(
+                                                              height: 8,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Container(
+                                                                  
+                                                                    height: 20,
+                                                                    width: 60,
+                                                                    decoration: BoxDecoration(
+                                                                        color: Colors.grey
+                                                                            .shade800,
+                                                                        borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(
+                                                                            2)),
+                                                                    child: Center(
+                                                                        child: Text(
+                                                                          event['eventName'] ?? "Unknown Event",
+                                                                          style: TextStyle(
+                                                                              color: ColorsGroup
+                                                                                  .whiteColor,
+                                                                              fontSize: 14,
+                                                                              fontWeight:
+                                                                              FontWeight
+                                                                                  .bold),
+                                                                        ))),
+                                                                SizedBox(
+                                                                  width: 8,
+                                                                )
+                                                              ],
+                                                            ),
+                                                            IconButton(
+                                                                onPressed: () {
+                                                                  //isSelected=true;
+                                                                },
+                                                                icon: Icon(
+                                                                  Icons.favorite,
+                                                                  color: Colors.red,
+                                                                ))
+                                                          ],
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        Text("Hii")
+                                      ]),
+                                    ),
+                                  ],
+                                )
+                              ],
                             ),
-                          ],
-                        )
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ),
+                );
+              }
+            }, stream: Connectivity().onConnectivityChanged,
           ),
         ),
       ),

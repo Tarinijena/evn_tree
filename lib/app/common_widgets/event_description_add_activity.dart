@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class EventDescriptionAddActivity extends StatelessWidget {
+class EventDescriptionAddActivity extends StatefulWidget {
   const EventDescriptionAddActivity({
     super.key,
     required this.activityController,
@@ -15,6 +15,55 @@ class EventDescriptionAddActivity extends StatelessWidget {
   final TextEditingController endTimeController;
   final TextEditingController artistController;
   final TextEditingController descriptionController;
+
+  @override
+  State<EventDescriptionAddActivity> createState() => _EventDescriptionAddActivityState();
+}
+
+class _EventDescriptionAddActivityState extends State<EventDescriptionAddActivity> {
+
+
+
+ //this method for time picker
+ Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.dark(), // Change the theme if needed
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        //startTimeController.text = picked.format(context);
+        widget.startTimeController.text=picked.format(context); // Format time as per the locale
+        
+      });
+    }
+  }
+
+  Future<void> _selectTime1(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.dark(), // Change the theme if needed
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        //startTimeController.text = picked.format(context);
+        widget.endTimeController.text=picked.format(context); // Format time as per the locale
+        
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +81,7 @@ class EventDescriptionAddActivity extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
-                controller: activityController,
+                controller: widget.activityController,
                 decoration: const InputDecoration(
                   labelText: 'Activity Name',
                   labelStyle: TextStyle(color: Colors.white),
@@ -43,29 +92,46 @@ class EventDescriptionAddActivity extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: TextFormField(
-                      controller: startTimeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Start Time',
-                        labelStyle: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
+                    child:  GestureDetector(
+          onTap: () => _selectTime(context),
+          child: AbsorbPointer( // Prevents manual input in the TextFormField
+            child: TextFormField(
+              
+              controller: widget.startTimeController,
+              decoration: const InputDecoration(
+                suffixIcon: Icon(Icons.watch_later,color: Colors.white,),
+                labelText: 'Start Time',
+                labelStyle: TextStyle(color: Colors.white),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+              ),
+            ),
+          ),)),
+                  
                   const SizedBox(width: 10),
                   Expanded(
-                    child: TextFormField(
-                      controller: endTimeController,
-                      decoration: const InputDecoration(
-                        labelText: 'End Time',
-                        labelStyle: TextStyle(color: Colors.white),
-                      ),
-                    ),
+                    child:  GestureDetector(
+          onTap: () => _selectTime1(context),
+          child: AbsorbPointer( // Prevents manual input in the TextFormField
+            child: TextFormField(
+              controller: widget.endTimeController,
+              decoration: const InputDecoration(
+                suffixIcon: Icon(Icons.watch_later,color: Colors.white,),
+                labelText: 'End Time',
+                labelStyle: TextStyle(color: Colors.white),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+              ),
+            ),
+          ),),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
               TextFormField(
-                controller: artistController,
+                controller: widget.artistController,
                 decoration: const InputDecoration(
                   labelText: 'Artist Name',
                   labelStyle: TextStyle(color: Colors.white),
@@ -73,7 +139,7 @@ class EventDescriptionAddActivity extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               TextFormField(
-                controller: descriptionController,
+                controller: widget.descriptionController,
                 decoration: const InputDecoration(
                   labelText: 'Description',
                   labelStyle: TextStyle(color: Colors.white),
@@ -102,11 +168,11 @@ class EventDescriptionAddActivity extends StatelessWidget {
           ),
           onPressed: () {
             // Handle form submission
-            print('Activity Name: ${activityController.text}');
-            print('Start Time: ${startTimeController.text}');
-            print('End Time: ${endTimeController.text}');
-            print('Artist Name: ${artistController.text}');
-            print('Description: ${descriptionController.text}');
+            print('Activity Name: ${widget.activityController.text}');
+            print('Start Time: ${widget.startTimeController.text}');
+            print('End Time: ${widget.endTimeController.text}');
+            print('Artist Name: ${widget.artistController.text}');
+            print('Description: ${widget.descriptionController.text}');
             Navigator.of(context).pop(); // Close the dialog
           },
           child: const Text(
