@@ -18,11 +18,13 @@ class EventListProvider with ChangeNotifier {
       
 
       HttpMethodsDio().getMethodWithToken(
-        api: ApiEndPoint.getEventListForApproval("ewogICJ0eXBlIjogIk9OX0dPSU5HIiwKICAiY2F0ZWdvcnkiOiAiQUxMIiwKICAiY2l0eSI6ICI4M2E2ZDNlNS01ZjkxLTRjNmItYjVjOC03OGI3YjdmYmM0ZjEiCn0="),
+        api: ApiEndPoint.getEventListForApproval(base64Json),
         token: token,
         fun: (map, code) {
           if (code == 200 && map['data'] != null && map['data'].isNotEmpty) {
             _eventList = List<Map<String, dynamic>>.from(map['data']);
+            print("================================>====>");
+            print(map['data']);
             
         notifyListeners();
         return true; // No need to decode again
@@ -30,7 +32,7 @@ class EventListProvider with ChangeNotifier {
             
           } else {
              _eventList = [];
-        notifyListeners();
+        //notifyListeners();
         return false; // Handle other scenarios
           }
         },

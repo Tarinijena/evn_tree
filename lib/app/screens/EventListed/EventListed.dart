@@ -108,7 +108,7 @@ class _EventListedPageState extends State<EventListedPage> {
   Future<void> _fetchEventList() async {
      categories=context.read<HomeScreenProvider>().dropdownValue3;
     categoriesName=categories?.nameStr;
-     cities=context.read<HomeScreenProvider>().dropdownValue2!.cityId;
+     cities=context.read<HomeScreenProvider>().dropdownValue!.cityId;
      Map<String,dynamic> locationAndCategory={
 "city":cities,
 "category":categoriesName,

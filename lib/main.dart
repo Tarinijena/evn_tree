@@ -9,7 +9,7 @@ import 'app/app_routes/app_routes.dart';
 import 'app/app_theme/app_themes.dart';
 import 'app/module/splash_screen/splash_screen.dart';
 
-//SWAGGER UI BACKEND URL FOR THIS APPLICATION
+//SWAGGER UI BACKEND URL FOR THIS APPLICATIO
 //http://128.199.18.223:8080/evntree/swagger-ui/index.html#/
 //          /evntree/v3/api-docs/
 
@@ -18,7 +18,8 @@ import 'app/module/splash_screen/splash_screen.dart';
 //https://docs.google.com/document/d/1IM63dOHx5Y9yRklL7Cw_mTPHRNAnsmwgi48mLKAjGzs/edit?tab=t.0
 
 void main() {
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
     
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
